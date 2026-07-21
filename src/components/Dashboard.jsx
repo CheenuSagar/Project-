@@ -15,7 +15,7 @@ function minutesToHoursAndMins(mins) {
   return `${h > 0 ? `${h}h ` : ''}${m}m`;
 }
 
-export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset }) {
+export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -60,13 +60,13 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           <div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>Load Pre-compiled MCA III Presets:</p>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('A')}>
+              <button className={`btn ${selectedSection === 'A' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('A')}>
                 Section III-A
               </button>
-              <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('B')}>
+              <button className={`btn ${selectedSection === 'B' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('B')}>
                 Section III-B
               </button>
-              <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('C')}>
+              <button className={`btn ${selectedSection === 'C' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('C')}>
                 Section III-C
               </button>
             </div>
@@ -171,9 +171,9 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           <h3 className="card-title" style={{ paddingBottom: '6px', marginBottom: '8px' }}>Select Timetable Option</h3>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginRight: '4px' }}>Load Preset:</span>
-            <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('A')}>Section A</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('B')}>Section B</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => onLoadPreset('C')}>Section C</button>
+            <button className={`btn ${selectedSection === 'A' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('A')}>Section A</button>
+            <button className={`btn ${selectedSection === 'B' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('B')}>Section B</button>
+            <button className={`btn ${selectedSection === 'C' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => onLoadPreset('C')}>Section C</button>
           </div>
         </div>
 

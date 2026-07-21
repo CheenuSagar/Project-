@@ -1488,7 +1488,7 @@ export function exportBackup(timetable) {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(timetable, null, 2));
   const link = document.createElement('a');
   link.setAttribute("href", dataStr);
-  link.setAttribute("download", "lecalert_backup.json");
+  link.setAttribute("download", "mca_timetable_backup.json");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

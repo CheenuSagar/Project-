@@ -49,6 +49,7 @@ export default function SettingsPanel({
   onImportBackup, 
   onClearAll,
   onLoadPreset,
+  selectedSection,
   isAdmin,
   onToggleAdmin
 }) {
@@ -386,7 +387,7 @@ export default function SettingsPanel({
             </div>
             <div className="setting-actions flex-gap">
               <button 
-                className="btn btn-secondary btn-sm"
+                className={`btn ${selectedSection === 'A' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                 onClick={() => {
                   if (confirm('Load MCA III-A timetable preset? This will overwrite your current schedule.')) {
                     onLoadPreset('A');
@@ -396,7 +397,7 @@ export default function SettingsPanel({
                 Section A
               </button>
               <button 
-                className="btn btn-secondary btn-sm"
+                className={`btn ${selectedSection === 'B' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                 onClick={() => {
                   if (confirm('Load MCA III-B timetable preset? This will overwrite your current schedule.')) {
                     onLoadPreset('B');
@@ -406,7 +407,7 @@ export default function SettingsPanel({
                 Section B
               </button>
               <button 
-                className="btn btn-secondary btn-sm"
+                className={`btn ${selectedSection === 'C' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                 onClick={() => {
                   if (confirm('Load MCA III-C timetable preset? This will overwrite your current schedule.')) {
                     onLoadPreset('C');

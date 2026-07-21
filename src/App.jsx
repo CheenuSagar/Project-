@@ -18,6 +18,19 @@ function timeToMinutes(timeStr) {
 
 export default function App() {
   const [timetable, setTimetable] = useState([]);
+  const [selectedSection, setSelectedSection] = useState(() => {
+    try {
+      const saved = localStorage.getItem('lecalert_selected_section');
+      if (saved) return saved;
+      const hasTimetable = localStorage.getItem('lecalert_timetable');
+      if (!hasTimetable) {
+        return 'B'; // default
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  });
   const [settings, setSettings] = useState({
     soundEnabled: true,
     notificationsEnabled: false,
@@ -232,6 +245,10 @@ export default function App() {
     else if (sectionCode === 'B') preset = DEFAULT_TIMETABLE_B;
     else if (sectionCode === 'C') preset = DEFAULT_TIMETABLE_C;
     handleSaveTimetable(preset);
+    setSelectedSection(sectionCode);
+    try {
+      localStorage.setItem('lecalert_selected_section', sectionCode);
+    } catch (e) {}
   };
 
 
@@ -267,7 +284,7 @@ export default function App() {
             <Bell size={20} className="bell-glow" />
           </div>
           <div className="logo-text">
-            <span>Lec</span>Alert
+            <span>MCA</span> Time Table
           </div>
         </div>
 
@@ -324,6 +341,7 @@ export default function App() {
               });
             }}
             onLoadPreset={handleLoadSectionPreset}
+            selectedSection={selectedSection}
           />
         )}
         {activeTab === 'timetable' && (
@@ -357,9 +375,14 @@ export default function App() {
             onClearAll={async () => {
               await verifyAdminAction(() => {
                 handleSaveTimetable([]);
+                setSelectedSection('');
+                try {
+                  localStorage.removeItem('lecalert_selected_section');
+                } catch (e) {}
               });
             }}
             onLoadPreset={handleLoadSectionPreset}
+            selectedSection={selectedSection}
             isAdmin={isAdmin}
             onToggleAdmin={handleToggleAdmin}
           />
@@ -368,7 +391,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2026 LecAlert • Build for public use • Synchronize calendar for 100% notification reliability</p>
+        <p>© 2026 MCA Time Table ❤️ • Build by Cheenu Sagar</p>
       </footer>
 
       {/* Add / Edit Class Modal */}

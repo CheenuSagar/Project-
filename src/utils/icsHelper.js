@@ -72,7 +72,7 @@ export function generateICS(classes) {
   let icsString = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//LecAlert//Class Schedule Notification//EN',
+    'PRODID:-//MCA Time Table//Class Schedule Notification//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH'
   ];
@@ -130,7 +130,7 @@ export function downloadICSFile(classes) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.setAttribute('download', 'lecalert_schedule.ics');
+  link.setAttribute('download', 'mca_timetable_schedule.ics');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
