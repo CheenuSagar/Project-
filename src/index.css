@@ -240,25 +240,36 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   padding: 4px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-tab {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-secondary);
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-tab:hover {
@@ -537,23 +548,40 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
+    align-items: stretch;
     gap: 12px;
-    padding: 14px;
-    margin: 10px 10px 0 10px;
+    padding: 12px 14px;
+    margin: 8px 8px 0 8px;
   }
   
+  .brand-logo {
+    justify-content: center;
+  }
+
   .nav-tabs {
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 4px;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
   }
 
   .nav-tab {
     padding: 8px 12px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .add-quick-btn {
+    width: 100%;
   }
 
   .app-main-content {
-    padding: 16px 12px;
+    padding: 16px 10px;
   }
 
   .form-row {
