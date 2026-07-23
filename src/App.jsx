@@ -430,7 +430,7 @@ export default function App() {
         <div className="mobile-drawer-overlay" onClick={() => setIsMobileMenuOpen(false)}>
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-drawer-header">
-              <span className="mobile-drawer-title">Navigation Menu</span>
+              <span className="mobile-drawer-title">Navigation & Settings</span>
               <button className="icon-btn" onClick={() => setIsMobileMenuOpen(false)}>
                 <X size={20} />
               </button>
@@ -461,6 +461,33 @@ export default function App() {
               >
                 <CalendarDays size={18} /> Academic Calendar
               </button>
+            </div>
+
+            {/* Mobile Theme Selector */}
+            <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '16px' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Palette size={15} style={{ color: 'var(--primary)' }} /> APP THEME (20 THEMES)
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
+                {ALL_THEMES.map((t) => {
+                  const IconComp = t.icon;
+                  const isActive = theme === t.id || (t.id === 'default' && theme === 'light');
+                  return (
+                    <button
+                      key={t.id}
+                      className={`mobile-nav-item ${isActive ? 'active' : ''}`}
+                      style={{ padding: '8px 10px', fontSize: '0.78rem' }}
+                      onClick={() => {
+                        setTheme(t.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <IconComp size={14} style={{ color: t.iconColor }} />
+                      <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{t.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
