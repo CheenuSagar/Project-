@@ -100,7 +100,7 @@ export const DEFAULT_TIMETABLE_A = [
   {
     id: "mca3a-mon-lab1",
     name: "Mini Project Lab (25CA353)",
-    teacher: "SSH+SV",
+    teacher: "SSH+ST",
     location: "AB-207",
     day: "Monday",
     startTime: "13:10",
@@ -110,7 +110,7 @@ export const DEFAULT_TIMETABLE_A = [
   {
     id: "mca3a-mon-lab2",
     name: "Mini Project Lab (25CA353)",
-    teacher: "SSH+SV",
+    teacher: "SSH+ST",
     location: "AB-207",
     day: "Monday",
     startTime: "14:00",
@@ -161,13 +161,13 @@ export const DEFAULT_TIMETABLE_A = [
   },
   {
     id: "mca3a-tue-3",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Savita Singh-SS",
+    name: "Mini Project Lab (25CA353)",
+    teacher: "SSH+AL",
     location: "AB-207",
     day: "Tuesday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#6366f1"
+    color: "#10b981"
   },
   {
     id: "mca3a-tue-4",
@@ -191,7 +191,7 @@ export const DEFAULT_TIMETABLE_A = [
   },
   {
     id: "mca3a-tue-6",
-    name: "Soft Skills (SS)",
+    name: "Soft Skills - SS(N)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-207",
     day: "Tuesday",
@@ -200,14 +200,14 @@ export const DEFAULT_TIMETABLE_A = [
     color: "#f97316"
   },
   {
-    id: "mca3a-tue-lab",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "SSH+SV",
+    id: "mca3a-tue-7",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Savita Singh-SS",
     location: "AB-207",
     day: "Tuesday",
     startTime: "14:00",
     endTime: "14:50",
-    color: "#10b981"
+    color: "#6366f1"
   },
   {
     id: "mca3a-tue-8",
@@ -253,7 +253,7 @@ export const DEFAULT_TIMETABLE_A = [
   },
   {
     id: "mca3a-wed-3",
-    name: "Quantitative Aptitude (QA)",
+    name: "Quantitative Aptitude - QA(N-2)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-207",
     day: "Wednesday",
@@ -488,7 +488,7 @@ export const DEFAULT_TIMETABLE_A = [
   {
     id: "mca3a-fri-meeting",
     name: "Mentor Mentee Meeting",
-    teacher: "KD (G1) / AL (G2)",
+    teacher: "Group A1-KD / Group A2-AL",
     location: "AB-207",
     day: "Friday",
     startTime: "14:50",
@@ -502,7 +502,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-mon-1",
     name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-208",
     day: "Monday",
     startTime: "08:50",
@@ -512,7 +512,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-mon-2",
     name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
+    teacher: "Dr. Rajesh Kr. Maurya-RKM",
     location: "AB-208",
     day: "Monday",
     startTime: "09:40",
@@ -522,7 +522,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-mon-3",
     name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
+    teacher: "Dr. Shikha Verma-SV",
     location: "AB-208",
     day: "Monday",
     startTime: "10:40",
@@ -550,14 +550,24 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#4b5563"
   },
   {
-    id: "mca3b-mon-lab",
+    id: "mca3b-mon-lab1",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Meghna Gupta + SS",
+    teacher: "SS+AP",
     location: "AB-208",
     day: "Monday",
     startTime: "13:10",
+    endTime: "14:00",
+    color: "#10b981"
+  },
+  {
+    id: "mca3b-mon-lab2",
+    name: "DAA Lab (25CA351)",
+    teacher: "SS+AP",
+    location: "AB-208",
+    day: "Monday",
+    startTime: "14:00",
     endTime: "14:50",
-    color: "#6366f1"
+    color: "#10b981"
   },
   {
     id: "mca3b-mon-8",
@@ -594,7 +604,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-tue-2",
     name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
+    teacher: "Dr. Rajesh Kr. Maurya-RKM",
     location: "AB-208",
     day: "Tuesday",
     startTime: "09:40",
@@ -603,13 +613,13 @@ export const DEFAULT_TIMETABLE_B = [
   },
   {
     id: "mca3b-tue-3",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-208",
     day: "Tuesday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#3b82f6"
+    color: "#6366f1"
   },
   {
     id: "mca3b-tue-4",
@@ -632,24 +642,34 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#4b5563"
   },
   {
-    id: "mca3b-tue-lab",
+    id: "mca3b-tue-lab1",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Meghna Gupta + SS",
+    teacher: "MG+HJ",
     location: "AB-208",
     day: "Tuesday",
     startTime: "13:10",
+    endTime: "14:00",
+    color: "#10b981"
+  },
+  {
+    id: "mca3b-tue-lab2",
+    name: "DAA Lab (25CA351)",
+    teacher: "MG+HJ",
+    location: "AB-208",
+    day: "Tuesday",
+    startTime: "14:00",
     endTime: "14:50",
-    color: "#6366f1"
+    color: "#10b981"
   },
   {
     id: "mca3b-tue-8",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma-SV",
     location: "AB-208",
     day: "Tuesday",
     startTime: "14:50",
     endTime: "15:40",
-    color: "#6366f1"
+    color: "#3b82f6"
   },
   {
     id: "mca3b-tue-9",
@@ -666,7 +686,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-wed-1",
     name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
+    teacher: "Dr. Shikha Verma-SV",
     location: "AB-208",
     day: "Wednesday",
     startTime: "08:50",
@@ -686,7 +706,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-wed-3",
     name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-208",
     day: "Wednesday",
     startTime: "10:40",
@@ -715,7 +735,7 @@ export const DEFAULT_TIMETABLE_B = [
   },
   {
     id: "mca3b-wed-6",
-    name: "Quantitative Aptitude (QA)",
+    name: "Quantitative Aptitude - QA(N-2)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-208",
     day: "Wednesday",
@@ -726,7 +746,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-wed-7",
     name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
+    teacher: "Dr. Rajesh Kr. Maurya-RKM",
     location: "AB-208",
     day: "Wednesday",
     startTime: "14:00",
@@ -734,12 +754,22 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#06b6d4"
   },
   {
-    id: "mca3b-wed-lab",
+    id: "mca3b-wed-lab1",
     name: "Mini Project Lab (25CA353)",
     teacher: "AK+AL",
     location: "AB-208",
     day: "Wednesday",
     startTime: "14:50",
+    endTime: "15:40",
+    color: "#10b981"
+  },
+  {
+    id: "mca3b-wed-lab2",
+    name: "Mini Project Lab (25CA353)",
+    teacher: "AK+AL",
+    location: "AB-208",
+    day: "Wednesday",
+    startTime: "15:40",
     endTime: "16:30",
     color: "#10b981"
   },
@@ -762,13 +792,23 @@ export const DEFAULT_TIMETABLE_B = [
     location: "AB-208",
     day: "Thursday",
     startTime: "09:40",
+    endTime: "10:30",
+    color: "#10b981"
+  },
+  {
+    id: "mca3b-thu-lab2",
+    name: "Full Stack Lab (25VC352)",
+    teacher: "HJ+CJ",
+    location: "AB-208",
+    day: "Thursday",
+    startTime: "10:40",
     endTime: "11:30",
     color: "#10b981"
   },
   {
     id: "mca3b-thu-4",
     name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
+    teacher: "Dr. Rajesh Kr. Maurya-RKM",
     location: "AB-208",
     day: "Thursday",
     startTime: "11:30",
@@ -788,7 +828,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-thu-6",
     name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
+    teacher: "Dr. Shikha Verma-SV",
     location: "AB-208",
     day: "Thursday",
     startTime: "13:10",
@@ -798,7 +838,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-thu-7",
     name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-208",
     day: "Thursday",
     startTime: "14:00",
@@ -816,7 +856,7 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#f59e0b"
   },
   {
-    id: "mca3b-thu-lab2",
+    id: "mca3b-thu-9",
     name: "Mini Project Lab (25CA353)",
     teacher: "AK+AL",
     location: "AB-208",
@@ -830,7 +870,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-fri-1",
     name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-208",
     day: "Friday",
     startTime: "08:50",
@@ -850,7 +890,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-fri-3",
     name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
+    teacher: "Dr. Rajesh Kr. Maurya-RKM",
     location: "AB-208",
     day: "Friday",
     startTime: "10:40",
@@ -860,7 +900,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-fri-4",
     name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
+    teacher: "Dr. Shikha Verma-SV",
     location: "AB-208",
     day: "Friday",
     startTime: "11:30",
@@ -889,7 +929,7 @@ export const DEFAULT_TIMETABLE_B = [
   },
   {
     id: "mca3b-fri-7",
-    name: "Soft Skills (SS)",
+    name: "Soft Skills - SS(N)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-208",
     day: "Friday",
@@ -900,7 +940,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-fri-meeting",
     name: "Mentor Mentee Meeting",
-    teacher: "Ms. Gunjan Agarwal (G1) / Ms. Shilpa Tyagi (G2)",
+    teacher: "Group B1-GA / Group B2-ST",
     location: "AB-208",
     day: "Friday",
     startTime: "14:50",
@@ -972,14 +1012,14 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#3b82f6"
   },
   {
-    id: "mca3c-mon-lab3",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "TKS+AL",
+    id: "mca3c-mon-7",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-209",
     day: "Monday",
     startTime: "14:00",
     endTime: "14:50",
-    color: "#10b981"
+    color: "#6366f1"
   },
   {
     id: "mca3c-mon-8",
@@ -1016,7 +1056,7 @@ export const DEFAULT_TIMETABLE_C = [
   {
     id: "mca3c-tue-lab1",
     name: "DAA Lab (25CA351)",
-    teacher: "MG+GA",
+    teacher: "SS+GA",
     location: "AB-209",
     day: "Tuesday",
     startTime: "09:40",
@@ -1026,7 +1066,7 @@ export const DEFAULT_TIMETABLE_C = [
   {
     id: "mca3c-tue-lab2",
     name: "DAA Lab (25CA351)",
-    teacher: "MG+GA",
+    teacher: "SS+GA",
     location: "AB-209",
     day: "Tuesday",
     startTime: "10:40",
@@ -1056,7 +1096,7 @@ export const DEFAULT_TIMETABLE_C = [
   {
     id: "mca3c-tue-lab3",
     name: "Mini Project Lab (25CA353)",
-    teacher: "TKS+PM",
+    teacher: "TKS+AL",
     location: "AB-209",
     day: "Tuesday",
     startTime: "13:10",
@@ -1064,14 +1104,14 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#10b981"
   },
   {
-    id: "mca3c-tue-lab4",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "TKS+PM",
+    id: "mca3c-tue-7",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar-AK",
     location: "AB-209",
     day: "Tuesday",
     startTime: "14:00",
     endTime: "14:50",
-    color: "#10b981"
+    color: "#3b82f6"
   },
   {
     id: "mca3c-tue-8",
@@ -1146,17 +1186,17 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#4b5563"
   },
   {
-    id: "mca3c-wed-6",
-    name: "Quantitative Aptitude (QA)",
-    teacher: "Employability Skills (25HM301(T))",
+    id: "mca3c-wed-lab1",
+    name: "DAA Lab (25CA351)",
+    teacher: "MG+GA",
     location: "AB-209",
     day: "Wednesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#f97316"
+    color: "#10b981"
   },
   {
-    id: "mca3c-wed-7",
+    id: "mca3c-wed-lab2",
     name: "DAA Lab (25CA351)",
     teacher: "MG+GA",
     location: "AB-209",
@@ -1167,17 +1207,17 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-wed-8",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Mr. Tarun Kr. Sharma-TKS",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-209",
     day: "Wednesday",
     startTime: "14:50",
     endTime: "15:40",
-    color: "#06b6d4"
+    color: "#6366f1"
   },
   {
     id: "mca3c-wed-9",
-    name: "Quantitative Aptitude (QA)",
+    name: "Quantitative Aptitude - QA(N-2)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-209",
     day: "Wednesday",
@@ -1199,27 +1239,27 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-thu-2",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta-MG",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar-AK",
     location: "AB-209",
     day: "Thursday",
     startTime: "09:40",
     endTime: "10:30",
-    color: "#6366f1"
+    color: "#3b82f6"
   },
   {
     id: "mca3c-thu-3",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta-MG",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar-AK",
     location: "AB-209",
     day: "Thursday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#6366f1"
+    color: "#3b82f6"
   },
   {
     id: "mca3c-thu-4",
-    name: "Soft Skills (SS)",
+    name: "Soft Skills - SS(N)",
     teacher: "Employability Skills (25HM301(T))",
     location: "AB-209",
     day: "Thursday",
@@ -1238,24 +1278,24 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#4b5563"
   },
   {
-    id: "mca3c-thu-6",
-    name: "Computer Networks (25CA303)",
-    teacher: "Mr. Ajay Kumar-AK",
+    id: "mca3c-thu-lab1",
+    name: "Mini Project Lab (25CA353)",
+    teacher: "TKS+PM",
     location: "AB-209",
     day: "Thursday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#3b82f6"
+    color: "#10b981"
   },
   {
-    id: "mca3c-thu-7",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta-MG",
+    id: "mca3c-thu-lab2",
+    name: "Mini Project Lab (25CA353)",
+    teacher: "TKS+PM",
     location: "AB-209",
     day: "Thursday",
     startTime: "14:00",
     endTime: "14:50",
-    color: "#6366f1"
+    color: "#10b981"
   },
   {
     id: "mca3c-thu-8",
@@ -1269,13 +1309,13 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-thu-9",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Mr. Tarun Kr. Sharma-TKS",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-209",
     day: "Thursday",
     startTime: "15:40",
     endTime: "16:30",
-    color: "#06b6d4"
+    color: "#6366f1"
   },
 
   // --- FRIDAY ---
@@ -1301,13 +1341,13 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-fri-3",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta-MG",
+    name: "Agile S/w Dev & Testing (25CA302)",
+    teacher: "Mr. Tarun Kr. Sharma-TKS",
     location: "AB-209",
     day: "Friday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#6366f1"
+    color: "#06b6d4"
   },
   {
     id: "mca3c-fri-4",
@@ -1341,18 +1381,18 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-fri-7",
-    name: "Computer Networks (25CA303)",
-    teacher: "Mr. Ajay Kumar-AK",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta-MG",
     location: "AB-209",
     day: "Friday",
     startTime: "14:00",
     endTime: "14:50",
-    color: "#3b82f6"
+    color: "#6366f1"
   },
   {
     id: "mca3c-fri-meeting",
     name: "Mentor Mentee Meeting",
-    teacher: "SSH (G1) / CJ (G2)",
+    teacher: "Group C1-SSH / Group C2-CJ",
     location: "AB-209",
     day: "Friday",
     startTime: "14:50",
@@ -1369,6 +1409,21 @@ export const DEFAULT_TIMETABLE = DEFAULT_TIMETABLE_B;
  */
 export function loadTimetable() {
   try {
+    const versionKey = 'lecalert_timetable_version_v3';
+    const currentVersion = localStorage.getItem(versionKey);
+    
+    // Automatically update to latest July 22, 2026 timetable
+    if (currentVersion !== '2026-07-22-v3') {
+      const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
+      let newTable = DEFAULT_TIMETABLE_B;
+      if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
+      else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
+
+      localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
+      localStorage.setItem(versionKey, '2026-07-22-v3');
+      return newTable;
+    }
+
     const raw = localStorage.getItem(STORAGE_KEYS.TIMETABLE);
     if (!raw) {
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(DEFAULT_TIMETABLE));

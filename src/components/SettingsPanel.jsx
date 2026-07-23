@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Bell, Volume2, VolumeX, Download, Share2, Trash2, 
   Upload, FileText, Check, AlertTriangle, ShieldCheck, Shield, Lock, Unlock, Clock,
-  Palette, Coffee, Layers, Zap, Sun, Moon, Sparkles, Flame, Crown
+  Palette, Coffee, Layers, Zap, Sun, Moon, Sparkles, Flame, Crown, Terminal, LayoutGrid, List
 } from 'lucide-react';
 import { generateShareUrl, exportBackup } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
@@ -43,6 +43,29 @@ export function playSyntheticChime() {
   }
 }
 
+export const ALL_THEMES = [
+  { id: 'default', category: 'light', label: 'Light White', icon: Sun, iconColor: '#4f46e5', desc: 'Clean & bright modern white design', dots: ['#ffffff', '#f8fafc', '#4f46e5'] },
+  { id: 'dark', category: 'dark', label: 'Midnight Dark', icon: Moon, iconColor: '#818cf8', desc: 'Sleek midnight dark background', dots: ['#0b0f19', '#111827', '#6366f1'] },
+  { id: 'vokka', category: 'neon', label: 'Vokka Neon', icon: Zap, iconColor: '#a855f7', desc: 'Cyberpunk violet neon & cyan', dots: ['#090614', '#120b29', '#a855f7'] },
+  { id: 'coffee', category: 'dark', label: 'Warm Coffee', icon: Coffee, iconColor: '#d97706', desc: 'Espresso brown & caramel gold', dots: ['#140e0b', '#221612', '#d97706'] },
+  { id: 'emerald', category: 'dark', label: 'Emerald Forest', icon: Sparkles, iconColor: '#10b981', desc: 'Deep emerald green & teal', dots: ['#061913', '#0b2920', '#10b981'] },
+  { id: 'ocean', category: 'dark', label: 'Sapphire Ocean', icon: Layers, iconColor: '#0284c7', desc: 'Deep navy blue & sky blue', dots: ['#031329', '#0a2540', '#0284c7'] },
+  { id: 'rose', category: 'neon', label: 'Rose Sunset', icon: Flame, iconColor: '#f43f5e', desc: 'Crimson rose & sunset amber', dots: ['#1a080f', '#290f19', '#f43f5e'] },
+  { id: 'cyber', category: 'neon', label: 'Cyber Lime', icon: Zap, iconColor: '#84cc16', desc: 'Electric lime green & slate', dots: ['#0b1309', '#12210e', '#84cc16'] },
+  { id: 'pastel', category: 'light', label: 'Cotton Candy', icon: Sun, iconColor: '#d946ef', desc: 'Soft pastel pink & lavender', dots: ['#fbf5ff', '#ffffff', '#d946ef'] },
+  { id: 'gold', category: 'dark', label: 'Royal Gold', icon: Crown, iconColor: '#eab308', desc: 'Obsidian dark & luxury gold', dots: ['#12100b', '#1e1a12', '#eab308'] },
+  { id: 'amethyst', category: 'neon', label: 'Amethyst Dream', icon: Sparkles, iconColor: '#c084fc', desc: 'Royal purple & magenta neon', dots: ['#0d0814', '#1a1029', '#c084fc'] },
+  { id: 'sunset', category: 'neon', label: 'Tangerine Sunset', icon: Flame, iconColor: '#f97316', desc: 'Vibrant orange & fiery crimson', dots: ['#180b06', '#27130a', '#f97316'] },
+  { id: 'matrix', category: 'neon', label: 'Matrix Code', icon: Terminal, iconColor: '#22c55e', desc: 'Hacker green & terminal dark', dots: ['#030a05', '#07170c', '#22c55e'] },
+  { id: 'nordic', category: 'dark', label: 'Nordic Frost', icon: Layers, iconColor: '#38bdf8', desc: 'Glacier cyan & frosty navy', dots: ['#0b131e', '#142232', '#38bdf8'] },
+  { id: 'crimson', category: 'dark', label: 'Crimson Ruby', icon: Flame, iconColor: '#ef4444', desc: 'Obsidian dark & ruby red', dots: ['#140507', '#240a0e', '#ef4444'] },
+  { id: 'lavender', category: 'light', label: 'Lavender Mist', icon: Palette, iconColor: '#8b5cf6', desc: 'Lilac pastel & soft purple', dots: ['#f6f4fe', '#ffffff', '#8b5cf6'] },
+  { id: 'mint', category: 'dark', label: 'Dark Mint', icon: Sparkles, iconColor: '#14b8a6', desc: 'Cool mint green & slate', dots: ['#081615', '#0f2927', '#14b8a6'] },
+  { id: 'amber', category: 'dark', label: 'Warm Amber', icon: Sun, iconColor: '#f59e0b', desc: 'Charcoal dark & glowing amber', dots: ['#14100a', '#241c12', '#f59e0b'] },
+  { id: 'tokyo', category: 'neon', label: 'Tokyo Synth', icon: Zap, iconColor: '#ec4899', desc: 'Electric violet, pink & cyan', dots: ['#0d0714', '#180d28', '#ec4899'] },
+  { id: 'monochrome', category: 'dark', label: 'Slate Silver', icon: Layers, iconColor: '#94a3b8', desc: 'Minimalist monochrome silver', dots: ['#0f172a', '#1e293b', '#94a3b8'] },
+];
+
 export default function SettingsPanel({ 
   timetable, 
   settings, 
@@ -62,6 +85,8 @@ export default function SettingsPanel({
   );
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [adminError, setAdminError] = useState('');
+  const [themeFilter, setThemeFilter] = useState('all');
+  const [themeViewMode, setThemeViewMode] = useState('grid');
 
   const handleRequestPermission = async () => {
     if (!('Notification' in window)) return;
@@ -132,56 +157,126 @@ export default function SettingsPanel({
     });
   };
 
-  const themeList = [
-    { id: 'default', label: 'Light White', icon: Sun, iconColor: '#4f46e5', desc: 'Clean & bright modern white design', dots: ['#ffffff', '#f8fafc', '#4f46e5'] },
-    { id: 'dark', label: 'Midnight Dark', icon: Moon, iconColor: '#818cf8', desc: 'Sleek midnight dark background', dots: ['#0b0f19', '#111827', '#6366f1'] },
-    { id: 'vokka', label: 'Vokka Neon', icon: Zap, iconColor: '#a855f7', desc: 'Cyberpunk violet neon & cyan', dots: ['#090614', '#120b29', '#a855f7'] },
-    { id: 'coffee', label: 'Warm Coffee', icon: Coffee, iconColor: '#d97706', desc: 'Espresso brown & caramel gold', dots: ['#140e0b', '#221612', '#d97706'] },
-    { id: 'emerald', label: 'Emerald Forest', icon: Sparkles, iconColor: '#10b981', desc: 'Deep emerald green & teal', dots: ['#061913', '#0b2920', '#10b981'] },
-    { id: 'ocean', label: 'Sapphire Ocean', icon: Layers, iconColor: '#0284c7', desc: 'Deep navy blue & sky blue', dots: ['#031329', '#0a2540', '#0284c7'] },
-    { id: 'rose', label: 'Rose Sunset', icon: Flame, iconColor: '#f43f5e', desc: 'Crimson rose & sunset amber', dots: ['#1a080f', '#290f19', '#f43f5e'] },
-    { id: 'cyber', label: 'Cyber Lime', icon: Zap, iconColor: '#84cc16', desc: 'Electric lime green & slate', dots: ['#0b1309', '#12210e', '#84cc16'] },
-    { id: 'pastel', label: 'Cotton Candy', icon: Sun, iconColor: '#d946ef', desc: 'Soft pastel pink & lavender', dots: ['#fbf5ff', '#ffffff', '#d946ef'] },
-    { id: 'gold', label: 'Royal Gold', icon: Crown, iconColor: '#eab308', desc: 'Obsidian dark & luxury gold', dots: ['#12100b', '#1e1a12', '#eab308'] },
-  ];
+  const filteredThemes = ALL_THEMES.filter(t => {
+    if (themeFilter === 'all') return true;
+    return t.category === themeFilter;
+  });
 
   return (
     <div className="settings-grid animate-fade-in">
-      {/* 10 Theme Collection Card */}
+      {/* 20 Theme Collection Card - Space Optimized Container */}
       <div className="settings-card glass" style={{ gridColumn: '1 / -1' }}>
-        <h3 className="settings-title">
-          <Palette size={18} className="title-icon" style={{ color: 'var(--primary)' }} /> Color Themes Collection (10 Styles)
-        </h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <h3 className="settings-title" style={{ margin: 0 }}>
+            <Palette size={18} className="title-icon" style={{ color: 'var(--primary)' }} /> Color Themes Collection 
+            <span className="badge badge-success" style={{ marginLeft: '10px', fontSize: '0.75rem', padding: '3px 10px' }}>20 Styles</span>
+          </h3>
+        </div>
         
-        <div className="settings-body">
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-            Choose from 10 handcrafted visual color themes. Click any theme to apply it instantly across the whole app.
+        <div className="settings-body" style={{ marginTop: '12px' }}>
+          <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
+            Choose from 20 handcrafted themes. Scroll inside the box below or switch view mode to save vertical screen space!
           </p>
 
-          <div className="theme-selector-grid">
-            {themeList.map((t) => {
-              const IconComp = t.icon;
-              const isActive = currentTheme === t.id || (t.id === 'default' && currentTheme === 'light');
-              return (
-                <div 
-                  key={t.id}
-                  className={`theme-card ${isActive ? 'active' : ''}`}
-                  onClick={() => onThemeChange && onThemeChange(t.id)}
-                >
-                  <div className="theme-card-header">
-                    <IconComp size={18} style={{ color: t.iconColor }} />
-                    <span className="theme-card-name">{t.label}</span>
-                    {isActive && <Check size={16} className="theme-check" />}
-                  </div>
-                  <p className="theme-card-desc">{t.desc}</p>
-                  <div className="theme-preview-dots">
-                    {t.dots.map((d, i) => (
-                      <span key={i} className="theme-dot" style={{ background: d, border: d === '#ffffff' ? '1px solid #cbd5e1' : 'none' }}></span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+          {/* Filter Pills and View Mode Toggle */}
+          <div className="theme-section-controls">
+            <div className="theme-filter-pills">
+              <button 
+                className={`theme-filter-pill ${themeFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setThemeFilter('all')}
+              >
+                All ({ALL_THEMES.length})
+              </button>
+              <button 
+                className={`theme-filter-pill ${themeFilter === 'dark' ? 'active' : ''}`}
+                onClick={() => setThemeFilter('dark')}
+              >
+                Dark ({ALL_THEMES.filter(t => t.category === 'dark').length})
+              </button>
+              <button 
+                className={`theme-filter-pill ${themeFilter === 'neon' ? 'active' : ''}`}
+                onClick={() => setThemeFilter('neon')}
+              >
+                Neon / Cyber ({ALL_THEMES.filter(t => t.category === 'neon').length})
+              </button>
+              <button 
+                className={`theme-filter-pill ${themeFilter === 'light' ? 'active' : ''}`}
+                onClick={() => setThemeFilter('light')}
+              >
+                Light ({ALL_THEMES.filter(t => t.category === 'light').length})
+              </button>
+            </div>
+
+            <div className="theme-view-toggle">
+              <button 
+                className={`theme-toggle-btn ${themeViewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setThemeViewMode('grid')}
+                title="Grid View"
+              >
+                <LayoutGrid size={14} /> Grid
+              </button>
+              <button 
+                className={`theme-toggle-btn ${themeViewMode === 'compact' ? 'active' : ''}`}
+                onClick={() => setThemeViewMode('compact')}
+                title="Compact Chips View"
+              >
+                <List size={14} /> Chips (Compact)
+              </button>
+            </div>
+          </div>
+
+          {/* Scrollable Container keeping vertical height compact */}
+          <div className="theme-selector-scroll-container">
+            {themeViewMode === 'grid' ? (
+              <div className="theme-selector-grid">
+                {filteredThemes.map((t) => {
+                  const IconComp = t.icon;
+                  const isActive = currentTheme === t.id || (t.id === 'default' && currentTheme === 'light');
+                  return (
+                    <div 
+                      key={t.id}
+                      className={`theme-card ${isActive ? 'active' : ''}`}
+                      onClick={() => onThemeChange && onThemeChange(t.id)}
+                    >
+                      <div className="theme-card-header">
+                        <IconComp size={18} style={{ color: t.iconColor }} />
+                        <span className="theme-card-name">{t.label}</span>
+                        {isActive && <Check size={16} className="theme-check" />}
+                      </div>
+                      <p className="theme-card-desc">{t.desc}</p>
+                      <div className="theme-preview-dots">
+                        {t.dots.map((d, i) => (
+                          <span key={i} className="theme-dot" style={{ background: d, border: d === '#ffffff' ? '1px solid #cbd5e1' : 'none' }}></span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="theme-chips-flex">
+                {filteredThemes.map((t) => {
+                  const IconComp = t.icon;
+                  const isActive = currentTheme === t.id || (t.id === 'default' && currentTheme === 'light');
+                  return (
+                    <div 
+                      key={t.id}
+                      className={`theme-chip-card ${isActive ? 'active' : ''}`}
+                      onClick={() => onThemeChange && onThemeChange(t.id)}
+                    >
+                      <IconComp size={16} style={{ color: t.iconColor }} />
+                      <span>{t.label}</span>
+                      <div style={{ display: 'flex', gap: '3px', marginLeft: '4px' }}>
+                        {t.dots.map((d, i) => (
+                          <span key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: d, border: d === '#ffffff' ? '1px solid #94a3b8' : 'none' }}></span>
+                        ))}
+                      </div>
+                      {isActive && <Check size={14} style={{ color: 'var(--primary)', marginLeft: '4px' }} />}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

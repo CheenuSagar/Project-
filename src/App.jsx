@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers } from 'lucide-react';
+import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import TimetableGrid from './components/TimetableGrid';
 import AcademicCalendar from './components/AcademicCalendar';
-import SettingsPanel, { playSyntheticChime } from './components/SettingsPanel';
+import SettingsPanel, { playSyntheticChime, ALL_THEMES } from './components/SettingsPanel';
 import ClassModal from './components/ClassModal';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -60,9 +60,10 @@ export default function App() {
     }
   });
 
-  // Mobile menu & Weekly Quick Popup state
+  // Mobile menu, Weekly Quick Popup & Header Theme Dropdown state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWeeklyPopupOpen, setIsWeeklyPopupOpen] = useState(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
 
   // Apply theme to document root
   useEffect(() => {
@@ -343,6 +344,45 @@ export default function App() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
+          {/* Quick Theme Picker Pill */}
+          <div className="header-theme-picker">
+            <button 
+              className="header-theme-btn" 
+              onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+              title="Quick Theme Selector (20 Themes)"
+            >
+              <Palette size={16} style={{ color: 'var(--primary)' }} />
+              <span>Theme</span>
+              <ChevronDown size={14} style={{ transform: isThemeDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+            </button>
+
+            {isThemeDropdownOpen && (
+              <div className="header-theme-dropdown glass">
+                <div style={{ padding: '6px 8px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', borderBottom: '1px solid var(--border-light)' }}>
+                  SELECT THEME (20)
+                </div>
+                {ALL_THEMES.map((t) => {
+                  const IconComp = t.icon;
+                  const isActive = theme === t.id || (t.id === 'default' && theme === 'light');
+                  return (
+                    <div 
+                      key={t.id}
+                      className={`header-theme-option ${isActive ? 'active' : ''}`}
+                      onClick={() => {
+                        setTheme(t.id);
+                        setIsThemeDropdownOpen(false);
+                      }}
+                    >
+                      <IconComp size={14} style={{ color: t.iconColor }} />
+                      <span style={{ flex: 1 }}>{t.label}</span>
+                      {isActive && <Check size={14} style={{ color: 'var(--primary)' }} />}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <button 
             className="btn btn-primary btn-sm add-quick-btn"
             onClick={async () => {
