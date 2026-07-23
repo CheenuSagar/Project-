@@ -936,7 +936,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .page-footer {
   text-align: center;
-  padding: 24px;
+  padding: 24px 20px 110px 20px;
   color: var(--text-muted);
   font-size: 0.85rem;
   border-top: 1px solid var(--border-light);
