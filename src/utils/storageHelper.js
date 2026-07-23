@@ -1965,10 +1965,16 @@ export function extractUniqueTeachers(timetable = []) {
       teacherSet.add(cls.substituteTeacher.trim());
     }
     if (cls.teacher) {
-      // Split multi-teacher entries separated by / or +
+      // Split multi-teacher entries separated by /, +, &, or comma
       const raw = cls.teacher;
-      const parts = raw.split(/[\/+]/).map(t => t.trim()).filter(Boolean);
-      parts.forEach(p => teacherSet.add(p));
+      const parts = raw.split(/[\/+&,]/).map(t => t.trim()).filter(Boolean);
+      parts.forEach(p => {
+        // Strip group prefixes like "Group A1: ", "Group B2: ", etc.
+        let cleaned = p.replace(/^Group\s+[A-Z0-9]+:\s*/i, '').trim();
+        if (cleaned && !cleaned.toLowerCase().includes('employability skills')) {
+          teacherSet.add(cleaned);
+        }
+      });
     }
   });
 
@@ -1984,11 +1990,18 @@ export function getTeacherTimetable(timetable = [], teacherName = '') {
   const searchLower = teacherName.toLowerCase().trim();
 
   return listToScan.filter(cls => {
-    if (cls.substituteTeacher && cls.substituteTeacher.toLowerCase().includes(searchLower)) {
-      return true;
+    // Only search teacher and substituteTeacher fields (NEVER match subject names!)
+    if (cls.substituteTeacher) {
+      const subLower = cls.substituteTeacher.toLowerCase().trim();
+      if (subLower === searchLower || subLower.includes(searchLower)) return true;
     }
-    if (cls.teacher && cls.teacher.toLowerCase().includes(searchLower)) {
-      return true;
+    if (cls.teacher) {
+      const teacherLower = cls.teacher.toLowerCase().trim();
+      if (teacherLower === searchLower) return true;
+
+      // Split multi-teacher entries and check parts
+      const parts = teacherLower.split(/[\/+&,]/).map(t => t.trim().replace(/^group\s+[a-z0-9]+:\s*/i, '')).filter(Boolean);
+      return parts.some(part => part === searchLower || part.includes(searchLower) || searchLower.includes(part));
     }
     return false;
   });
