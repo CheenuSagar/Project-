@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, Sparkles, BookOpen, Layers, Lock, Unlock, Key, ShieldCheck } from 'lucide-react';
-import { extractUniqueTeachers, getTeacherTimetable, isActualLecture, loadTeacherPINs, verifyTeacherPIN } from '../utils/storageHelper';
+import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, Sparkles, BookOpen, Layers, Lock, Unlock, Key, ShieldCheck, KeyRound } from 'lucide-react';
+import { extractUniqueTeachers, getTeacherTimetable, isActualLecture, loadTeacherPINs, saveTeacherPINs } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -13,15 +13,7 @@ function timeToMinutes(timeStr) {
 
 export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin }) {
   const allTeachers = extractUniqueTeachers(timetable);
-  const teacherPins = loadTeacherPINs(allTeachers);
-
-  const [selectedTeacher, setSelectedTeacher] = useState(() => {
-    try {
-      return localStorage.getItem('lecalert_selected_teacher') || (allTeachers[0] || '');
-    } catch (e) {
-      return allTeachers[0] || '';
-    }
-  });
+  const [teacherPins, setTeacherPins] = useState(() => loadTeacherPINs(allTeachers));
 
   const [authenticatedTeacher, setAuthenticatedTeacher] = useState(() => {
     try {
@@ -31,56 +23,116 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
     }
   });
 
+  const [selectedTeacher, setSelectedTeacher] = useState(() => {
+    try {
+      return sessionStorage.getItem('lecalert_auth_teacher') || (allTeachers[0] || '');
+    } catch (e) {
+      return allTeachers[0] || '';
+    }
+  });
+
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Change PIN modal / inline state
+  const [isChangingPin, setIsChangingPin] = useState(false);
+  const [oldPin, setOldPin] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [changePinMsg, setChangePinMsg] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleSelectTeacher = (name) => {
-    setSelectedTeacher(name);
-    setPinInput('');
-    setPinError('');
-    try {
-      localStorage.setItem('lecalert_selected_teacher', name);
-    } catch (e) {}
-  };
-
   const handleVerifyPIN = () => {
-    if (verifyTeacherPIN(selectedTeacher, pinInput, teacherPins)) {
-      setAuthenticatedTeacher(selectedTeacher);
+    const trimmedPin = pinInput.trim();
+    if (!trimmedPin) {
+      setPinError('Please enter your 4-digit Faculty PIN.');
+      return;
+    }
+
+    // Find teacher whose PIN matches the entered input
+    const currentPinsMap = loadTeacherPINs(allTeachers);
+    const matchedTeacher = allTeachers.find(
+      (t) => String(currentPinsMap[t]).trim() === trimmedPin
+    );
+
+    if (matchedTeacher) {
+      setAuthenticatedTeacher(matchedTeacher);
+      setSelectedTeacher(matchedTeacher);
       setPinError('');
       setPinInput('');
       try {
-        sessionStorage.setItem('lecalert_auth_teacher', selectedTeacher);
+        sessionStorage.setItem('lecalert_auth_teacher', matchedTeacher);
       } catch (e) {}
     } else {
-      setPinError('Incorrect PIN! Please try again.');
+      setPinError('Incorrect PIN! No faculty account found for this PIN.');
     }
   };
 
   const handleLogoutTeacher = () => {
     setAuthenticatedTeacher('');
+    setIsChangingPin(false);
+    setPinInput('');
+    setPinError('');
     try {
       sessionStorage.removeItem('lecalert_auth_teacher');
     } catch (e) {}
   };
 
-  const isUnlocked = authenticatedTeacher === selectedTeacher;
+  const handleSaveNewPIN = () => {
+    if (!oldPin.trim() || !newPin.trim() || !confirmPin.trim()) {
+      setChangePinMsg({ type: 'error', text: 'All fields are required.' });
+      return;
+    }
 
-  const teacherSchedule = isUnlocked ? getTeacherTimetable(timetable, selectedTeacher) : [];
+    const currentPinsMap = loadTeacherPINs(allTeachers);
+    if (String(currentPinsMap[authenticatedTeacher]).trim() !== oldPin.trim()) {
+      setChangePinMsg({ type: 'error', text: 'Current PIN is incorrect.' });
+      return;
+    }
+
+    if (newPin.trim().length < 4) {
+      setChangePinMsg({ type: 'error', text: 'New PIN must be at least 4 digits.' });
+      return;
+    }
+
+    if (newPin.trim() !== confirmPin.trim()) {
+      setChangePinMsg({ type: 'error', text: 'New PIN and Confirm PIN do not match.' });
+      return;
+    }
+
+    const updated = {
+      ...currentPinsMap,
+      [authenticatedTeacher]: newPin.trim()
+    };
+    saveTeacherPINs(updated);
+    setTeacherPins(updated);
+    setChangePinMsg({ type: 'success', text: 'PIN updated successfully!' });
+    setOldPin('');
+    setNewPin('');
+    setConfirmPin('');
+    setTimeout(() => {
+      setIsChangingPin(false);
+      setChangePinMsg({ type: '', text: '' });
+    }, 1500);
+  };
+
+  const activeTeacher = authenticatedTeacher || (isAdmin ? selectedTeacher : '');
+  const isUnlocked = Boolean(authenticatedTeacher || isAdmin);
+
+  const teacherSchedule = activeTeacher ? getTeacherTimetable(timetable, activeTeacher) : [];
   const currentDay = DAYS[currentTime.getDay()];
   const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
-  // Filter today's lectures for teacher
+  // Filter today's lectures for active teacher
   const todayLectures = teacherSchedule
     .filter(cls => cls.day === currentDay && isActualLecture(cls))
     .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
 
-  // Determine current ongoing and next lecture
   let ongoingClass = null;
   let nextClass = null;
 
@@ -96,7 +148,6 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
     }
   }
 
-  // Group weekly schedule by day
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const groupedWeekly = {};
   daysOfWeek.forEach(d => {
@@ -107,68 +158,16 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
 
   return (
     <div className="teacher-panel animate-fade-in">
-      {/* Teacher Portal Header & Picker */}
-      <div className="teacher-header-card glass">
-        <div className="teacher-header-top">
-          <div className="teacher-header-info">
-            <div className="teacher-icon-badge">
-              <UserCheck size={24} style={{ color: 'var(--primary)' }} />
-            </div>
-            <div>
-              <h2 className="teacher-portal-title">Faculty Schedule Portal</h2>
-              <p className="teacher-portal-subtitle">
-                Private Workload, Room Allocations & Proxy Alerts for {selectedTeacher || 'Faculty'}
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px' }}>
-            {isUnlocked && (
-              <>
-                <button 
-                  className="btn btn-secondary btn-sm"
-                  onClick={handleLogoutTeacher}
-                >
-                  <Lock size={14} /> Lock Account
-                </button>
-
-                <button 
-                  className="btn btn-primary btn-sm"
-                  onClick={() => downloadICSFile(teacherSchedule, `Faculty_${selectedTeacher.replace(/\s+/g, '_')}_Schedule`)}
-                  disabled={teacherSchedule.length === 0}
-                >
-                  <Download size={15} /> Export My Calendar (.ics)
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Teacher Selection Pill Dropdown */}
-        <div className="teacher-select-row">
-          <label className="teacher-select-label">Select Faculty Account:</label>
-          <div className="teacher-pills-scroll">
-            {allTeachers.map((t) => (
-              <button 
-                key={t}
-                className={`teacher-pill ${selectedTeacher === t ? 'active' : ''}`}
-                onClick={() => handleSelectTeacher(t)}
-              >
-                {t} {authenticatedTeacher === t ? '✓' : ''}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* PIN Authentication Lock Screen (If not unlocked for selected teacher) */}
       {!isUnlocked ? (
-        <div className="teacher-pin-lock-card glass">
+        /* Simple Direct PIN Login Card - No Teacher Selection List */
+        <div className="teacher-pin-lock-card glass" style={{ marginTop: '40px' }}>
           <div className="pin-lock-icon">
-            <Key size={32} style={{ color: 'var(--primary)' }} />
+            <Key size={36} style={{ color: 'var(--primary)' }} />
           </div>
-          <h3>Private Schedule PIN Verification</h3>
-          <p>Please enter the 4-digit PIN for <strong>{selectedTeacher}</strong> to view private schedule.</p>
+          <h2 style={{ margin: '8px 0 4px', fontSize: '1.4rem' }}>Faculty Portal Access</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px' }}>
+            Enter your 4-digit Faculty PIN to open your personal timetable portal.
+          </p>
 
           <div className="pin-input-group">
             <input 
@@ -177,22 +176,130 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
               className="form-input pin-field"
               placeholder="Enter PIN..."
               value={pinInput}
-              onChange={(e) => setPinInput(e.target.value)}
+              onChange={(e) => {
+                setPinInput(e.target.value);
+                setPinError('');
+              }}
               onKeyDown={(e) => e.key === 'Enter' && handleVerifyPIN()}
+              autoFocus
             />
             <button className="btn btn-primary" onClick={handleVerifyPIN}>
-              <Unlock size={16} /> Unlock Schedule
+              <Unlock size={16} /> Login
             </button>
           </div>
 
           {pinError && <div className="pin-error-msg">{pinError}</div>}
-
-          <div className="pin-hint-box">
-            <span>💡 Initial Default PIN for <strong>{selectedTeacher}</strong>: <code>{teacherPins[selectedTeacher] || '1001'}</code></span>
-          </div>
         </div>
       ) : (
         <>
+          {/* Teacher Portal Header */}
+          <div className="teacher-header-card glass">
+            <div className="teacher-header-top">
+              <div className="teacher-header-info">
+                <div className="teacher-icon-badge">
+                  <UserCheck size={24} style={{ color: 'var(--primary)' }} />
+                </div>
+                <div>
+                  <h2 className="teacher-portal-title">Faculty Portal — {activeTeacher}</h2>
+                  <p className="teacher-portal-subtitle">
+                    Private Workload, Room Allocations & Proxy Alerts for {activeTeacher}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button 
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setIsChangingPin(!isChangingPin)}
+                >
+                  <KeyRound size={14} /> {isChangingPin ? 'Cancel' : 'Change PIN'}
+                </button>
+
+                {authenticatedTeacher && (
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={handleLogoutTeacher}
+                  >
+                    <Lock size={14} /> Lock / Logout
+                  </button>
+                )}
+
+                <button 
+                  className="btn btn-primary btn-sm"
+                  onClick={() => downloadICSFile(teacherSchedule, `Faculty_${activeTeacher.replace(/\s+/g, '_')}_Schedule`)}
+                  disabled={teacherSchedule.length === 0}
+                >
+                  <Download size={15} /> Export Calendar (.ics)
+                </button>
+              </div>
+            </div>
+
+            {/* Admin-only Teacher Switcher */}
+            {isAdmin && !authenticatedTeacher && (
+              <div className="teacher-select-row" style={{ marginTop: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '12px' }}>
+                <label className="teacher-select-label">Admin Faculty View:</label>
+                <div className="teacher-pills-scroll">
+                  {allTeachers.map((t) => (
+                    <button 
+                      key={t}
+                      className={`teacher-pill ${selectedTeacher === t ? 'active' : ''}`}
+                      onClick={() => setSelectedTeacher(t)}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Change PIN Inline Card */}
+          {isChangingPin && (
+            <div className="admin-card glass" style={{ marginBottom: '20px' }}>
+              <div className="admin-card-header">
+                <KeyRound size={20} style={{ color: 'var(--primary)' }} />
+                <h4 style={{ margin: 0 }}>Change Your Faculty PIN</h4>
+              </div>
+              <div className="admin-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px' }}>
+                <div>
+                  <label className="form-label">Current PIN:</label>
+                  <input 
+                    type="password"
+                    className="form-input"
+                    value={oldPin}
+                    onChange={(e) => setOldPin(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">New PIN (min 4 digits):</label>
+                  <input 
+                    type="password"
+                    className="form-input"
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Confirm New PIN:</label>
+                  <input 
+                    type="password"
+                    className="form-input"
+                    value={confirmPin}
+                    onChange={(e) => setConfirmPin(e.target.value)}
+                  />
+                </div>
+                {changePinMsg.text && (
+                  <div style={{ color: changePinMsg.type === 'error' ? 'var(--danger)' : 'var(--success)', fontSize: '0.88rem', fontWeight: 600 }}>
+                    {changePinMsg.text}
+                  </div>
+                )}
+                <button className="btn btn-primary btn-sm" onClick={handleSaveNewPIN}>
+                  Update PIN
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Live Teacher Banner */}
           <div className="teacher-live-grid">
             {/* Ongoing Lecture Card */}
@@ -262,7 +369,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
           <div className="teacher-weekly-section glass">
             <h3 className="teacher-section-title">
               <Calendar size={18} style={{ color: 'var(--primary)' }} /> 
-              Weekly Master Workload for {selectedTeacher} ({teacherSchedule.length} Lectures Total)
+              Weekly Master Workload for {activeTeacher} ({teacherSchedule.length} Lectures Total)
             </h3>
 
             <div className="teacher-days-grid">
@@ -317,3 +424,4 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
     </div>
   );
 }
+
