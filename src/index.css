@@ -1763,9 +1763,9 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .app-header {
-    margin: 0;
+    margin: 0 0 12px 0;
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    padding: 12px 16px;
+    padding: 10px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1775,10 +1775,33 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
 
+  .brand-logo {
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-text {
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
   .header-actions {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .header-theme-btn span {
+    display: none;
+  }
+
+  .header-theme-btn {
+    padding: 8px 10px;
   }
 
   .floating-bottom-trigger {
@@ -1786,6 +1809,7 @@ h1, h2, h3, h4, h5, h6 {
     right: 16px;
     padding: 10px 16px;
     font-size: 0.85rem;
+    z-index: 98;
   }
 
   .weekly-popup-modal {
@@ -2552,19 +2576,19 @@ h1, h2, h3, h4, h5, h6 {
 /* Floating Feedback Button & Modal */
 .floating-feedback-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 74px;
+  right: 16px;
   z-index: 99;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 10px 16px;
   border-radius: 30px;
-  background: var(--primary);
+  background: var(--primary-gradient);
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.88rem;
-  border: none;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-glow);
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
   cursor: pointer;
   transition: all 0.25s ease;
@@ -2573,6 +2597,22 @@ h1, h2, h3, h4, h5, h6 {
 .floating-feedback-btn:hover {
   transform: translateY(-3px) scale(1.03);
   box-shadow: 0 12px 30px rgba(99, 102, 241, 0.55);
+}
+
+@media (max-width: 768px) {
+  .floating-feedback-btn span {
+    display: none;
+  }
+  .floating-feedback-btn {
+    bottom: 70px;
+    right: 16px;
+    padding: 10px;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  }
 }
 
 .feedback-type-pills {
