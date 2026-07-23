@@ -829,8 +829,11 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: space-between;
   padding: 14px 28px;
-  margin: 16px 24px 0 24px;
+  margin: 12px 24px 0 24px;
   border-radius: var(--radius-lg);
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .brand-logo {
@@ -880,7 +883,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--nav-tabs-bg);
   padding: 4px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
@@ -1761,9 +1764,12 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .app-header {
-    margin: 8px 8px 0 8px;
-    padding: 10px 14px;
+    margin: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    padding: 12px 14px;
     flex-wrap: wrap;
+    background: var(--bg-surface) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
 
   .floating-bottom-trigger {
