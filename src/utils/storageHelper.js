@@ -438,7 +438,7 @@ export const DEFAULT_TIMETABLE_A = [
   {
     id: "mca3a-fri-lab1",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + AP",
+    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
     location: "AB-207",
     day: "Friday",
     startTime: "10:40",
@@ -448,7 +448,7 @@ export const DEFAULT_TIMETABLE_A = [
   {
     id: "mca3a-fri-lab2",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + AP",
+    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
     location: "AB-207",
     day: "Friday",
     startTime: "11:30",
@@ -552,7 +552,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-mon-lab1",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + AP",
+    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
     location: "AB-208",
     day: "Monday",
     startTime: "13:10",
@@ -562,7 +562,7 @@ export const DEFAULT_TIMETABLE_B = [
   {
     id: "mca3b-mon-lab2",
     name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + AP",
+    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
     location: "AB-208",
     day: "Monday",
     startTime: "14:00",
@@ -1408,6 +1408,7 @@ export function migrateTeacherNames(table = []) {
   const map = {
     'AK': 'Mr. Ajay Kumar',
     'AL': 'Ms. Alpna Lodhi',
+    'AP': 'Mr. Asheesh Pandey',
     'CJ': 'Mr. Chirag Jain',
     'GA': 'Ms. Gunjan Agarwal',
     'HJ': 'Ms. Himani Jain',
@@ -1428,6 +1429,7 @@ export function migrateTeacherNames(table = []) {
     // Replace exact short codes if present
     if (t === 'AK') t = 'Mr. Ajay Kumar';
     if (t === 'AL') t = 'Ms. Alpna Lodhi';
+    if (t === 'AP') t = 'Mr. Asheesh Pandey';
     if (t === 'CJ') t = 'Mr. Chirag Jain';
     if (t === 'GA') t = 'Ms. Gunjan Agarwal';
     if (t === 'HJ') t = 'Ms. Himani Jain';
@@ -1438,6 +1440,7 @@ export function migrateTeacherNames(table = []) {
     if (t === 'SSH') t = 'Ms. Surbhi Sharma';
     if (t === 'ST') t = 'Ms. Shilpa Tyagi';
     if (t === 'TKS') t = 'Mr. Tarun Kumar Sharma';
+    t = t.replace(/\bAP\b/g, 'Mr. Asheesh Pandey');
     return { ...cls, teacher: t };
   });
 }
@@ -1448,18 +1451,18 @@ export function migrateTeacherNames(table = []) {
  */
 export function loadTimetable() {
   try {
-    const versionKey = 'lecalert_timetable_version_v5';
+    const versionKey = 'lecalert_timetable_version_v6';
     const currentVersion = localStorage.getItem(versionKey);
     
     // Automatically update to latest clean timetable
-    if (currentVersion !== '2026-07-24-v5') {
+    if (currentVersion !== '2026-07-24-v6') {
       const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
       let newTable = DEFAULT_TIMETABLE_B;
       if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
       else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
 
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
-      localStorage.setItem(versionKey, '2026-07-24-v5');
+      localStorage.setItem(versionKey, '2026-07-24-v6');
       return newTable;
     }
 
