@@ -408,18 +408,6 @@ export default function App() {
             )}
           </div>
 
-          <button 
-            className="btn btn-primary btn-sm add-quick-btn"
-            onClick={async () => {
-              await verifyAdminAction(() => {
-                setEditingClass(null);
-                setIsModalOpen(true);
-              });
-            }}
-          >
-            <Plus size={16} /> Quick Add
-          </button>
-
           {/* Corner Hamburger Button for Mobile */}
           <button 
             className="hamburger-btn"
@@ -620,6 +608,12 @@ export default function App() {
               });
             }}
             onSaveTimetable={handleSaveTimetable}
+            onAddClick={async () => {
+              await verifyAdminAction(() => {
+                setEditingClass(null);
+                setIsModalOpen(true);
+              });
+            }}
           />
         )}
 

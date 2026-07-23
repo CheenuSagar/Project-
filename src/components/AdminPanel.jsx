@@ -20,7 +20,8 @@ export default function AdminPanel({
   onThemeChange,
   onOpenGenerator,
   onEditClick,
-  onSaveTimetable
+  onSaveTimetable,
+  onAddClick
 }) {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [proxyTeacherName, setProxyTeacherName] = useState('');
@@ -107,6 +108,26 @@ export default function AdminPanel({
 
       {isAdmin ? (
         <div className="admin-grid">
+          {/* Card 0: Manual Class Creator */}
+          <div className="admin-card glass card-featured">
+            <div className="admin-card-header">
+              <Plus size={22} style={{ color: 'var(--primary)' }} />
+              <div>
+                <h4>Quick Add New Lecture</h4>
+                <p>Create single class entry with teacher, subject, room & timing</p>
+              </div>
+            </div>
+
+            <div className="admin-card-body">
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                Add a new class or lecture slot directly into Section A, B, or C schedule.
+              </p>
+              <button className="btn btn-primary" onClick={onAddClick}>
+                <Plus size={16} /> Quick Add New Class
+              </button>
+            </div>
+          </div>
+
           {/* Card 1: AI Automatic Timetable Generator */}
           <div className="admin-card glass card-featured">
             <div className="admin-card-header">
