@@ -1403,24 +1403,63 @@ export const DEFAULT_TIMETABLE_C = [
 
 export const DEFAULT_TIMETABLE = DEFAULT_TIMETABLE_B;
 
+export function migrateTeacherNames(table = []) {
+  if (!Array.isArray(table)) return table;
+  const map = {
+    'AK': 'Mr. Ajay Kumar',
+    'AL': 'Ms. Alpna Lodhi',
+    'CJ': 'Mr. Chirag Jain',
+    'GA': 'Ms. Gunjan Agarwal',
+    'HJ': 'Ms. Himani Jain',
+    'KD': 'Ms. Kalpana Dwivedi',
+    'MG': 'Ms. Meghna Gupta',
+    'PM': 'Ms. Priya Mishra',
+    'RKM': 'Dr. Rajesh Kr. Maurya',
+    'SS': 'Ms. Savita Singh',
+    'SSH': 'Ms. Surbhi Sharma',
+    'ST': 'Ms. Shilpa Tyagi',
+    'SV': 'Dr. Shikha Verma',
+    'TKS': 'Mr. Tarun Kumar Sharma'
+  };
+
+  return table.map(cls => {
+    if (!cls.teacher) return cls;
+    let t = cls.teacher;
+    // Replace exact short codes if present
+    if (t === 'AK') t = 'Mr. Ajay Kumar';
+    if (t === 'AL') t = 'Ms. Alpna Lodhi';
+    if (t === 'CJ') t = 'Mr. Chirag Jain';
+    if (t === 'GA') t = 'Ms. Gunjan Agarwal';
+    if (t === 'HJ') t = 'Ms. Himani Jain';
+    if (t === 'KD') t = 'Ms. Kalpana Dwivedi';
+    if (t === 'MG') t = 'Ms. Meghna Gupta';
+    if (t === 'PM') t = 'Ms. Priya Mishra';
+    if (t === 'SS') t = 'Ms. Savita Singh';
+    if (t === 'SSH') t = 'Ms. Surbhi Sharma';
+    if (t === 'ST') t = 'Ms. Shilpa Tyagi';
+    if (t === 'TKS') t = 'Mr. Tarun Kumar Sharma';
+    return { ...cls, teacher: t };
+  });
+}
+
 /**
  * Load timetable from local storage
  * @returns {Array}
  */
 export function loadTimetable() {
   try {
-    const versionKey = 'lecalert_timetable_version_v3';
+    const versionKey = 'lecalert_timetable_version_v5';
     const currentVersion = localStorage.getItem(versionKey);
     
-    // Automatically update to latest July 22, 2026 timetable
-    if (currentVersion !== '2026-07-22-v3') {
+    // Automatically update to latest clean timetable
+    if (currentVersion !== '2026-07-24-v5') {
       const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
       let newTable = DEFAULT_TIMETABLE_B;
       if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
       else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
 
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
-      localStorage.setItem(versionKey, '2026-07-22-v3');
+      localStorage.setItem(versionKey, '2026-07-24-v5');
       return newTable;
     }
 
@@ -1429,7 +1468,10 @@ export function loadTimetable() {
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(DEFAULT_TIMETABLE));
       return DEFAULT_TIMETABLE;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    const migrated = migrateTeacherNames(parsed);
+    localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(migrated));
+    return migrated;
   } catch (e) {
     console.error('Failed to load timetable:', e);
     return DEFAULT_TIMETABLE;
