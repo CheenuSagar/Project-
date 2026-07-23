@@ -214,8 +214,13 @@ export default function App() {
 
   const handleToggleAdmin = async (status, password = "") => {
     if (status) {
+      let pwd = password;
+      if (!pwd) {
+        pwd = prompt("Please enter the Admin passcode to unlock Admin Mode:");
+        if (pwd === null) return false;
+      }
       try {
-        const msgBuffer = new TextEncoder().encode(password);
+        const msgBuffer = new TextEncoder().encode(pwd);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -229,7 +234,7 @@ export default function App() {
           } catch (e) {}
           return true;
         } else {
-          alert("Incorrect passcode!");
+          alert("Incorrect passcode! Admin mode remains locked.");
           return false;
         }
       } catch (e) {

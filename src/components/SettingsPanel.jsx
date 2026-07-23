@@ -83,8 +83,6 @@ export default function SettingsPanel({
   const [notificationStatus, setNotificationStatus] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
   );
-  const [adminPasswordInput, setAdminPasswordInput] = useState('');
-  const [adminError, setAdminError] = useState('');
   const [themeFilter, setThemeFilter] = useState('all');
   const [themeViewMode, setThemeViewMode] = useState('grid');
 
@@ -294,7 +292,7 @@ export default function SettingsPanel({
               <p>
                 {isAdmin 
                   ? 'Admin Mode is Active. You have full permission to add, edit, or delete lectures and load presets.' 
-                  : 'Regular View Mode. Modification features are locked. Enter passcode to manage the schedule.'}
+                  : 'Regular View Mode. Modification features are locked. Click below to enter passcode and unlock.'}
               </p>
             </div>
             
@@ -305,52 +303,20 @@ export default function SettingsPanel({
                 </span>
                 <button 
                   className="btn btn-danger btn-sm"
-                  onClick={() => {
-                    onToggleAdmin(false);
-                    setAdminPasswordInput('');
-                    setAdminError('');
-                  }}
+                  onClick={() => onToggleAdmin(false)}
                 >
                   <Lock size={14} /> Lock Admin
                 </button>
               </div>
             ) : (
-              <div className="setting-actions flex-gap" style={{ alignItems: 'stretch', flexDirection: 'column', width: '100%', maxWidth: '320px', minWidth: '260px' }}>
-                {adminError && <div className="form-error" style={{ width: '100%', margin: '0 0 8px 0', padding: '6px', fontSize: '0.8rem', color: '#f87171' }}>{adminError}</div>}
-                <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-                  <input 
-                    type="password" 
-                    className="form-input" 
-                    placeholder="Enter admin passcode..."
-                    value={adminPasswordInput}
-                    onChange={(e) => setAdminPasswordInput(e.target.value)}
-                    style={{ flex: 1, padding: '8px 12px', fontSize: '0.88rem' }}
-                    onKeyDown={async (e) => {
-                      if (e.key === 'Enter') {
-                        const success = await onToggleAdmin(true, adminPasswordInput);
-                        if (success) {
-                          setAdminError('');
-                        } else {
-                          setAdminError('Incorrect passcode!');
-                        }
-                      }
-                    }}
-                  />
-                  <button 
-                    className="btn btn-primary btn-sm"
-                    onClick={async () => {
-                      const success = await onToggleAdmin(true, adminPasswordInput);
-                      if (success) {
-                        setAdminError('');
-                      } else {
-                        setAdminError('Incorrect passcode!');
-                      }
-                    }}
-                    style={{ padding: '8px 16px', fontSize: '0.88rem' }}
-                  >
-                    Unlock
-                  </button>
-                </div>
+              <div className="setting-actions flex-gap">
+                <button 
+                  className="btn btn-primary btn-sm"
+                  onClick={() => onToggleAdmin(true)}
+                  style={{ padding: '8px 16px', fontSize: '0.88rem' }}
+                >
+                  <Lock size={14} /> Unlock Admin Mode
+                </button>
               </div>
             )}
           </div>
