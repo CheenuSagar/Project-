@@ -71,7 +71,7 @@ export default function FeedbackModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="modal-backdrop animate-fade-in" onClick={handleModalClose}>
+    <div className="modal-overlay animate-fade-in" style={{ zIndex: 2000 }} onClick={handleModalClose}>
       <div 
         className="modal-content glass feedback-modal" 
         onClick={(e) => e.stopPropagation()}
