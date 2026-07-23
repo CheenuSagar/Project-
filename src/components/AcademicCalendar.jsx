@@ -620,6 +620,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .header-title {
           font-size: 1.8rem;
           font-weight: 800;
+          color: var(--text-primary);
         }
         .header-subtitle {
           font-size: 0.9rem;
@@ -667,21 +668,24 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           display: flex;
           align-items: center;
           gap: 12px;
-          background: rgba(245, 158, 11, 0.12);
-          border: 1px solid rgba(245, 158, 11, 0.3);
+          background: var(--warning-glow);
+          border: 1px solid var(--warning);
+          border-radius: var(--radius-lg);
         }
         .notice-text {
           font-size: 0.88rem;
-          color: #fef08a;
+          color: var(--warning-text-color);
         }
 
         .next-milestone-card {
           padding: 24px 28px;
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
-          border: 1px solid rgba(99, 102, 241, 0.3);
+          background: var(--bg-card);
+          border: 1px solid var(--border-light);
+          box-shadow: var(--glass-shadow);
           display: flex;
           flex-direction: column;
           gap: 16px;
+          border-radius: var(--radius-xl);
         }
         .milestone-badge-row {
           display: flex;
@@ -704,7 +708,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .milestone-title {
           font-size: 1.5rem;
           font-weight: 800;
-          color: white;
+          color: var(--text-primary);
           margin-bottom: 6px;
         }
         .milestone-details {
@@ -720,7 +724,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           font-size: 2.6rem;
           font-weight: 900;
           font-family: var(--font-heading);
-          color: #f87171;
+          color: #ef4444;
           line-height: 1;
         }
         .countdown-unit {
@@ -752,6 +756,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           padding: 4px;
           border-radius: var(--radius-md);
           overflow-x: auto;
+          background: var(--bg-card);
         }
         .cat-tab {
           padding: 8px 16px;
@@ -766,13 +771,13 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           white-space: nowrap;
         }
         .cat-tab:hover {
-          color: white;
-          background: rgba(255, 255, 255, 0.05);
+          color: var(--text-primary);
+          background: var(--bg-card-hover);
         }
         .cat-tab.active {
           color: white;
           background: var(--primary-gradient);
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+          box-shadow: 0 4px 12px var(--primary-glow);
         }
         .search-box {
           display: flex;
@@ -781,6 +786,8 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           border-radius: var(--radius-md);
           gap: 8px;
           min-width: 260px;
+          background: var(--form-input-bg);
+          border: 1px solid var(--border-light);
         }
         .search-icon {
           color: var(--text-muted);
@@ -788,7 +795,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .search-input {
           background: transparent;
           border: none;
-          color: white;
+          color: var(--text-primary);
           font-size: 0.88rem;
           width: 100%;
         }
@@ -808,18 +815,18 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           align-items: center;
           gap: 10px;
           padding-bottom: 8px;
-          border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+          border-bottom: 2px solid var(--border-glow);
         }
         .month-header-bar h2 {
           font-size: 1.25rem;
           font-weight: 800;
-          color: white;
+          color: var(--text-primary);
         }
         .month-count-badge {
           font-size: 0.75rem;
           font-weight: 700;
           color: var(--secondary);
-          background: rgba(6, 182, 212, 0.12);
+          background: var(--secondary-glow);
           padding: 2px 8px;
           border-radius: 99px;
         }
@@ -838,9 +845,11 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           border-radius: var(--radius-lg);
           transition: all var(--transition-fast);
           cursor: pointer;
+          background: var(--bg-card);
+          border: 1px solid var(--border-light);
         }
         .readable-event-row:hover {
-          background: rgba(30, 41, 69, 0.7);
+          background: var(--bg-card-hover);
           transform: translateX(4px);
         }
         .readable-event-row.past-row {
@@ -853,15 +862,16 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           justify-content: center;
           min-width: 64px;
           padding: 6px 12px;
-          background: rgba(0, 0, 0, 0.3);
+          background: var(--bg-base);
           border-radius: var(--radius-md);
           border-left: 4px solid var(--primary);
+          border: 1px solid var(--border-light);
         }
         .date-main-text {
           font-size: 1.4rem;
           font-weight: 900;
           font-family: var(--font-heading);
-          color: white;
+          color: var(--text-primary);
           line-height: 1;
         }
         .date-sub-text {
@@ -895,7 +905,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .readable-event-title {
           font-size: 1.1rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
         }
         .readable-event-desc {
           font-size: 0.85rem;
@@ -914,16 +924,16 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         }
         .status-today {
           background: rgba(16, 185, 129, 0.18);
-          color: #34d399;
+          color: #10b981;
           border: 1px solid rgba(16, 185, 129, 0.35);
         }
         .status-future {
-          background: rgba(99, 102, 241, 0.18);
-          color: #a5b4fc;
-          border: 1px solid rgba(99, 102, 241, 0.35);
+          background: var(--primary-glow);
+          color: var(--primary);
+          border: 1px solid var(--border-glow);
         }
         .status-past {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--bg-card-hover);
           color: var(--text-muted);
         }
 
@@ -937,7 +947,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .table-heading {
           font-size: 1.2rem;
           font-weight: 800;
-          color: white;
+          color: var(--text-primary);
         }
         .table-subtext {
           font-size: 0.85rem;
@@ -954,21 +964,22 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           border-bottom: 1px solid var(--border-light);
         }
         .official-mca-table th {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--bg-card);
+          color: var(--text-primary);
           font-weight: 700;
         }
         .table-highlight-green {
-          color: #34d399;
+          color: #10b981;
           font-weight: 700;
         }
         .exam-row-highlight {
-          background: rgba(239, 68, 68, 0.1);
+          background: rgba(239, 68, 68, 0.08);
         }
         .final-exam-row {
-          background: rgba(239, 68, 68, 0.18);
+          background: rgba(239, 68, 68, 0.15);
         }
         .text-danger-bright {
-          color: #f87171 !important;
+          color: #ef4444 !important;
         }
 
         /* Holidays Mode */
@@ -988,7 +999,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .holidays-header h2 {
           font-size: 1.25rem;
           font-weight: 800;
-          color: white;
+          color: var(--text-primary);
         }
         .holidays-header p {
           font-size: 0.85rem;
@@ -1004,6 +1015,9 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           display: flex;
           flex-direction: column;
           gap: 6px;
+          background: var(--bg-card);
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border-light);
           border-left: 4px solid #ec4899;
         }
         .holiday-date-badge {
@@ -1011,13 +1025,13 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
           align-items: center;
           gap: 6px;
           font-size: 0.8rem;
-          color: #f472b6;
+          color: #ec4899;
           font-weight: 700;
         }
         .holiday-name {
           font-size: 1.1rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
         }
         .holiday-desc {
           font-size: 0.82rem;
@@ -1033,7 +1047,7 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
         .weightage-title {
           font-size: 1.1rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
           display: flex;
           align-items: center;
           gap: 8px;

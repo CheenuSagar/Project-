@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays } from 'lucide-react';
+import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import TimetableGrid from './components/TimetableGrid';
 import AcademicCalendar from './components/AcademicCalendar';
@@ -51,6 +51,27 @@ export default function App() {
     }
   });
   
+  // Theme state: 'default', 'vokka', 'coffee'
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('lecalert_theme') || 'default';
+    } catch (e) {
+      return 'default';
+    }
+  });
+
+  // Mobile menu & Weekly Quick Popup state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isWeeklyPopupOpen, setIsWeeklyPopupOpen] = useState(false);
+
+  // Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('lecalert_theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
   // Share link import modal state
   const [sharedClasses, setSharedClasses] = useState(null);
   
@@ -296,45 +317,140 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="nav-tabs">
-          <button 
-            className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <Clock size={16} /> Dashboard
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'timetable' ? 'active' : ''}`}
-            onClick={() => setActiveTab('timetable')}
-          >
-            <Calendar size={16} /> Weekly Schedule
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'academic' ? 'active' : ''}`}
-            onClick={() => setActiveTab('academic')}
-          >
-            <CalendarDays size={16} /> Academic Calendar
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
-          >
-            <SettingsIcon size={16} /> Settings
-          </button>
+        {/* Desktop Navbar */}
+        <nav className="desktop-nav">
+          <div className="nav-tabs">
+            <button 
+              className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              <Clock size={16} /> Dashboard
+            </button>
+            <button 
+              className={`nav-tab ${activeTab === 'academic' ? 'active' : ''}`}
+              onClick={() => setActiveTab('academic')}
+            >
+              <CalendarDays size={16} /> Academic Calendar
+            </button>
+            <button 
+              className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <SettingsIcon size={16} /> Settings
+            </button>
+          </div>
         </nav>
 
-        <button 
-          className="btn btn-primary btn-sm add-quick-btn"
-          onClick={async () => {
-            await verifyAdminAction(() => {
-              setEditingClass(null);
-              setIsModalOpen(true);
-            });
-          }}
-        >
-          <Plus size={16} /> Quick Add
-        </button>
+        {/* Header Right Actions */}
+        <div className="header-actions">
+          <button 
+            className="btn btn-primary btn-sm add-quick-btn"
+            onClick={async () => {
+              await verifyAdminAction(() => {
+                setEditingClass(null);
+                setIsModalOpen(true);
+              });
+            }}
+          >
+            <Plus size={16} /> Quick Add
+          </button>
+
+          {/* Mobile Hamburger Button */}
+          <button 
+            className="hamburger-btn" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </header>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              <span className="mobile-drawer-title">Navigation</span>
+              <button className="modal-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mobile-nav-list">
+              <button 
+                className={`mobile-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}
+              >
+                <Clock size={18} /> Dashboard
+              </button>
+              <button 
+                className="mobile-nav-item"
+                onClick={() => { setIsWeeklyPopupOpen(true); setIsMobileMenuOpen(false); }}
+              >
+                <Calendar size={18} /> Weekly Schedule
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'academic' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('academic'); setIsMobileMenuOpen(false); }}
+              >
+                <CalendarDays size={18} /> Academic Calendar
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+              >
+                <SettingsIcon size={18} /> Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Floating Bottom Trigger for Weekly Schedule */}
+      <button 
+        className="floating-bottom-trigger"
+        onClick={() => setIsWeeklyPopupOpen(true)}
+        title="View Full Weekly Schedule"
+      >
+        <Calendar size={18} />
+        <span>Weekly Schedule</span>
+      </button>
+
+      {/* Full Weekly Schedule Modal */}
+      {isWeeklyPopupOpen && (
+        <div className="weekly-popup-overlay" onClick={() => setIsWeeklyPopupOpen(false)}>
+          <div className="weekly-popup-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="weekly-popup-header">
+              <div className="weekly-popup-title">
+                <Calendar size={22} style={{ color: 'var(--primary)' }} />
+                <span>Weekly Schedule</span>
+              </div>
+              <button className="modal-close-btn" onClick={() => setIsWeeklyPopupOpen(false)}>
+                <X size={22} />
+              </button>
+            </div>
+            <div className="weekly-popup-body">
+              <TimetableGrid 
+                timetable={timetable} 
+                settings={settings}
+                onAddClick={async () => {
+                  await verifyAdminAction(() => {
+                    setEditingClass(null);
+                    setIsModalOpen(true);
+                  });
+                }}
+                onEditClick={async (cls) => {
+                  await verifyAdminAction(() => {
+                    setEditingClass(cls);
+                    setIsModalOpen(true);
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Panel Content */}
       <main className="app-main-content">
@@ -356,24 +472,6 @@ export default function App() {
             }}
             onLoadPreset={handleLoadSectionPreset}
             selectedSection={selectedSection}
-          />
-        )}
-        {activeTab === 'timetable' && (
-          <TimetableGrid 
-            timetable={timetable} 
-            settings={settings}
-            onAddClick={async () => {
-              await verifyAdminAction(() => {
-                setEditingClass(null);
-                setIsModalOpen(true);
-              });
-            }}
-            onEditClick={async (cls) => {
-              await verifyAdminAction(() => {
-                setEditingClass(cls);
-                setIsModalOpen(true);
-              });
-            }}
           />
         )}
         {activeTab === 'academic' && (
@@ -407,6 +505,8 @@ export default function App() {
             selectedSection={selectedSection}
             isAdmin={isAdmin}
             onToggleAdmin={handleToggleAdmin}
+            currentTheme={theme}
+            onThemeChange={setTheme}
           />
         )}
       </main>

@@ -396,21 +396,22 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           font-family: var(--font-heading);
           font-weight: 800;
           letter-spacing: -0.02em;
-          background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+          background: var(--gradient-heading);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          color: var(--text-primary);
         }
         .live-clock-badge {
           display: flex;
           align-items: center;
           gap: 8px;
           padding: 6px 14px;
-          background: rgba(16, 185, 129, 0.12);
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          background: var(--success-glow);
+          border: 1px solid var(--success);
           border-radius: 99px;
           font-size: 0.75rem;
           font-weight: 700;
-          color: #34d399;
+          color: var(--success);
           letter-spacing: 0.05em;
         }
 
@@ -435,11 +436,11 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
         }
         .bg-primary-glow {
           background: var(--primary-glow);
-          border: 1px solid rgba(99, 102, 241, 0.3);
+          border: 1px solid var(--border-light);
         }
         .bg-secondary-glow {
           background: var(--secondary-glow);
-          border: 1px solid rgba(6, 182, 212, 0.3);
+          border: 1px solid var(--border-light);
         }
         .stat-details {
           display: flex;
@@ -467,7 +468,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           border-radius: 99px;
           font-size: 0.75rem;
           font-weight: 600;
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--bg-card);
           border: 1px solid var(--border-light);
           color: var(--text-secondary);
           cursor: pointer;
@@ -477,18 +478,18 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           background: var(--primary-gradient);
           color: white;
           border-color: transparent;
-          box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+          box-shadow: 0 2px 10px var(--primary-glow);
         }
 
         .warning-banner {
           display: flex;
           align-items: center;
           gap: 14px;
-          background: rgba(245, 158, 11, 0.15);
+          background: var(--warning-glow);
           border: 1px solid var(--warning);
           border-radius: var(--radius-lg);
           padding: 16px 20px;
-          color: #fef08a;
+          color: var(--warning-text-color);
         }
         .warning-icon {
           color: var(--warning);
@@ -496,6 +497,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
         }
         .warning-text {
           font-size: 0.95rem;
+          color: var(--warning-text-color);
         }
 
         .status-card {
@@ -536,7 +538,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
         .class-name {
           font-size: 1.5rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
         }
         .metadata-row {
           display: flex;
@@ -562,16 +564,16 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           color: var(--text-primary);
         }
         .time-remaining {
-          color: #38bdf8;
-          background: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.25);
+          color: var(--secondary);
+          background: var(--secondary-glow);
+          border: 1px solid var(--border-light);
           padding: 3px 10px;
           border-radius: 99px;
           font-size: 0.8rem;
         }
         .progress-container {
           height: 8px;
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--border-light);
           border-radius: 99px;
           overflow: hidden;
           margin-top: 6px;
@@ -649,17 +651,22 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           gap: 6px;
           position: relative;
         }
+        .timeline-container {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
         .timeline-item {
           display: flex;
           gap: 16px;
-          cursor: pointer;
-          padding: 12px;
+          padding: 12px 14px;
           border-radius: var(--radius-md);
           transition: all var(--transition-fast);
+          cursor: pointer;
           border: 1px solid transparent;
         }
         .timeline-item:hover {
-          background-color: rgba(255, 255, 255, 0.04);
+          background-color: var(--bg-card-hover);
           border-color: var(--border-light);
         }
         .timeline-dot-container {
@@ -696,11 +703,12 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
         .timeline-time {
           font-size: 0.8rem;
           font-weight: 700;
+          color: var(--primary);
         }
         .timeline-title {
           font-size: 1.05rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
         }
         .timeline-meta {
           font-size: 0.82rem;

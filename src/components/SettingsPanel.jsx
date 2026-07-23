@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   Bell, Volume2, VolumeX, Download, Share2, Trash2, 
-  Upload, FileText, Check, AlertTriangle, ShieldCheck, Shield, Lock, Unlock, Clock
+  Upload, FileText, Check, AlertTriangle, ShieldCheck, Shield, Lock, Unlock, Clock,
+  Palette, Coffee, Layers, Zap, Sun, Moon, Sparkles, Flame, Crown
 } from 'lucide-react';
 import { generateShareUrl, exportBackup } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
@@ -51,7 +52,9 @@ export default function SettingsPanel({
   onLoadPreset,
   selectedSection,
   isAdmin,
-  onToggleAdmin
+  onToggleAdmin,
+  currentTheme = 'default',
+  onThemeChange
 }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState(
@@ -129,8 +132,60 @@ export default function SettingsPanel({
     });
   };
 
+  const themeList = [
+    { id: 'default', label: 'Light White', icon: Sun, iconColor: '#4f46e5', desc: 'Clean & bright modern white design', dots: ['#ffffff', '#f8fafc', '#4f46e5'] },
+    { id: 'dark', label: 'Midnight Dark', icon: Moon, iconColor: '#818cf8', desc: 'Sleek midnight dark background', dots: ['#0b0f19', '#111827', '#6366f1'] },
+    { id: 'vokka', label: 'Vokka Neon', icon: Zap, iconColor: '#a855f7', desc: 'Cyberpunk violet neon & cyan', dots: ['#090614', '#120b29', '#a855f7'] },
+    { id: 'coffee', label: 'Warm Coffee', icon: Coffee, iconColor: '#d97706', desc: 'Espresso brown & caramel gold', dots: ['#140e0b', '#221612', '#d97706'] },
+    { id: 'emerald', label: 'Emerald Forest', icon: Sparkles, iconColor: '#10b981', desc: 'Deep emerald green & teal', dots: ['#061913', '#0b2920', '#10b981'] },
+    { id: 'ocean', label: 'Sapphire Ocean', icon: Layers, iconColor: '#0284c7', desc: 'Deep navy blue & sky blue', dots: ['#031329', '#0a2540', '#0284c7'] },
+    { id: 'rose', label: 'Rose Sunset', icon: Flame, iconColor: '#f43f5e', desc: 'Crimson rose & sunset amber', dots: ['#1a080f', '#290f19', '#f43f5e'] },
+    { id: 'cyber', label: 'Cyber Lime', icon: Zap, iconColor: '#84cc16', desc: 'Electric lime green & slate', dots: ['#0b1309', '#12210e', '#84cc16'] },
+    { id: 'pastel', label: 'Cotton Candy', icon: Sun, iconColor: '#d946ef', desc: 'Soft pastel pink & lavender', dots: ['#fbf5ff', '#ffffff', '#d946ef'] },
+    { id: 'gold', label: 'Royal Gold', icon: Crown, iconColor: '#eab308', desc: 'Obsidian dark & luxury gold', dots: ['#12100b', '#1e1a12', '#eab308'] },
+  ];
+
   return (
     <div className="settings-grid animate-fade-in">
+      {/* 10 Theme Collection Card */}
+      <div className="settings-card glass" style={{ gridColumn: '1 / -1' }}>
+        <h3 className="settings-title">
+          <Palette size={18} className="title-icon" style={{ color: 'var(--primary)' }} /> Color Themes Collection (10 Styles)
+        </h3>
+        
+        <div className="settings-body">
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+            Choose from 10 handcrafted visual color themes. Click any theme to apply it instantly across the whole app.
+          </p>
+
+          <div className="theme-selector-grid">
+            {themeList.map((t) => {
+              const IconComp = t.icon;
+              const isActive = currentTheme === t.id || (t.id === 'default' && currentTheme === 'light');
+              return (
+                <div 
+                  key={t.id}
+                  className={`theme-card ${isActive ? 'active' : ''}`}
+                  onClick={() => onThemeChange && onThemeChange(t.id)}
+                >
+                  <div className="theme-card-header">
+                    <IconComp size={18} style={{ color: t.iconColor }} />
+                    <span className="theme-card-name">{t.label}</span>
+                    {isActive && <Check size={16} className="theme-check" />}
+                  </div>
+                  <p className="theme-card-desc">{t.desc}</p>
+                  <div className="theme-preview-dots">
+                    {t.dots.map((d, i) => (
+                      <span key={i} className="theme-dot" style={{ background: d, border: d === '#ffffff' ? '1px solid #cbd5e1' : 'none' }}></span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Admin Authorization Card */}
       <div className="settings-card glass" style={{ border: isAdmin ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid var(--border-light)' }}>
         <h3 className="settings-title">
@@ -206,8 +261,6 @@ export default function SettingsPanel({
           </div>
         </div>
       </div>
-
-      {/* Notifications and Alerts Card */}
       <div className="settings-card glass">
         <h3 className="settings-title">
           <Bell size={18} className="title-icon" /> Notification Settings
@@ -449,7 +502,7 @@ export default function SettingsPanel({
         }
         .settings-title {
           font-size: 1.15rem;
-          color: white;
+          color: var(--text-primary);
           border-bottom: 1px solid var(--border-light);
           padding-bottom: 14px;
           margin-bottom: 20px;
@@ -479,7 +532,7 @@ export default function SettingsPanel({
         .setting-info h4 {
           font-size: 1.02rem;
           font-weight: 700;
-          color: white;
+          color: var(--text-primary);
           margin-bottom: 4px;
         }
         .setting-info p {
