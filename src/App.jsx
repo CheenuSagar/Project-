@@ -413,8 +413,58 @@ export default function App() {
           >
             <Plus size={16} /> Quick Add
           </button>
+
+          {/* Corner Hamburger Button for Mobile */}
+          <button 
+            className="hamburger-btn"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </header>
+
+      {/* Mobile Drawer Menu */}
+      {isMobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              <span className="mobile-drawer-title">Navigation Menu</span>
+              <button className="icon-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mobile-nav-list">
+              <button 
+                className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
+              >
+                <GraduationCap size={18} /> Student Portal
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'teacher' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('teacher'); setIsMobileMenuOpen(false); }}
+              >
+                <UserCheck size={18} /> Teacher Portal
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
+              >
+                <Shield size={18} /> Admin Portal
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'academic' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('academic'); setIsMobileMenuOpen(false); }}
+              >
+                <CalendarDays size={18} /> Academic Calendar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sticky Floating Bottom Trigger for Weekly Schedule */}
       <button 
