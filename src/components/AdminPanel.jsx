@@ -182,17 +182,20 @@ export default function AdminPanel({
 
               <div className="form-group" style={{ marginBottom: '12px' }}>
                 <label className="form-label">Substitute / Proxy Teacher Name:</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="e.g. Mr. Chirag Jain" 
+                <select 
+                  className="form-select" 
                   value={proxyTeacherName}
                   onChange={(e) => {
                     const val = e.target.value;
                     setProxyTeacherName(val);
                     setProxySubjectName(getTeacherPrimarySubject(val, timetable));
                   }}
-                />
+                >
+                  <option value="">-- Select Substitute Faculty Member --</option>
+                  {allTeachers.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group" style={{ marginBottom: '16px' }}>
@@ -200,7 +203,7 @@ export default function AdminPanel({
                 <input 
                   type="text" 
                   className="form-input" 
-                  placeholder="e.g. Cyber Security (25DE003)" 
+                  placeholder="Enter subject name..." 
                   value={proxySubjectName}
                   onChange={(e) => setProxySubjectName(e.target.value)}
                 />

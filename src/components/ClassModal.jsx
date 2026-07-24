@@ -171,7 +171,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
                     setSubstituteSubject(getTeacherPrimarySubject(val));
                   }
                 }}
-                placeholder="e.g. Prof. Chirag Jain"
+                placeholder="Enter substitute teacher name..."
                 style={{ borderColor: substituteTeacher ? '#f43f5e' : undefined }}
               />
             </div>
@@ -184,7 +184,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
                 className="form-input"
                 value={substituteSubject}
                 onChange={(e) => setSubstituteSubject(e.target.value)}
-                placeholder="e.g. Cyber Security"
+                placeholder="Enter subject name..."
                 style={{ borderColor: substituteTeacher ? '#f43f5e' : undefined }}
               />
             </div>

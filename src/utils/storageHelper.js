@@ -47,6 +47,28 @@ export function addProxyNotification({ fromTeacher, toTeacher, classObj }) {
   return updated;
 }
 
+export function addSwapNotification({ fromTeacher, toTeacher, classA, classB }) {
+  const notifs = loadTeacherNotifications();
+  const newNotif = {
+    id: `notif-swap-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+    fromTeacher,
+    toTeacher,
+    classId: classA.id,
+    className: `Lecture Slot Swap: ${classA.name} ↔ ${classB.name}`,
+    day: classA.day,
+    startTime: classA.startTime,
+    endTime: classA.endTime,
+    location: classA.location,
+    type: 'swap',
+    details: `${fromTeacher} swapped lecture "${classA.name}" (${classA.day} ${classA.startTime}-${classA.endTime}, Sec ${classA.section || 'A'}) with your lecture "${classB.name}" (${classB.day} ${classB.startTime}-${classB.endTime}, Sec ${classB.section || 'B'})`,
+    timestamp: new Date().toISOString(),
+    isRead: false
+  };
+  const updated = [newNotif, ...notifs];
+  saveTeacherNotifications(updated);
+  return updated;
+}
+
 const DEFAULT_SETTINGS = {
   soundEnabled: true,
   notificationsEnabled: false,
@@ -2023,12 +2045,25 @@ export function extractUniqueTeachers(timetable = []) {
   return Array.from(teacherSet).sort();
 }
 
+export function getCombinedMasterTimetable(timetable = []) {
+  const master = getAllMasterLectures();
+  const map = new Map();
+  master.forEach(cls => map.set(cls.id, cls));
+  if (Array.isArray(timetable) && timetable.length > 0) {
+    timetable.forEach(cls => {
+      const existing = map.get(cls.id);
+      map.set(cls.id, existing ? { ...existing, ...cls } : cls);
+    });
+  }
+  return Array.from(map.values());
+}
+
 /**
  * Returns filtered timetable assigned to a specific teacher (including substitute duties)
  */
 export function getTeacherTimetable(timetable = [], teacherName = '') {
   if (!teacherName) return [];
-  const listToScan = (timetable && timetable.length > 0) ? timetable : getAllMasterLectures();
+  const listToScan = getCombinedMasterTimetable(timetable);
   const searchLower = teacherName.toLowerCase().trim();
 
   return listToScan.filter(cls => {
@@ -2047,6 +2082,53 @@ export function getTeacherTimetable(timetable = [], teacherName = '') {
     }
     return false;
   });
+}
+
+function parseTimeToMins(timeStr) {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * Checks whether a faculty member is free during a specific day & time slot
+ */
+export function checkTeacherSlotAvailability(teacherName, day, startTime, endTime, timetable = [], ignoreClassId = null) {
+  if (!teacherName || !day || !startTime || !endTime) {
+    return { isFree: true, conflict: null };
+  }
+
+  const teacherSchedule = getTeacherTimetable(timetable, teacherName);
+  const targetStart = parseTimeToMins(startTime);
+  const targetEnd = parseTimeToMins(endTime);
+
+  const conflict = teacherSchedule.find(cls => {
+    if (cls.id === ignoreClassId) return false;
+    if (cls.day !== day) return false;
+    if (!isActualLecture(cls)) return false;
+
+    const cStart = parseTimeToMins(cls.startTime);
+    const cEnd = parseTimeToMins(cls.endTime);
+
+    return (targetStart < cEnd && cStart < targetEnd);
+  });
+
+  if (conflict) {
+    return {
+      isFree: false,
+      conflict: {
+        id: conflict.id,
+        name: conflict.name,
+        section: conflict.section || 'General',
+        location: conflict.location || 'N/A',
+        startTime: conflict.startTime,
+        endTime: conflict.endTime,
+        day: conflict.day
+      }
+    };
+  }
+
+  return { isFree: true, conflict: null };
 }
 
 /**
