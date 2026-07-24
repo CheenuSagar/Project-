@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw } from 'lucide-react';
-import { formatTimeTo12Hr, isActualLecture } from '../utils/storageHelper';
+import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject } from '../utils/storageHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -208,20 +208,26 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
               <RefreshCw size={22} style={{ color: '#f43f5e', flexShrink: 0, marginTop: '2px' }} />
               <div>
                 <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#f43f5e' }}>
-                  📢 Faculty Replacement Alert ({todaySubstitutedClasses.length} Today)
+                  📢 Faculty Replacement & Subject Notice ({todaySubstitutedClasses.length} Today)
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
-                  {todaySubstitutedClasses.map(c => (
-                    <div key={c.id} style={{ fontSize: '0.84rem', color: 'var(--text-primary)' }}>
-                      • <strong>{c.name}</strong> ({c.startTime} - {c.endTime}): 
-                      <span style={{ color: '#f43f5e', fontWeight: 700, marginLeft: '4px' }}>
-                        Prof. {c.substituteTeacher}
-                      </span> 
-                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', textDecoration: 'line-through', marginLeft: '4px' }}>
-                        (instead of {c.teacher})
-                      </span>
-                    </div>
-                  ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                  {todaySubstitutedClasses.map(c => {
+                    const subSubject = c.substituteSubject || getTeacherPrimarySubject(c.substituteTeacher, timetable) || c.name;
+                    return (
+                      <div key={c.id} style={{ fontSize: '0.86rem', color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                        • <strong>{c.startTime} - {c.endTime}</strong>: 
+                        <span style={{ color: '#f43f5e', fontWeight: 700, marginLeft: '4px' }}>
+                          Prof. {c.substituteTeacher}
+                        </span> will teach 
+                        <span style={{ color: 'var(--primary)', fontWeight: 700, marginLeft: '4px' }}>
+                          "{subSubject}"
+                        </span> 
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginLeft: '4px' }}>
+                          (instead of {c.name} by {c.teacher})
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -233,7 +239,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           <div className="warning-banner animate-pulse-glow">
             <AlertCircle className="warning-icon" size={22} />
             <div className="warning-text">
-              <strong>{nextClass.name}</strong> starts in <strong>{nextClass.diffMinutes} mins</strong>!
+              <strong>{nextClass.substituteSubject || getTeacherPrimarySubject(nextClass.substituteTeacher, timetable) || nextClass.name}</strong> starts in <strong>{nextClass.diffMinutes} mins</strong>!
               {nextClass.location && ` (${nextClass.location})`}
             </div>
           </div>
@@ -250,11 +256,22 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
             <div className="class-status-active">
               <div className="color-bar" style={{ backgroundColor: activeClass.color, boxShadow: `0 0 15px ${activeClass.color}` }}></div>
               <div className="active-details">
-                <h2 className="class-name">{activeClass.name}</h2>
+                <h2 className="class-name">
+                  {activeClass.substituteTeacher ? (
+                    <>
+                      <span>{activeClass.substituteSubject || getTeacherPrimarySubject(activeClass.substituteTeacher, timetable) || activeClass.name}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', textDecoration: 'line-through' }}>
+                        Regular Slot: {activeClass.name}
+                      </span>
+                    </>
+                  ) : (
+                    activeClass.name
+                  )}
+                </h2>
                 <div className="metadata-row" style={{ flexWrap: 'wrap', gap: '10px' }}>
                   {activeClass.substituteTeacher ? (
                     <span className="metadata-item" style={{ color: '#f43f5e', fontWeight: 700, background: 'rgba(244, 63, 94, 0.12)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(244, 63, 94, 0.3)' }}>
-                      <RefreshCw size={14} /> Sub: {activeClass.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.65, fontWeight: 400, fontSize: '0.78rem' }}>({activeClass.teacher})</span>
+                      <RefreshCw size={14} /> Sub: Prof. {activeClass.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.65, fontWeight: 400, fontSize: '0.78rem' }}>({activeClass.teacher})</span>
                     </span>
                   ) : (
                     activeClass.teacher && (
@@ -305,12 +322,23 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
             <div className="next-class-content" onClick={() => onEditClick(nextClass)}>
               <div className="next-details">
                 <div className="next-header">
-                  <h2 className="class-name">{nextClass.name}</h2>
+                  <h2 className="class-name">
+                    {nextClass.substituteTeacher ? (
+                      <>
+                        <span>{nextClass.substituteSubject || getTeacherPrimarySubject(nextClass.substituteTeacher, timetable) || nextClass.name}</span>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', textDecoration: 'line-through' }}>
+                          Regular Slot: {nextClass.name}
+                        </span>
+                      </>
+                    ) : (
+                      nextClass.name
+                    )}
+                  </h2>
                 </div>
                 <div className="metadata-row" style={{ flexWrap: 'wrap', gap: '10px' }}>
                   {nextClass.substituteTeacher ? (
                     <span className="metadata-item" style={{ color: '#f43f5e', fontWeight: 700, background: 'rgba(244, 63, 94, 0.12)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(244, 63, 94, 0.3)' }}>
-                      <RefreshCw size={14} /> Sub: {nextClass.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.65, fontWeight: 400, fontSize: '0.78rem' }}>({nextClass.teacher})</span>
+                      <RefreshCw size={14} /> Sub: Prof. {nextClass.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.65, fontWeight: 400, fontSize: '0.78rem' }}>({nextClass.teacher})</span>
                     </span>
                   ) : (
                     nextClass.teacher && (
@@ -377,7 +405,18 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
                     <div className="timeline-time" style={{ color: cls.color }}>
                       {show12h ? formatTimeTo12Hr(cls.startTime) : cls.startTime} - {show12h ? formatTimeTo12Hr(cls.endTime) : cls.endTime}
                     </div>
-                    <h4 className="timeline-title">{cls.name}</h4>
+                    <h4 className="timeline-title">
+                      {cls.substituteTeacher ? (
+                        <>
+                          <span style={{ color: '#f43f5e' }}>{cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', textDecoration: 'line-through', fontWeight: 400 }}>
+                            Regular: {cls.name}
+                          </span>
+                        </>
+                      ) : (
+                        cls.name
+                      )}
+                    </h4>
                     <div className="timeline-meta">
                       {cls.substituteTeacher ? (
                         <span style={{ color: '#f43f5e', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>

@@ -67,7 +67,8 @@ function classToCompactArray(cls) {
     cls.startTime || '',
     cls.endTime || '',
     cls.color || '#6366f1',
-    cls.substituteTeacher || ''
+    cls.substituteTeacher || '',
+    cls.substituteSubject || ''
   ];
 }
 
@@ -81,7 +82,8 @@ function compactArrayToClass(arr) {
     startTime: arr[5],
     endTime: arr[6],
     color: arr[7],
-    substituteTeacher: arr[8] || ''
+    substituteTeacher: arr[8] || '',
+    substituteSubject: arr[9] || ''
   };
 }
 
@@ -2045,6 +2047,27 @@ export function getTeacherTimetable(timetable = [], teacherName = '') {
     }
     return false;
   });
+}
+
+/**
+ * Automatically looks up the primary subject taught by a teacher
+ * @param {string} teacherName 
+ * @param {Array} timetable 
+ * @returns {string}
+ */
+export function getTeacherPrimarySubject(teacherName = '', timetable = []) {
+  if (!teacherName) return '';
+  const listToScan = (timetable && timetable.length > 0) ? timetable : getAllMasterLectures();
+  const searchLower = teacherName.toLowerCase().trim();
+
+  const found = listToScan.find(cls => {
+    if (!isActualLecture(cls)) return false;
+    if (!cls.teacher) return false;
+    const tLower = cls.teacher.toLowerCase();
+    return tLower.includes(searchLower) || searchLower.includes(tLower);
+  });
+
+  return found ? found.name : '';
 }
 
 const TEACHER_PIN_STORAGE_KEY = 'lecalert_teacher_pins';

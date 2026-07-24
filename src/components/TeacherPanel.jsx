@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, Sparkles, BookOpen, Layers, Lock, Unlock, Key, ShieldCheck, KeyRound, X, Bell, CheckCircle2 } from 'lucide-react';
-import { extractUniqueTeachers, getTeacherTimetable, isActualLecture, loadTeacherPINs, saveTeacherPINs, loadTeacherNotifications, saveTeacherNotifications, addProxyNotification } from '../utils/storageHelper';
+import { extractUniqueTeachers, getTeacherTimetable, isActualLecture, loadTeacherPINs, saveTeacherPINs, loadTeacherNotifications, saveTeacherNotifications, addProxyNotification, getTeacherPrimarySubject } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -38,6 +38,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
   // Proxy duty assignment state
   const [proxyModalClass, setProxyModalClass] = useState(null);
   const [proxyTeacherTarget, setProxyTeacherTarget] = useState('');
+  const [proxySubjectTarget, setProxySubjectTarget] = useState('');
   const [notifications, setNotifications] = useState(() => loadTeacherNotifications());
 
   // Change PIN modal / inline state
@@ -469,7 +470,9 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setProxyModalClass(cls);
-                                  setProxyTeacherTarget(cls.substituteTeacher || '');
+                                  const subT = cls.substituteTeacher || '';
+                                  setProxyTeacherTarget(subT);
+                                  setProxySubjectTarget(cls.substituteSubject || (subT ? getTeacherPrimarySubject(subT, timetable) : ''));
                                 }}
                               >
                                 <RefreshCw size={12} /> {cls.substituteTeacher ? `Change Proxy (${cls.substituteTeacher})` : 'Assign Proxy'}
@@ -492,7 +495,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
       {/* Proxy Assignment Modal */}
       {proxyModalClass && (
         <div className="modal-overlay" style={{ zIndex: 1100 }}>
-          <div className="modal-content glass animate-fade-in" style={{ maxWidth: '440px', padding: '24px' }}>
+          <div className="modal-content glass animate-fade-in" style={{ maxWidth: '460px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <RefreshCw size={20} style={{ color: 'var(--primary)' }} />
@@ -505,12 +508,17 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
               Assign a colleague to take over <strong>{proxyModalClass.name}</strong> on {proxyModalClass.day} ({proxyModalClass.startTime} - {proxyModalClass.endTime}). An instant notification will be sent to the substitute faculty member.
             </p>
 
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '14px' }}>
               <label className="form-label" style={{ fontWeight: 600, marginBottom: '6px' }}>Select Substitute Faculty Member:</label>
               <select 
                 className="form-select"
                 value={proxyTeacherTarget}
-                onChange={(e) => setProxyTeacherTarget(e.target.value)}
+                onChange={(e) => {
+                  const sel = e.target.value;
+                  setProxyTeacherTarget(sel);
+                  const autoSub = getTeacherPrimarySubject(sel, timetable);
+                  setProxySubjectTarget(autoSub);
+                }}
                 style={{ width: '100%', padding: '10px' }}
               >
                 <option value="">-- Choose Faculty Member --</option>
@@ -520,12 +528,27 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
               </select>
             </div>
 
+            <div style={{ marginBottom: '20px' }}>
+              <label className="form-label" style={{ fontWeight: 600, marginBottom: '6px' }}>Subject Taught During Proxy Period:</label>
+              <input 
+                type="text"
+                className="form-input"
+                value={proxySubjectTarget}
+                onChange={(e) => setProxySubjectTarget(e.target.value)}
+                placeholder="e.g. Design & Analysis of Algorithm (Subject of Proxy Faculty)"
+                style={{ width: '100%' }}
+              />
+              <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                💡 Note: Replacement teacher will teach their own subject during this period.
+              </span>
+            </div>
+
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
               {proxyModalClass.substituteTeacher && (
                 <button 
                   className="btn btn-danger btn-sm"
                   onClick={() => {
-                    const updated = timetable.map(c => c.id === proxyModalClass.id ? { ...c, substituteTeacher: '' } : c);
+                    const updated = timetable.map(c => c.id === proxyModalClass.id ? { ...c, substituteTeacher: '', substituteSubject: '' } : c);
                     if (onSaveTimetable) onSaveTimetable(updated);
                     setProxyModalClass(null);
                   }}
@@ -540,16 +563,21 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                     alert('Please select a substitute faculty member.');
                     return;
                   }
-                  const updated = timetable.map(c => c.id === proxyModalClass.id ? { ...c, substituteTeacher: proxyTeacherTarget } : c);
+                  const finalSubSubject = proxySubjectTarget || getTeacherPrimarySubject(proxyTeacherTarget, timetable);
+                  const updated = timetable.map(c => c.id === proxyModalClass.id ? { 
+                    ...c, 
+                    substituteTeacher: proxyTeacherTarget,
+                    substituteSubject: finalSubSubject 
+                  } : c);
                   if (onSaveTimetable) onSaveTimetable(updated);
                   addProxyNotification({
                     fromTeacher: activeTeacher,
                     toTeacher: proxyTeacherTarget,
-                    classObj: proxyModalClass
+                    classObj: { ...proxyModalClass, substituteSubject: finalSubSubject }
                   });
                   setNotifications(loadTeacherNotifications());
                   setProxyModalClass(null);
-                  alert(`Proxy duty assigned to ${proxyTeacherTarget}! Notification sent to their portal.`);
+                  alert(`Proxy duty assigned to ${proxyTeacherTarget} (${finalSubSubject})! Notification sent to their portal.`);
                 }}
               >
                 Assign & Send Notification

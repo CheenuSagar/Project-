@@ -4,7 +4,7 @@ import {
   Download, Upload, Trash2, Check, AlertTriangle, Plus, Edit2, UserCheck, Layers, MapPin, Key
 } from 'lucide-react';
 import SettingsPanel from './SettingsPanel';
-import { extractUniqueTeachers, loadTeacherPINs, saveTeacherPINs } from '../utils/storageHelper';
+import { extractUniqueTeachers, loadTeacherPINs, saveTeacherPINs, getTeacherPrimarySubject } from '../utils/storageHelper';
 
 export default function AdminPanel({
   timetable,
@@ -25,6 +25,7 @@ export default function AdminPanel({
 }) {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [proxyTeacherName, setProxyTeacherName] = useState('');
+  const [proxySubjectName, setProxySubjectName] = useState('');
 
   const allTeachers = extractUniqueTeachers(timetable);
   const [teacherPinsMap, setTeacherPinsMap] = useState(() => loadTeacherPINs(allTeachers));
@@ -36,11 +37,14 @@ export default function AdminPanel({
       return;
     }
 
+    const finalSubSubject = proxySubjectName || getTeacherPrimarySubject(proxyTeacherName, timetable);
+
     const updated = timetable.map((cls) => {
       if (cls.id === selectedClassId) {
         return {
           ...cls,
-          substituteTeacher: proxyTeacherName.trim()
+          substituteTeacher: proxyTeacherName.trim(),
+          substituteSubject: finalSubSubject.trim()
         };
       }
       return cls;
@@ -49,7 +53,8 @@ export default function AdminPanel({
     onSaveTimetable(updated);
     setSelectedClassId('');
     setProxyTeacherName('');
-    alert('Substitute teacher assigned successfully!');
+    setProxySubjectName('');
+    alert('Substitute teacher and subject assigned successfully!');
   };
 
   const handleClearProxy = (classId) => {
@@ -175,15 +180,33 @@ export default function AdminPanel({
                 </select>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '16px' }}>
+              <div className="form-group" style={{ marginBottom: '12px' }}>
                 <label className="form-label">Substitute / Proxy Teacher Name:</label>
                 <input 
                   type="text" 
                   className="form-input" 
                   placeholder="e.g. Mr. Chirag Jain" 
                   value={proxyTeacherName}
-                  onChange={(e) => setProxyTeacherName(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setProxyTeacherName(val);
+                    setProxySubjectName(getTeacherPrimarySubject(val, timetable));
+                  }}
                 />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label className="form-label">Subject Taught During Proxy Period:</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. Cyber Security (25DE003)" 
+                  value={proxySubjectName}
+                  onChange={(e) => setProxySubjectName(e.target.value)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                  * Replacement teacher will teach their own subject during this period.
+                </span>
               </div>
 
               <button className="btn btn-secondary btn-sm" onClick={handleAssignProxy} style={{ width: '100%' }}>
@@ -201,8 +224,11 @@ export default function AdminPanel({
                       <div key={cls.id} className="proxy-item-chip">
                         <div>
                           <strong>{cls.substituteTeacher}</strong> (Proxy for {cls.teacher})
+                          <div style={{ fontSize: '0.78rem', color: 'var(--danger)', fontWeight: 600 }}>
+                            Subject: {cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}
+                          </div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            {cls.day} {cls.startTime} • {cls.name} [Sec {cls.section || 'A'}]
+                            {cls.day} {cls.startTime} • Replaces: {cls.name} [Sec {cls.section || 'A'}]
                           </div>
                         </div>
                         <button className="icon-btn-danger" onClick={() => handleClearProxy(cls.id)} title="Remove Proxy">

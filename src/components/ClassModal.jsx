@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Trash2, BookOpen, User, MapPin, Calendar, Clock, Palette, RefreshCw } from 'lucide-react';
+import { getTeacherPrimarySubject } from '../utils/storageHelper';
 
 const PRESET_COLORS = [
   { name: 'Indigo', value: '#6366f1' },
@@ -26,6 +27,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
   const [name, setName] = useState('');
   const [teacher, setTeacher] = useState('');
   const [substituteTeacher, setSubstituteTeacher] = useState('');
+  const [substituteSubject, setSubstituteSubject] = useState('');
   const [location, setLocation] = useState('');
   const [day, setDay] = useState('Monday');
   const [startTime, setStartTime] = useState('09:00');
@@ -38,6 +40,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
       setName(editingClass.name || '');
       setTeacher(editingClass.teacher || '');
       setSubstituteTeacher(editingClass.substituteTeacher || '');
+      setSubstituteSubject(editingClass.substituteSubject || '');
       setLocation(editingClass.location || '');
       setDay(editingClass.day || 'Monday');
       setStartTime(editingClass.startTime || '09:00');
@@ -48,6 +51,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
       setName('');
       setTeacher('');
       setSubstituteTeacher('');
+      setSubstituteSubject('');
       setLocation('');
       setDay('Monday');
       setStartTime('09:00');
@@ -82,6 +86,7 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
       name: name.trim(),
       teacher: teacher.trim(),
       substituteTeacher: substituteTeacher.trim(),
+      substituteSubject: substituteSubject.trim(),
       location: location.trim(),
       day,
       startTime,
@@ -150,18 +155,39 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label" style={{ color: substituteTeacher ? '#f43f5e' : 'inherit' }}>
-              <RefreshCw size={14} /> Substitute / Replacement Teacher (Optional)
-            </label>
-            <input
-              type="text"
-              className="form-input"
-              value={substituteTeacher}
-              onChange={(e) => setSubstituteTeacher(e.target.value)}
-              placeholder="e.g. Prof. Chirag Jain (Leave blank if no proxy)"
-              style={{ borderColor: substituteTeacher ? '#f43f5e' : undefined }}
-            />
+          <div className="form-row">
+            <div className="form-group flex-1">
+              <label className="form-label" style={{ color: substituteTeacher ? '#f43f5e' : 'inherit' }}>
+                <RefreshCw size={14} /> Substitute / Replacement Teacher
+              </label>
+              <input
+                type="text"
+                className="form-input"
+                value={substituteTeacher}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSubstituteTeacher(val);
+                  if (val && !substituteSubject) {
+                    setSubstituteSubject(getTeacherPrimarySubject(val));
+                  }
+                }}
+                placeholder="e.g. Prof. Chirag Jain"
+                style={{ borderColor: substituteTeacher ? '#f43f5e' : undefined }}
+              />
+            </div>
+            <div className="form-group flex-1">
+              <label className="form-label" style={{ color: substituteTeacher ? '#f43f5e' : 'inherit' }}>
+                <BookOpen size={14} /> Substitute Subject Taught
+              </label>
+              <input
+                type="text"
+                className="form-input"
+                value={substituteSubject}
+                onChange={(e) => setSubstituteSubject(e.target.value)}
+                placeholder="e.g. Cyber Security"
+                style={{ borderColor: substituteTeacher ? '#f43f5e' : undefined }}
+              />
+            </div>
           </div>
 
           <div className="form-group">

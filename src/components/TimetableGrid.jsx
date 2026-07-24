@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, User, PlusCircle, Edit3, Sparkles, Search, Grid, ListFilter, LayoutGrid, RefreshCw } from 'lucide-react';
-import { formatTimeTo12Hr, isActualLecture } from '../utils/storageHelper';
+import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject } from '../utils/storageHelper';
 
 const DAYS_OF_WEEK = [
   'Monday',
@@ -46,6 +46,7 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
       (cls.name && cls.name.toLowerCase().includes(q)) ||
       (cls.teacher && cls.teacher.toLowerCase().includes(q)) ||
       (cls.substituteTeacher && cls.substituteTeacher.toLowerCase().includes(q)) ||
+      (cls.substituteSubject && cls.substituteSubject.toLowerCase().includes(q)) ||
       (cls.location && cls.location.toLowerCase().includes(q))
     );
   });
@@ -72,7 +73,16 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
         <div className="card-accent-strip" style={{ backgroundColor: accent, boxShadow: `0 0 12px ${accent}` }}></div>
         <div className="graphical-card-body">
           <div className="graphical-card-top">
-            <h4 className="graphical-card-title">{cls.name}</h4>
+            <h4 className="graphical-card-title">
+              {cls.substituteTeacher ? (
+                <>
+                  <span style={{ color: '#f43f5e', display: 'block' }}>{cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}</span>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', textDecoration: 'line-through', fontWeight: 400 }}>Reg: {cls.name}</span>
+                </>
+              ) : (
+                cls.name
+              )}
+            </h4>
             {durationStr && <span className="duration-pill">{durationStr}</span>}
           </div>
 
@@ -207,7 +217,16 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
                                 {show12h ? formatTimeTo12Hr(cls.startTime) : cls.startTime}
                               </div>
                               <div className="slot-details">
-                                <div className="slot-name">{cls.name}</div>
+                                <div className="slot-name">
+                                  {cls.substituteTeacher ? (
+                                    <>
+                                      <span style={{ color: '#f43f5e' }}>{cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}</span>
+                                      <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', textDecoration: 'line-through', marginLeft: '6px', fontWeight: 400 }}>(Reg: {cls.name})</span>
+                                    </>
+                                  ) : (
+                                    cls.name
+                                  )}
+                                </div>
                                 <div className="slot-sub">
                                   {cls.substituteTeacher ? (
                                     <span style={{ color: '#f43f5e', fontWeight: 700 }}>
