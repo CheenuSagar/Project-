@@ -190,7 +190,7 @@ export default function App() {
 
   // Admin Verification Helper (SHA-256 Encrypted Mastermind & Admin Hashes)
   const MASTERMIND_HASH = "2071810017735617cc09af7c114a19863f8e1ca8ae82bc4951a6d5e337e88aa6";
-  const ADMIN_HASH = "e7c1666f1dfd0871389c0f9fbef95d16a4827f343da46ef59a0bf2105d2a09b1";
+  const ADMIN_HASH = "d89a08370f1157a589cebe086324544139adef1c0e118947390337227b2ddddd";
 
   const verifyAdminAction = async (callback) => {
     if (isAdmin) {
