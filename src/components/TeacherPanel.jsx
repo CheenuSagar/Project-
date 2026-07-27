@@ -3,7 +3,7 @@ import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, S
 import { 
   extractUniqueTeachers, getTeacherTimetable, isActualLecture, 
   loadTeacherPINs, saveTeacherPINs, loadTeacherNotifications, 
-  saveTeacherNotifications, addProxyNotification, addSwapNotification, 
+  saveTeacherNotifications, addProxyNotification, addProxyAcceptanceNotification, addSwapNotification, 
   getTeacherPrimarySubject, checkTeacherSlotAvailability, getCombinedMasterTimetable 
 } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
@@ -289,30 +289,65 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
               </div>
 
               <div className="admin-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {myNotifications.map((n) => (
-                  <div key={n.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 'var(--radius-md)', background: n.type === 'swap' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(99, 102, 241, 0.08)', border: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '8px' }}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-                        {n.type === 'swap' ? '🔄 Lecture Swap Alert' : '📋 Substitute Duty Assigned'} by <span style={{ color: 'var(--primary)' }}>{n.fromTeacher}</span>
+                {myNotifications.map((n) => {
+                  const isAcceptedType = n.type === 'proxy_accepted';
+                  const isSwapType = n.type === 'swap';
+
+                  return (
+                    <div key={n.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 'var(--radius-md)', background: isAcceptedType ? 'rgba(16, 185, 129, 0.12)' : isSwapType ? 'rgba(16, 185, 129, 0.08)' : 'rgba(99, 102, 241, 0.08)', border: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                          {isAcceptedType ? '✅ Proxy Duty Confirmed' : isSwapType ? '🔄 Lecture Swap Alert' : '📋 Substitute Duty Assigned'} by <span style={{ color: 'var(--primary)' }}>{n.fromTeacher}</span>
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                          {n.details || `${n.className} • 📅 ${n.day} (${n.startTime} - ${n.endTime}) • Room: ${n.location}`}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                        {n.details || `${n.className} • 📅 ${n.day} (${n.startTime} - ${n.endTime}) • Room: ${n.location}`}
+
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        {!isAcceptedType && !isSwapType && (
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            style={{ fontSize: '0.78rem', padding: '4px 10px' }}
+                            onClick={() => {
+                              // Confirm & accept proxy duty
+                              const masterTable = getCombinedMasterTimetable(timetable);
+                              const updatedTable = masterTable.map(c => c.id === n.classId ? { ...c, substituteStatus: 'confirmed' } : c);
+                              if (onSaveTimetable) onSaveTimetable(updatedTable);
+
+                              // Notify the original requesting teacher
+                              addProxyAcceptanceNotification({
+                                fromTeacher: authenticatedTeacher,
+                                toTeacher: n.fromTeacher,
+                                classObj: n
+                              });
+
+                              // Remove notification for current teacher
+                              const remainingNotifs = notifications.filter(item => item.id !== n.id);
+                              saveTeacherNotifications(remainingNotifs);
+                              setNotifications(remainingNotifs);
+                              alert(`Proxy duty accepted! A confirmation notification has been sent back to ${n.fromTeacher}.`);
+                            }}
+                          >
+                            <CheckCircle2 size={14} /> Accept & Confirm Duty
+                          </button>
+                        )}
+
+                        <button 
+                          className="btn btn-secondary btn-sm"
+                          style={{ fontSize: '0.78rem', padding: '4px 10px' }}
+                          onClick={() => {
+                            const updated = notifications.filter(item => item.id !== n.id);
+                            saveTeacherNotifications(updated);
+                            setNotifications(updated);
+                          }}
+                        >
+                          {isAcceptedType ? 'Acknowledge' : 'Dismiss Alert'}
+                        </button>
                       </div>
                     </div>
-
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      style={{ fontSize: '0.78rem', padding: '4px 10px' }}
-                      onClick={() => {
-                        const updated = notifications.filter(item => item.id !== n.id);
-                        saveTeacherNotifications(updated);
-                        setNotifications(updated);
-                      }}
-                    >
-                      <CheckCircle2 size={14} style={{ color: 'var(--success)' }} /> Acknowledge Alert
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -471,8 +506,16 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                                 <MapPin size={12} /> {cls.location || 'AB-207'}
                               </span>
                               {cls.substituteTeacher && (
-                                <span className="card-proxy-tag">
-                                  <RefreshCw size={11} /> {cls.substituteTeacher}
+                                <span 
+                                  className="card-proxy-tag" 
+                                  style={{
+                                    background: cls.substituteStatus === 'confirmed' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                                    color: cls.substituteStatus === 'confirmed' ? 'var(--success)' : 'var(--warning-text-color)',
+                                    borderColor: cls.substituteStatus === 'confirmed' ? 'var(--success)' : 'var(--warning)'
+                                  }}
+                                  title={cls.substituteStatus === 'confirmed' ? 'Proxy duty accepted & confirmed by substitute teacher' : 'Proxy duty assigned, pending acceptance'}
+                                >
+                                  <RefreshCw size={11} /> {cls.substituteStatus === 'confirmed' ? `✅ ${cls.substituteTeacher}` : `⏳ ${cls.substituteTeacher}`}
                                 </span>
                               )}
                             </div>
@@ -646,7 +689,8 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                   const updated = masterTable.map(c => c.id === proxyModalClass.id ? { 
                     ...c, 
                     substituteTeacher: proxyTeacherTarget,
-                    substituteSubject: finalSubSubject 
+                    substituteSubject: finalSubSubject,
+                    substituteStatus: 'pending'
                   } : c);
 
                   if (onSaveTimetable) onSaveTimetable(updated);

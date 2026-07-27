@@ -39,6 +39,29 @@ export function addProxyNotification({ fromTeacher, toTeacher, classObj }) {
     startTime: classObj.startTime,
     endTime: classObj.endTime,
     location: classObj.location,
+    type: 'proxy_assigned',
+    timestamp: new Date().toISOString(),
+    isRead: false
+  };
+  const updated = [newNotif, ...notifs];
+  saveTeacherNotifications(updated);
+  return updated;
+}
+
+export function addProxyAcceptanceNotification({ fromTeacher, toTeacher, classObj }) {
+  const notifs = loadTeacherNotifications();
+  const newNotif = {
+    id: `notif-accept-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+    fromTeacher,
+    toTeacher,
+    classId: classObj.id || classObj.classId,
+    className: classObj.name || classObj.className,
+    day: classObj.day,
+    startTime: classObj.startTime,
+    endTime: classObj.endTime,
+    location: classObj.location,
+    type: 'proxy_accepted',
+    details: `✅ ${fromTeacher} has ACCEPTED your substitute lecture request for "${classObj.name || classObj.className}" on ${classObj.day} (${classObj.startTime}-${classObj.endTime}).`,
     timestamp: new Date().toISOString(),
     isRead: false
   };
