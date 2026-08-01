@@ -533,6 +533,14 @@ export default function App() {
             </div>
 
             <div className="mobile-nav-list">
+              <button 
+                className="mobile-nav-item role-switch-mobile-item"
+                onClick={() => { setIsRoleModalOpen(true); setIsMobileMenuOpen(false); }}
+              >
+                <UserCog size={18} style={{ color: 'var(--primary)' }} />
+                <span>Switch Role ({userRole === 'teacher' ? 'Teacher' : 'Student'})</span>
+              </button>
+
               {(!userRole || userRole === 'student') && (
                 <button 
                   className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
