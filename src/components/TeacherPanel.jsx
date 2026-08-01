@@ -873,3 +873,5 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
 }
 
 /* update */
+
+/* update */
