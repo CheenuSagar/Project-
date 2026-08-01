@@ -33,7 +33,7 @@ export default function RoleSelectionModal({ isOpen, onClose, onSelectRole, curr
         <div className="role-modal-header">
           <div className="role-badge-pill">
             <Sparkles size={14} className="sparkle-icon" />
-            <span>MCA Time Table Portal</span>
+            <span>ABES Academix Portal</span>
           </div>
           <h2 className="role-modal-title">Welcome! Choose Your Role</h2>
           <p className="role-modal-subtitle">

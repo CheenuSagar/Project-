@@ -257,8 +257,8 @@ export default function App() {
           
           // 2. Role-Targeted Notification Construction
           const notifTitle = isTeacherMode 
-            ? `👨‍🏫 Faculty Alert: Teaching Session Soon!` 
-            : `🎓 Student Alert: Class Starting Soon!`;
+            ? `👨‍🏫 ABES Academix: Faculty Teaching Alert!` 
+            : `🎓 ABES Academix: Class Starting Soon!`;
           
           const notifBody = isTeacherMode
             ? `Upcoming Lecture: ${cls.name} (Sec ${cls.section || 'All'}) starts in ${settings.preTime} mins ${cls.location ? `at ${cls.location}` : ''}.${subInfo}`
@@ -425,12 +425,12 @@ export default function App() {
     <div className="app-layout">
       {/* Navigation Header */}
       <header className="app-header glass">
-        <div className="brand-logo" onClick={handleLogoClick} title="MCA Time Table (Tap 5 times for Secret Admin Access)">
+        <div className="brand-logo" onClick={handleLogoClick} title="ABES Academix (Tap 5 times for Secret Admin Access)">
           <div className="logo-icon">
             <Bell size={20} className="bell-glow" />
           </div>
           <div className="logo-text">
-            <span>MCA</span> Time Table
+            <span>ABES</span> Academix
           </div>
         </div>
 
@@ -789,7 +789,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2026 MCA Time Table 🎓 • Build by Cheenu Sagar</p>
+        <p>© 2026 ABES Academix 🎓 • Built for ABES by Cheenu Sagar</p>
       </footer>
 
       {/* Add / Edit Class Modal */}
