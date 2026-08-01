@@ -180,4 +180,4 @@ npm run lint
 ---
 
 ## 📄 License & Credits
-© 2026 **MCA Time Table & Notification Provider** • Developed with ❤️ by **Cheenu Sagar**.
+© 2026 **MCA Time Table & Notification Provider** • Developed with 🎓 by **Cheenu Sagar**.
