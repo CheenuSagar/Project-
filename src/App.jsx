@@ -206,8 +206,32 @@ export default function App() {
       const day = String(now.getDate()).padStart(2, '0');
       const todayDateString = `${year}-${month}-${day}`;
       
+      const isTeacherMode = userRole === 'teacher' || activeTab === 'teacher';
+      let authTeacher = '';
+      try {
+        const savedTeacher = localStorage.getItem('lecalert_auth_teacher');
+        const expiry = localStorage.getItem('lecalert_auth_teacher_expiry');
+        if (savedTeacher && expiry && Date.now() < Number(expiry)) {
+          authTeacher = savedTeacher;
+        }
+      } catch (e) {}
+
       timetable.forEach((cls) => {
         if (cls.day !== currentDay) return;
+
+        // Strict Role Notification Filtering
+        if (isTeacherMode) {
+          // If teacher is logged in, ONLY notify for classes taught by this teacher (or as substitute)
+          if (authTeacher) {
+            const isMyClass = cls.teacher === authTeacher || cls.substituteTeacher === authTeacher;
+            if (!isMyClass) return;
+          }
+        } else {
+          // Student Mode: If a section is selected, filter by section
+          if (selectedSection && cls.section && cls.section !== selectedSection && cls.section !== 'All') {
+            return;
+          }
+        }
         
         const startMins = timeToMinutes(cls.startTime);
         // Target trigger time is startMins minus the preTime
@@ -232,7 +256,6 @@ export default function App() {
           const subInfo = cls.substituteTeacher ? ` (Substitute Teacher: ${cls.substituteTeacher})` : '';
           
           // 2. Role-Targeted Notification Construction
-          const isTeacherMode = userRole === 'teacher' || activeTab === 'teacher';
           const notifTitle = isTeacherMode 
             ? `👨‍🏫 Faculty Alert: Teaching Session Soon!` 
             : `🎓 Student Alert: Class Starting Soon!`;
