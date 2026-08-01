@@ -403,7 +403,7 @@ export default function SyllabusPortal() {
         <div className="syllabus-hero-content">
           <div className="syllabus-badge">
             <Sparkles size={16} />
-            <span>ABES Academix • MCA 3rd Semester Official Syllabus Scheme</span>
+            <span>MCA 3rd Semester Official Syllabus Scheme</span>
           </div>
           <h1 className="syllabus-title">MCA Semester III Syllabus Portal</h1>
           <p className="syllabus-subtitle">

@@ -425,12 +425,12 @@ export default function App() {
     <div className="app-layout">
       {/* Navigation Header */}
       <header className="app-header glass">
-        <div className="brand-logo" onClick={handleLogoClick} title="ABES Academix (Tap 5 times for Secret Admin Access)">
+        <div className="brand-logo" onClick={handleLogoClick} title="MCA Time Table (Tap 5 times for Secret Admin Access)">
           <div className="logo-icon">
             <Bell size={20} className="bell-glow" />
           </div>
           <div className="logo-text">
-            <span>ABES</span> Academix
+            <span>MCA</span> Time Table
           </div>
         </div>
 
@@ -789,7 +789,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2026 ABES Academix 🎓 • Built for ABES by Cheenu Sagar</p>
+        <p>© 2026 MCA Time Table 🎓 • Build by Cheenu Sagar</p>
       </footer>
 
       {/* Add / Edit Class Modal */}
