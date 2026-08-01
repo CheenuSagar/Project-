@@ -16,24 +16,46 @@ function timeToMinutes(timeStr) {
   return h * 60 + m;
 }
 
+const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000; // 12 Hours in milliseconds
+
+function getPersistentAuthTeacher() {
+  try {
+    const teacher = localStorage.getItem('lecalert_auth_teacher');
+    const expiry = localStorage.getItem('lecalert_auth_teacher_expiry');
+    if (teacher && expiry) {
+      if (Date.now() < Number(expiry)) {
+        return teacher;
+      } else {
+        // Session expired after 12 hours
+        localStorage.removeItem('lecalert_auth_teacher');
+        localStorage.removeItem('lecalert_auth_teacher_expiry');
+      }
+    }
+  } catch (e) {}
+  return '';
+}
+
+function setPersistentAuthTeacher(teacherName) {
+  try {
+    if (teacherName) {
+      const expiryTime = Date.now() + TWELVE_HOURS_MS;
+      localStorage.setItem('lecalert_auth_teacher', teacherName);
+      localStorage.setItem('lecalert_auth_teacher_expiry', String(expiryTime));
+    } else {
+      localStorage.removeItem('lecalert_auth_teacher');
+      localStorage.removeItem('lecalert_auth_teacher_expiry');
+    }
+  } catch (e) {}
+}
+
 export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin, onSaveTimetable }) {
   const allTeachers = extractUniqueTeachers(timetable);
   const [teacherPins, setTeacherPins] = useState(() => loadTeacherPINs(allTeachers));
 
-  const [authenticatedTeacher, setAuthenticatedTeacher] = useState(() => {
-    try {
-      return sessionStorage.getItem('lecalert_auth_teacher') || '';
-    } catch (e) {
-      return '';
-    }
-  });
+  const [authenticatedTeacher, setAuthenticatedTeacher] = useState(() => getPersistentAuthTeacher());
 
   const [selectedTeacher, setSelectedTeacher] = useState(() => {
-    try {
-      return sessionStorage.getItem('lecalert_auth_teacher') || (allTeachers[0] || '');
-    } catch (e) {
-      return allTeachers[0] || '';
-    }
+    return getPersistentAuthTeacher() || (allTeachers[0] || '');
   });
 
   const [pinInput, setPinInput] = useState('');
@@ -81,9 +103,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
       setSelectedTeacher(matchedTeacher);
       setPinError('');
       setPinInput('');
-      try {
-        sessionStorage.setItem('lecalert_auth_teacher', matchedTeacher);
-      } catch (e) {}
+      setPersistentAuthTeacher(matchedTeacher);
     } else {
       setPinError('Incorrect PIN! No faculty account found for this PIN.');
     }
@@ -94,9 +114,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
     setIsChangingPin(false);
     setPinInput('');
     setPinError('');
-    try {
-      sessionStorage.removeItem('lecalert_auth_teacher');
-    } catch (e) {}
+    setPersistentAuthTeacher('');
   };
 
   const handleSaveNewPIN = () => {
@@ -187,7 +205,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
           </div>
           <h2 style={{ margin: '8px 0 4px', fontSize: '1.4rem' }}>Faculty Portal Access</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px' }}>
-            Enter your 4-digit Faculty PIN to open your personal master timetable portal.
+            Enter your 4-digit Faculty PIN to open your portal. Once logged in, your session remains <strong>stay-open for 12 hours</strong>.
           </p>
 
           <div className="pin-input-group">
@@ -245,7 +263,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                 <div>
                   <h2 className="teacher-portal-title">Personal Faculty Schedule — {activeTeacher}</h2>
                   <p className="teacher-portal-subtitle">
-                    Consolidated Workload across all sections, Free/Busy Proxy & Lecture Swap Portal
+                    Consolidated Workload across all sections • ⏱️ <strong>Session Active (Stay-Open 12 Hours)</strong>
                   </p>
                 </div>
               </div>
