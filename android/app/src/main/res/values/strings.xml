@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LecAlert</string>
+    <string name="title_activity_main">LecAlert</string>
+    <string name="package_name">com.cheenusagar.lecalert</string>
+    <string name="custom_url_scheme">com.cheenusagar.lecalert</string>
+</resources>
