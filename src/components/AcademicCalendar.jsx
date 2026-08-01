@@ -1089,8 +1089,5 @@ export default function AcademicCalendar({ events, onSaveEvents, isAdmin, verify
   );
 }
 
-/* update */
 
-/* update */
 
-/* update */

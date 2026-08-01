@@ -720,4 +720,3 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
   );
 }
 
-/* update */

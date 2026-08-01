@@ -209,4 +209,3 @@ export default function AutoGeneratorModal({ isOpen, onClose, onApplyTimetable }
   );
 }
 
-/* update */

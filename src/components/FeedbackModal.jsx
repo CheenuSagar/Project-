@@ -225,4 +225,3 @@ export default function FeedbackModal({ isOpen, onClose }) {
   );
 }
 
-/* update */
