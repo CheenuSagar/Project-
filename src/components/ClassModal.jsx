@@ -36,6 +36,17 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     if (editingClass) {
       setName(editingClass.name || '');
       setTeacher(editingClass.teacher || '');
@@ -99,8 +110,8 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content glass animate-scale-in">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content glass animate-scale-in" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <BookOpen size={20} className="text-primary" />
@@ -289,15 +300,27 @@ export default function ClassModal({ isOpen, onClose, onSave, onDelete, editingC
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 10000;
           padding: 20px;
+          overflow-y: auto;
         }
         .modal-content {
           width: 100%;
-          max-width: 540px;
+          max-width: 560px;
+          max-height: 86vh;
+          overflow-y: auto;
           padding: 26px;
           border-radius: var(--radius-xl);
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 30px rgba(99, 102, 241, 0.2);
+          scrollbar-width: thin;
+          scrollbar-color: var(--primary) transparent;
+        }
+        .modal-content::-webkit-scrollbar {
+          width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+          background: var(--primary);
+          border-radius: 4px;
         }
         .modal-header {
           display: flex;
