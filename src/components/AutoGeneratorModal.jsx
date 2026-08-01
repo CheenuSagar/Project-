@@ -208,3 +208,5 @@ export default function AutoGeneratorModal({ isOpen, onClose, onApplyTimetable }
     </div>
   );
 }
+
+/* update */
