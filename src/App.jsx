@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown, UserCheck, Shield, GraduationCap } from 'lucide-react';
+import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown, UserCheck, Shield, GraduationCap, UserCog, BookOpen } from 'lucide-react';
 import StudentPanel from './components/StudentPanel';
 import TeacherPanel from './components/TeacherPanel';
 import AdminPanel from './components/AdminPanel';
@@ -7,9 +7,12 @@ import AutoGeneratorModal from './components/AutoGeneratorModal';
 import Dashboard from './components/Dashboard';
 import TimetableGrid from './components/TimetableGrid';
 import AcademicCalendar from './components/AcademicCalendar';
+import SyllabusPortal from './components/SyllabusPortal';
 import SettingsPanel, { playSyntheticChime, ALL_THEMES } from './components/SettingsPanel';
 import ClassModal from './components/ClassModal';
 import FeedbackModal from './components/FeedbackModal';
+import AdminPasswordModal from './components/AdminPasswordModal';
+import RoleSelectionModal from './components/RoleSelectionModal';
 import { MessageSquare } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -26,6 +29,24 @@ function timeToMinutes(timeStr) {
 
 export default function App() {
   const [timetable, setTimetable] = useState([]);
+
+  // User Role State: 'student' | 'teacher' | null
+  const [userRole, setUserRole] = useState(() => {
+    try {
+      return localStorage.getItem('lecalert_user_role') || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(() => {
+    try {
+      return !localStorage.getItem('lecalert_user_role');
+    } catch (e) {
+      return true;
+    }
+  });
+
   const [selectedSection, setSelectedSection] = useState(() => {
     try {
       const saved = localStorage.getItem('lecalert_selected_section');
@@ -39,6 +60,7 @@ export default function App() {
       return '';
     }
   });
+
   const [settings, setSettings] = useState({
     soundEnabled: true,
     notificationsEnabled: false,
@@ -46,11 +68,21 @@ export default function App() {
     alarmSound: 'chime'
   });
   const [academicEvents, setAcademicEvents] = useState(() => loadAcademicCalendar());
-  const [activeTab, setActiveTab] = useState('student');
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const savedRole = localStorage.getItem('lecalert_user_role');
+      if (savedRole === 'teacher') return 'teacher';
+      return 'student';
+    } catch (e) {
+      return 'student';
+    }
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
+  const [isAdminPasswordModalOpen, setIsAdminPasswordModalOpen] = useState(false);
+  const pendingAdminCallbackRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(() => {
     try {
       return localStorage.getItem('lecalert_is_admin') === 'true';
@@ -109,6 +141,58 @@ export default function App() {
     }
   }, []);
 
+  // Secret Admin Trigger Refs & Handler (5-tap logo or Ctrl+Shift+A)
+  const logoClickCountRef = useRef(0);
+  const logoClickTimerRef = useRef(null);
+
+  const handleLogoClick = () => {
+    logoClickCountRef.current += 1;
+
+    if (logoClickTimerRef.current) {
+      clearTimeout(logoClickTimerRef.current);
+    }
+
+    logoClickTimerRef.current = setTimeout(() => {
+      logoClickCountRef.current = 0;
+    }, 3000);
+
+    if (logoClickCountRef.current >= 5) {
+      logoClickCountRef.current = 0;
+      if (logoClickTimerRef.current) clearTimeout(logoClickTimerRef.current);
+      
+      // Trigger Secret Admin Verification Modal
+      verifyAdminAction(() => {
+        setActiveTab('admin');
+      });
+    } else {
+      setActiveTab(userRole || 'student');
+    }
+  };
+
+  // Keyboard shortcut listener: Ctrl + Shift + A for Secret Admin Access
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        verifyAdminAction(() => {
+          setActiveTab('admin');
+        });
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAdmin]);
+
+  const handleSelectRole = (role) => {
+    setUserRole(role);
+    setIsRoleModalOpen(false);
+    if (role === 'teacher') {
+      setActiveTab('teacher');
+    } else {
+      setActiveTab('student');
+    }
+  };
+
   // 2. Alarm Trigger Interval Loop (runs every second)
   useEffect(() => {
     const checkSchedule = () => {
@@ -147,11 +231,21 @@ export default function App() {
           
           const subInfo = cls.substituteTeacher ? ` (Substitute Teacher: ${cls.substituteTeacher})` : '';
           
-          // 2. Trigger System Notification
+          // 2. Role-Targeted Notification Construction
+          const isTeacherMode = userRole === 'teacher' || activeTab === 'teacher';
+          const notifTitle = isTeacherMode 
+            ? `👨‍🏫 Faculty Alert: Teaching Session Soon!` 
+            : `🎓 Student Alert: Class Starting Soon!`;
+          
+          const notifBody = isTeacherMode
+            ? `Upcoming Lecture: ${cls.name} (Sec ${cls.section || 'All'}) starts in ${settings.preTime} mins ${cls.location ? `at ${cls.location}` : ''}.${subInfo}`
+            : `${cls.name} starts in ${settings.preTime} mins ${cls.location ? `at ${cls.location}` : ''}.${subInfo}`;
+
+          // Trigger System Notification
           if (settings.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
             try {
-              new Notification(`Class Starting Soon!`, {
-                body: `${cls.name} starts in ${settings.preTime} minutes ${cls.location ? `at ${cls.location}` : ''}.${subInfo}`,
+              new Notification(notifTitle, {
+                body: notifBody,
                 icon: '/favicon.ico',
                 tag: cls.id
               });
@@ -160,7 +254,7 @@ export default function App() {
             }
           } else {
             // Fallback in-app alert
-            alert(`Upcoming Lecture: "${cls.name}" starts in ${settings.preTime} minutes!${subInfo}`);
+            alert(`${notifTitle}\n${notifBody}`);
           }
         }
       });
@@ -170,7 +264,7 @@ export default function App() {
     checkSchedule();
     const interval = setInterval(checkSchedule, 1000);
     return () => clearInterval(interval);
-  }, [timetable, settings]);
+  }, [timetable, settings, userRole, activeTab]);
 
   // Save changes helper
   const handleSaveTimetable = (newTable) => {
@@ -192,14 +286,35 @@ export default function App() {
   const MASTERMIND_HASH = "2071810017735617cc09af7c114a19863f8e1ca8ae82bc4951a6d5e337e88aa6";
   const ADMIN_HASH = "d89a08370f1157a589cebe086324544139adef1c0e118947390337227b2ddddd";
 
-  const verifyAdminAction = async (callback) => {
+  const verifyAdminAction = (callback) => {
     if (isAdmin) {
       if (callback) callback();
       return true;
     }
-    const enteredPassword = prompt("Please enter the Admin Password or Mastermind Password:");
-    if (enteredPassword === null) return false;
-    
+    pendingAdminCallbackRef.current = callback || null;
+    setIsAdminPasswordModalOpen(true);
+    return false;
+  };
+
+  const handleToggleAdmin = (status) => {
+    if (status) {
+      if (isAdmin) return true;
+      pendingAdminCallbackRef.current = null;
+      setIsAdminPasswordModalOpen(true);
+      return false;
+    } else {
+      setIsAdmin(false);
+      try {
+        localStorage.setItem('lecalert_is_admin', 'false');
+      } catch (e) {}
+      if (activeTab === 'admin') {
+        setActiveTab(userRole || 'student');
+      }
+      return true;
+    }
+  };
+
+  const handleVerifyAdminPassword = async (enteredPassword) => {
     try {
       const msgBuffer = new TextEncoder().encode(enteredPassword);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -208,56 +323,20 @@ export default function App() {
       
       if (hashHex === MASTERMIND_HASH || hashHex === ADMIN_HASH) {
         setIsAdmin(true);
+        setActiveTab('admin');
         try {
           localStorage.setItem('lecalert_is_admin', 'true');
         } catch (e) {}
-        if (callback) callback();
+        if (pendingAdminCallbackRef.current) {
+          pendingAdminCallbackRef.current();
+          pendingAdminCallbackRef.current = null;
+        }
         return true;
-      } else {
-        alert("Incorrect password! Action aborted.");
       }
     } catch (e) {
       console.error("Crypto hashing failed:", e);
-      alert("Verification system error.");
     }
     return false;
-  };
-
-  const handleToggleAdmin = async (status, password = "") => {
-    if (status) {
-      let pwd = password;
-      if (!pwd) {
-        pwd = prompt("Please enter the Admin Password or Mastermind Password:");
-        if (pwd === null) return false;
-      }
-      try {
-        const msgBuffer = new TextEncoder().encode(pwd);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        if (hashHex === MASTERMIND_HASH || hashHex === ADMIN_HASH) {
-          setIsAdmin(true);
-          try {
-            localStorage.setItem('lecalert_is_admin', 'true');
-          } catch (e) {}
-          return true;
-        } else {
-          alert("Incorrect password! Admin mode remains locked.");
-          return false;
-        }
-      } catch (e) {
-        console.error("Crypto hashing failed:", e);
-        alert("Verification system error.");
-        return false;
-      }
-    } else {
-      setIsAdmin(false);
-      try {
-        localStorage.setItem('lecalert_is_admin', 'false');
-      } catch (e) {}
-      return true;
-    }
   };
 
   // Add / Edit / Delete Handlers
@@ -323,7 +402,7 @@ export default function App() {
     <div className="app-layout">
       {/* Navigation Header */}
       <header className="app-header glass">
-        <div className="brand-logo" onClick={() => setActiveTab('dashboard')}>
+        <div className="brand-logo" onClick={handleLogoClick} title="MCA Time Table (Tap 5 times for Secret Admin Access)">
           <div className="logo-icon">
             <Bell size={20} className="bell-glow" />
           </div>
@@ -332,26 +411,38 @@ export default function App() {
           </div>
         </div>
 
-        {/* Desktop Navbar - 3 Portals Architecture */}
+        {/* Desktop Navbar - Dynamic Role-Based Portals */}
         <nav className="desktop-nav">
           <div className="nav-tabs">
+            {(!userRole || userRole === 'student') && (
+              <button 
+                className={`nav-tab ${activeTab === 'student' ? 'active' : ''}`}
+                onClick={() => setActiveTab('student')}
+              >
+                <GraduationCap size={16} /> Student Portal
+              </button>
+            )}
+            {(!userRole || userRole === 'teacher') && (
+              <button 
+                className={`nav-tab ${activeTab === 'teacher' ? 'active' : ''}`}
+                onClick={() => setActiveTab('teacher')}
+              >
+                <UserCheck size={16} /> Teacher Portal
+              </button>
+            )}
+            {isAdmin && (
+              <button 
+                className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => setActiveTab('admin')}
+              >
+                <Shield size={16} /> Admin Portal
+              </button>
+            )}
             <button 
-              className={`nav-tab ${activeTab === 'student' ? 'active' : ''}`}
-              onClick={() => setActiveTab('student')}
+              className={`nav-tab ${activeTab === 'syllabus' ? 'active' : ''}`}
+              onClick={() => setActiveTab('syllabus')}
             >
-              <GraduationCap size={16} /> Student Portal
-            </button>
-            <button 
-              className={`nav-tab ${activeTab === 'teacher' ? 'active' : ''}`}
-              onClick={() => setActiveTab('teacher')}
-            >
-              <UserCheck size={16} /> Teacher Portal
-            </button>
-            <button 
-              className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admin')}
-            >
-              <Shield size={16} /> Admin Portal
+              <BookOpen size={16} /> Syllabus Portal
             </button>
             <button 
               className={`nav-tab ${activeTab === 'academic' ? 'active' : ''}`}
@@ -370,6 +461,16 @@ export default function App() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
+          {/* Switch Role Button */}
+          <button 
+            className="role-switch-header-btn"
+            onClick={() => setIsRoleModalOpen(true)}
+            title="Switch User Role (Student / Teacher)"
+          >
+            <UserCog size={16} />
+            <span>{userRole === 'teacher' ? 'Teacher Mode' : 'Student Mode'}</span>
+          </button>
+
           {/* Quick Theme Picker Pill */}
           <div className="header-theme-picker">
             <button 
@@ -432,23 +533,35 @@ export default function App() {
             </div>
 
             <div className="mobile-nav-list">
+              {(!userRole || userRole === 'student') && (
+                <button 
+                  className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
+                >
+                  <GraduationCap size={18} /> Student Portal
+                </button>
+              )}
+              {(!userRole || userRole === 'teacher') && (
+                <button 
+                  className={`mobile-nav-item ${activeTab === 'teacher' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('teacher'); setIsMobileMenuOpen(false); }}
+                >
+                  <UserCheck size={18} /> Teacher Portal
+                </button>
+              )}
+              {isAdmin && (
+                <button 
+                  className={`mobile-nav-item ${activeTab === 'admin' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
+                >
+                  <Shield size={18} /> Admin Portal
+                </button>
+              )}
               <button 
-                className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
+                className={`mobile-nav-item ${activeTab === 'syllabus' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('syllabus'); setIsMobileMenuOpen(false); }}
               >
-                <GraduationCap size={18} /> Student Portal
-              </button>
-              <button 
-                className={`mobile-nav-item ${activeTab === 'teacher' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('teacher'); setIsMobileMenuOpen(false); }}
-              >
-                <UserCheck size={18} /> Teacher Portal
-              </button>
-              <button 
-                className={`mobile-nav-item ${activeTab === 'admin' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
-              >
-                <Shield size={18} /> Admin Portal
+                <BookOpen size={18} /> Syllabus Portal
               </button>
               <button 
                 className={`mobile-nav-item ${activeTab === 'academic' ? 'active' : ''}`}
@@ -627,6 +740,10 @@ export default function App() {
             verifyAdminAction={verifyAdminAction}
           />
         )}
+
+        {activeTab === 'syllabus' && (
+          <SyllabusPortal />
+        )}
       </main>
 
       {/* AI Automatic Timetable Generator Modal */}
@@ -641,7 +758,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2026 MCA Time Table ❤️ • Build by Cheenu Sagar</p>
+        <p>© 2026 MCA Time Table 🎓 • Build by Cheenu Sagar</p>
       </footer>
 
       {/* Add / Edit Class Modal */}
@@ -706,6 +823,22 @@ export default function App() {
       <FeedbackModal 
         isOpen={isFeedbackOpen} 
         onClose={() => setIsFeedbackOpen(false)} 
+      />
+
+      {/* Admin Password Verification Modal */}
+      <AdminPasswordModal
+        isOpen={isAdminPasswordModalOpen}
+        onClose={() => setIsAdminPasswordModalOpen(false)}
+        onSubmit={handleVerifyAdminPassword}
+      />
+
+      {/* Student vs Teacher Role Selection Landing Modal */}
+      <RoleSelectionModal 
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+        onSelectRole={handleSelectRole}
+        currentRole={userRole}
+        allowClose={!!userRole}
       />
 
     </div>
