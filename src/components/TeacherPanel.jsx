@@ -205,7 +205,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
           </div>
           <h2 style={{ margin: '8px 0 4px', fontSize: '1.4rem' }}>Faculty Portal Access</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px' }}>
-            Enter your 4-digit Faculty PIN to open your portal. Once logged in, your session remains <strong>stay-open for 12 hours</strong>.
+            Enter your 4-digit Faculty PIN to open your personal master timetable portal.
           </p>
 
           <div className="pin-input-group">
@@ -263,7 +263,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                 <div>
                   <h2 className="teacher-portal-title">Personal Faculty Schedule — {activeTeacher}</h2>
                   <p className="teacher-portal-subtitle">
-                    Consolidated Workload across all sections • ⏱️ <strong>Session Active (Stay-Open 12 Hours)</strong>
+                    Consolidated Workload across all sections, Free/Busy Proxy & Lecture Swap Portal
                   </p>
                 </div>
               </div>
