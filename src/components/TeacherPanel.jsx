@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, Sparkles, BookOpen, Layers, Lock, Unlock, Key, ShieldCheck, KeyRound, X, Bell, CheckCircle2, ArrowLeftRight, AlertTriangle } from 'lucide-react';
+import { UserCheck, Clock, MapPin, Calendar, Download, RefreshCw, AlertCircle, Sparkles, BookOpen, Layers, Lock, Unlock, Key, ShieldCheck, KeyRound, X, Bell, CheckCircle2, ArrowLeftRight, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { 
   extractUniqueTeachers, getTeacherTimetable, isActualLecture, 
   loadTeacherPINs, saveTeacherPINs, loadTeacherNotifications, 
@@ -37,6 +37,7 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
   });
 
   const [pinInput, setPinInput] = useState('');
+  const [showPin, setShowPin] = useState(false);
   const [pinError, setPinError] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -190,19 +191,41 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
           </p>
 
           <div className="pin-input-group">
-            <input 
-              type="password"
-              maxLength={6}
-              className="form-input pin-field"
-              placeholder="Enter PIN..."
-              value={pinInput}
-              onChange={(e) => {
-                setPinInput(e.target.value);
-                setPinError('');
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && handleVerifyPIN()}
-              autoFocus
-            />
+            <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+              <input 
+                type={showPin ? "text" : "password"}
+                maxLength={6}
+                className="form-input pin-field"
+                placeholder="Enter PIN..."
+                value={pinInput}
+                onChange={(e) => {
+                  setPinInput(e.target.value);
+                  setPinError('');
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && handleVerifyPIN()}
+                autoFocus
+                style={{ width: '100%', paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin(!showPin)}
+                title={showPin ? "Hide PIN" : "Show PIN"}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             <button className="btn btn-primary" onClick={handleVerifyPIN}>
               <Unlock size={16} /> Login
             </button>
