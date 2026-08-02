@@ -19,6 +19,7 @@ import {
   loadAcademicCalendar, saveAcademicCalendar,
   DEFAULT_TIMETABLE_A, DEFAULT_TIMETABLE_B, DEFAULT_TIMETABLE_C 
 } from './utils/storageHelper';
+import { requestLocalNotificationPermission, rescheduleLectureReminders } from './utils/localNotificationScheduler';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -288,6 +289,17 @@ export default function App() {
     const interval = setInterval(checkSchedule, 1000);
     return () => clearInterval(interval);
   }, [timetable, settings, userRole, activeTab]);
+
+  // Offline lecture reminders (native Android app only) — schedules device-level
+  // alarms via Capacitor Local Notifications so alerts fire even when the app
+  // is closed / phone has no internet. No-ops in a regular browser tab.
+  useEffect(() => {
+    requestLocalNotificationPermission();
+  }, []);
+
+  useEffect(() => {
+    rescheduleLectureReminders(timetable, settings.preTime);
+  }, [timetable, settings.preTime]);
 
   // Save changes helper
   const handleSaveTimetable = (newTable) => {
