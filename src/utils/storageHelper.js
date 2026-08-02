@@ -1528,18 +1528,18 @@ export function migrateTeacherNames(table = []) {
  */
 export function loadTimetable() {
   try {
-    const versionKey = 'lecalert_timetable_version_v6';
+    const versionKey = 'lecalert_timetable_version_v7';
     const currentVersion = localStorage.getItem(versionKey);
     
     // Automatically update to latest clean timetable
-    if (currentVersion !== '2026-07-24-v6') {
+    if (currentVersion !== '2026-08-03-v7') {
       const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
       let newTable = DEFAULT_TIMETABLE_B;
       if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
       else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
 
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
-      localStorage.setItem(versionKey, '2026-07-24-v6');
+      localStorage.setItem(versionKey, '2026-08-03-v7');
       return newTable;
     }
 
