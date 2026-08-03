@@ -168,6 +168,25 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           </div>
         </div>
 
+        {/* Special Timetable Banner */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25))',
+          border: '1px solid rgba(245, 158, 11, 0.4)',
+          borderRadius: '12px',
+          padding: '10px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          marginBottom: '16px',
+          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.1)'
+        }}>
+          <Sparkles size={18} style={{ color: '#f59e0b', flexShrink: 0 }} />
+          <span>⚡ <strong>Special Time Table Active</strong> (Effective 4th to 7th Aug 2026) | Today (3rd Aug) follows Regular Monday Schedule</span>
+        </div>
+
         {/* Quick Stats & Section Switcher */}
         <div className="stats-row">
           <div className="stat-card glass">

@@ -133,7 +133,7 @@ function compactArrayToClass(arr) {
 }
 
 export const DEFAULT_TIMETABLE_A = [
-  // --- MONDAY ---
+  // --- MONDAY (Regular Schedule for 3rd August) ---
   {
     id: "mca3a-mon-1",
     name: "Computer Networks (25CA303)",
@@ -215,7 +215,7 @@ export const DEFAULT_TIMETABLE_A = [
     color: "#f43f5e"
   },
 
-  // --- TUESDAY ---
+  // --- TUESDAY (Special Time Table 04 Aug) ---
   {
     id: "mca3a-tue-1",
     name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
@@ -257,66 +257,36 @@ export const DEFAULT_TIMETABLE_A = [
     color: "#8b5cf6"
   },
   {
+    id: "mca3a-tue-5",
+    name: "Agile S/w Dev & Testing (25CA302)",
+    teacher: "Dr. Rajesh Kr. Maurya",
+    location: "AB-207",
+    day: "Tuesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#06b6d4"
+  },
+  {
     id: "mca3a-tue-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Tuesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3a-tue-6",
-    name: "Soft Skills - SS(N)",
-    teacher: "Employability Skills (25HM301(T))",
-    location: "AB-207",
-    day: "Tuesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#f97316"
-  },
-  {
-    id: "mca3a-tue-7",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Alpna Lodhi + Mr. Ajay Kumar",
-    location: "AB-207",
-    day: "Tuesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3a-tue-8",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Alpna Lodhi + Mr. Ajay Kumar",
-    location: "AB-207",
-    day: "Tuesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#10b981"
-  },
-  {
-    id: "mca3a-tue-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Tuesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- WEDNESDAY ---
   {
     id: "mca3a-wed-1",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Savita Singh",
+    name: "Agile S/w Dev & Testing (25CA302)",
+    teacher: "Dr. Rajesh Kr. Maurya",
     location: "AB-207",
     day: "Wednesday",
     startTime: "08:50",
     endTime: "09:40",
-    color: "#6366f1"
+    color: "#06b6d4"
   },
   {
     id: "mca3a-wed-2",
@@ -330,13 +300,13 @@ export const DEFAULT_TIMETABLE_A = [
   },
   {
     id: "mca3a-wed-3",
-    name: "Quantitative Aptitude - QA(N-2)",
-    teacher: "Employability Skills (25HM301(T))",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma",
     location: "AB-207",
     day: "Wednesday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#f97316"
+    color: "#3b82f6"
   },
   {
     id: "mca3a-wed-4",
@@ -349,54 +319,24 @@ export const DEFAULT_TIMETABLE_A = [
     color: "#f59e0b"
   },
   {
+    id: "mca3a-wed-5",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Savita Singh",
+    location: "AB-207",
+    day: "Wednesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#6366f1"
+  },
+  {
     id: "mca3a-wed-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Wednesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3a-wed-6",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
-    location: "AB-207",
-    day: "Wednesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3a-wed-7",
-    name: "Full Stack Lab (25VC352)",
-    teacher: "Ms. Himani Jain + Mr. Chirag Jain",
-    location: "AB-207",
-    day: "Wednesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3a-wed-8",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
-    location: "AB-207",
-    day: "Wednesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#06b6d4"
-  },
-  {
-    id: "mca3a-wed-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Wednesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- THURSDAY ---
@@ -422,23 +362,33 @@ export const DEFAULT_TIMETABLE_A = [
   },
   {
     id: "mca3a-thu-3",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
-    location: "AB-207",
-    day: "Thursday",
-    startTime: "10:40",
-    endTime: "11:30",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3a-thu-4",
     name: "Design & Analysis of Algorithm (25CA301)",
     teacher: "Ms. Savita Singh",
     location: "AB-207",
     day: "Thursday",
+    startTime: "10:40",
+    endTime: "11:30",
+    color: "#6366f1"
+  },
+  {
+    id: "mca3a-thu-4",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma",
+    location: "AB-207",
+    day: "Thursday",
     startTime: "11:30",
     endTime: "12:20",
-    color: "#6366f1"
+    color: "#3b82f6"
+  },
+  {
+    id: "mca3a-thu-5",
+    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
+    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
+    location: "AB-207/208/209",
+    day: "Thursday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#f59e0b"
   },
   {
     id: "mca3a-thu-lunch",
@@ -446,49 +396,9 @@ export const DEFAULT_TIMETABLE_A = [
     teacher: "",
     location: "",
     day: "Thursday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3a-thu-6",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Ms. Gunjan Agarwal",
-    location: "AB-207",
-    day: "Thursday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#10b981"
-  },
-  {
-    id: "mca3a-thu-7",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Ms. Gunjan Agarwal",
-    location: "AB-207",
-    day: "Thursday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3a-thu-8",
-    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
-    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
-    location: "AB-207/208/209",
-    day: "Thursday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#f59e0b"
-  },
-  {
-    id: "mca3a-thu-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Thursday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- FRIDAY ---
@@ -533,49 +443,29 @@ export const DEFAULT_TIMETABLE_A = [
     color: "#10b981"
   },
   {
+    id: "mca3a-fri-5",
+    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
+    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
+    location: "AB-207/208/209",
+    day: "Friday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#8b5cf6"
+  },
+  {
     id: "mca3a-fri-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Friday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3a-fri-6",
-    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
-    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
-    location: "AB-207/208/209",
-    day: "Friday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#8b5cf6"
-  },
-  {
-    id: "mca3a-fri-7",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Dr. Rajesh Kr. Maurya",
-    location: "AB-207",
-    day: "Friday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#06b6d4"
-  },
-  {
-    id: "mca3a-fri-meeting",
-    name: "Mentor Mentee Meeting",
-    teacher: "Group A1: Ms. Kalpana Dwivedi / Group A2: Ms. Alpna Lodhi",
-    location: "AB-207",
-    day: "Friday",
-    startTime: "14:50",
-    endTime: "16:30",
-    color: "#f97316"
+    color: "#4b5563"
   }
 ];
 
 export const DEFAULT_TIMETABLE_B = [
-  // --- MONDAY ---
+  // --- MONDAY (Regular Schedule for 3rd August) ---
   {
     id: "mca3b-mon-1",
     name: "Agile S/w Dev & Testing (25CA302)",
@@ -667,7 +557,7 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#f43f5e"
   },
 
-  // --- TUESDAY ---
+  // --- TUESDAY (Special Time Table 04 Aug) ---
   {
     id: "mca3b-tue-1",
     name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
@@ -709,54 +599,24 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#8b5cf6"
   },
   {
+    id: "mca3b-tue-5",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma",
+    location: "AB-208",
+    day: "Tuesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#3b82f6"
+  },
+  {
     id: "mca3b-tue-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Tuesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3b-tue-6",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
-    location: "AB-208",
-    day: "Tuesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3b-tue-7",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Shilpa Tyagi + Ms. Gunjan Agarwal",
-    location: "AB-208",
-    day: "Tuesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3b-tue-8",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Shilpa Tyagi + Ms. Gunjan Agarwal",
-    location: "AB-208",
-    day: "Tuesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#10b981"
-  },
-  {
-    id: "mca3b-tue-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Tuesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- WEDNESDAY ---
@@ -782,13 +642,13 @@ export const DEFAULT_TIMETABLE_B = [
   },
   {
     id: "mca3b-wed-3",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
-    location: "AB-208",
+    name: "Full Stack Lab (25VC352)",
+    teacher: "Ms. Himani Jain + Mr. Chirag Jain",
+    location: "AB-207",
     day: "Wednesday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#3b82f6"
+    color: "#10b981"
   },
   {
     id: "mca3b-wed-4",
@@ -801,54 +661,24 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#f59e0b"
   },
   {
+    id: "mca3b-wed-5",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma",
+    location: "AB-208",
+    day: "Wednesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#3b82f6"
+  },
+  {
     id: "mca3b-wed-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Wednesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3b-wed-6",
-    name: "Quantitative Aptitude - QA(N-2)",
-    teacher: "Employability Skills (25HM301(T))",
-    location: "AB-208",
-    day: "Wednesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#f97316"
-  },
-  {
-    id: "mca3b-wed-7",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
-    location: "AB-208",
-    day: "Wednesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3b-wed-8",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Mr. Asheesh Pandey",
-    location: "AB-208",
-    day: "Wednesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#10b981"
-  },
-  {
-    id: "mca3b-wed-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Wednesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- THURSDAY ---
@@ -864,23 +694,23 @@ export const DEFAULT_TIMETABLE_B = [
   },
   {
     id: "mca3b-thu-2",
-    name: "Full Stack Lab (25VC352)",
-    teacher: "Ms. Himani Jain + Mr. Chirag Jain",
+    name: "Computer Networks (25CA303)",
+    teacher: "Dr. Shikha Verma",
     location: "AB-208",
     day: "Thursday",
     startTime: "09:40",
     endTime: "10:30",
-    color: "#10b981"
+    color: "#3b82f6"
   },
   {
     id: "mca3b-thu-3",
-    name: "Full Stack Lab (25VC352)",
-    teacher: "Ms. Himani Jain + Mr. Chirag Jain",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta",
     location: "AB-208",
     day: "Thursday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#10b981"
+    color: "#6366f1"
   },
   {
     id: "mca3b-thu-4",
@@ -893,54 +723,24 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#06b6d4"
   },
   {
+    id: "mca3b-thu-5",
+    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
+    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
+    location: "AB-207/208/209",
+    day: "Thursday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#f59e0b"
+  },
+  {
     id: "mca3b-thu-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Thursday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3b-thu-6",
-    name: "Computer Networks (25CA303)",
-    teacher: "Dr. Shikha Verma",
-    location: "AB-208",
-    day: "Thursday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3b-thu-7",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
-    location: "AB-208",
-    day: "Thursday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#6366f1"
-  },
-  {
-    id: "mca3b-thu-8",
-    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
-    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
-    location: "AB-207/208/209",
-    day: "Thursday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#f59e0b"
-  },
-  {
-    id: "mca3b-thu-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Thursday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- FRIDAY ---
@@ -985,49 +785,29 @@ export const DEFAULT_TIMETABLE_B = [
     color: "#3b82f6"
   },
   {
+    id: "mca3b-fri-5",
+    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
+    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
+    location: "AB-207/208/209",
+    day: "Friday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#8b5cf6"
+  },
+  {
     id: "mca3b-fri-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Friday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3b-fri-6",
-    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
-    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
-    location: "AB-207/208/209",
-    day: "Friday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#8b5cf6"
-  },
-  {
-    id: "mca3b-fri-7",
-    name: "Soft Skills - SS(N)",
-    teacher: "Employability Skills (25HM301(T))",
-    location: "AB-208",
-    day: "Friday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#f97316"
-  },
-  {
-    id: "mca3b-fri-meeting",
-    name: "Mentor Mentee Meeting",
-    teacher: "Group B1: Ms. Gunjan Agarwal / Group B2: Ms. Shilpa Tyagi",
-    location: "AB-208",
-    day: "Friday",
-    startTime: "14:50",
-    endTime: "16:30",
-    color: "#f97316"
+    color: "#4b5563"
   }
 ];
 
 export const DEFAULT_TIMETABLE_C = [
-  // --- MONDAY ---
+  // --- MONDAY (Regular Schedule for 3rd August) ---
   {
     id: "mca3c-mon-1",
     name: "Design & Analysis of Algorithm (25CA301)",
@@ -1119,7 +899,7 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#f43f5e"
   },
 
-  // --- TUESDAY ---
+  // --- TUESDAY (Special Time Table 04 Aug) ---
   {
     id: "mca3c-tue-1",
     name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
@@ -1132,13 +912,13 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-tue-2",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
-    location: "AB-209",
+    name: "Full Stack Lab (25VC352)",
+    teacher: "Ms. Himani Jain + Mr. Chirag Jain",
+    location: "AB-207",
     day: "Tuesday",
     startTime: "09:40",
     endTime: "10:30",
-    color: "#6366f1"
+    color: "#10b981"
   },
   {
     id: "mca3c-tue-3",
@@ -1161,66 +941,36 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#8b5cf6"
   },
   {
+    id: "mca3c-tue-5",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta",
+    location: "AB-209",
+    day: "Tuesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#6366f1"
+  },
+  {
     id: "mca3c-tue-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Tuesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3c-tue-6",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Mr. Tarun Kumar Sharma",
-    location: "AB-209",
-    day: "Tuesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#06b6d4"
-  },
-  {
-    id: "mca3c-tue-7",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Surbhi Sharma + Mr. Chirag Jain",
-    location: "AB-208",
-    day: "Tuesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3c-tue-8",
-    name: "Mini Project Lab (25CA353)",
-    teacher: "Ms. Surbhi Sharma + Mr. Chirag Jain",
-    location: "AB-208",
-    day: "Tuesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#10b981"
-  },
-  {
-    id: "mca3c-tue-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Tuesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- WEDNESDAY ---
   {
     id: "mca3c-wed-1",
-    name: "Quantitative Aptitude - QA(N-2)",
-    teacher: "Employability Skills (25HM301(T))",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar",
     location: "AB-209",
     day: "Wednesday",
     startTime: "08:50",
     endTime: "09:40",
-    color: "#f97316"
+    color: "#3b82f6"
   },
   {
     id: "mca3c-wed-2",
@@ -1253,54 +1003,24 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#f59e0b"
   },
   {
+    id: "mca3c-wed-5",
+    name: "Agile S/w Dev & Testing (25CA302)",
+    teacher: "Mr. Tarun Kumar Sharma",
+    location: "AB-209",
+    day: "Wednesday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#06b6d4"
+  },
+  {
     id: "mca3c-wed-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Wednesday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3c-wed-6",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Meghna Gupta + Ms. Gunjan Agarwal",
-    location: "AB-209",
-    day: "Wednesday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#10b981"
-  },
-  {
-    id: "mca3c-wed-7",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Meghna Gupta + Ms. Gunjan Agarwal",
-    location: "AB-209",
-    day: "Wednesday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#10b981"
-  },
-  {
-    id: "mca3c-wed-8",
-    name: "Computer Networks (25CA303)",
-    teacher: "Mr. Ajay Kumar",
-    location: "AB-209",
-    day: "Wednesday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3c-wed-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Wednesday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- THURSDAY ---
@@ -1316,33 +1036,43 @@ export const DEFAULT_TIMETABLE_C = [
   },
   {
     id: "mca3c-thu-2",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Ms. Gunjan Agarwal",
+    name: "Design & Analysis of Algorithm (25CA301)",
+    teacher: "Ms. Meghna Gupta",
     location: "AB-209",
     day: "Thursday",
     startTime: "09:40",
     endTime: "10:30",
-    color: "#10b981"
+    color: "#6366f1"
   },
   {
     id: "mca3c-thu-3",
-    name: "DAA Lab (25CA351)",
-    teacher: "Ms. Savita Singh + Ms. Gunjan Agarwal",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar",
     location: "AB-209",
     day: "Thursday",
     startTime: "10:40",
     endTime: "11:30",
-    color: "#10b981"
+    color: "#3b82f6"
   },
   {
     id: "mca3c-thu-4",
-    name: "Soft Skills - SS(N)",
-    teacher: "Employability Skills (25HM301(T))",
+    name: "Agile S/w Dev & Testing (25CA302)",
+    teacher: "Mr. Tarun Kumar Sharma",
     location: "AB-209",
     day: "Thursday",
     startTime: "11:30",
     endTime: "12:20",
-    color: "#f97316"
+    color: "#06b6d4"
+  },
+  {
+    id: "mca3c-thu-5",
+    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
+    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
+    location: "AB-207/208/209",
+    day: "Thursday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#f59e0b"
   },
   {
     id: "mca3c-thu-lunch",
@@ -1350,71 +1080,31 @@ export const DEFAULT_TIMETABLE_C = [
     teacher: "",
     location: "",
     day: "Thursday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3c-thu-6",
-    name: "Agile S/w Dev & Testing (25CA302)",
-    teacher: "Mr. Tarun Kumar Sharma",
-    location: "AB-209",
-    day: "Thursday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#06b6d4"
-  },
-  {
-    id: "mca3c-thu-7",
-    name: "Computer Networks (25CA303)",
-    teacher: "Mr. Ajay Kumar",
-    location: "AB-209",
-    day: "Thursday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#3b82f6"
-  },
-  {
-    id: "mca3c-thu-8",
-    name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
-    teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
-    location: "AB-207/208/209",
-    day: "Thursday",
-    startTime: "14:50",
-    endTime: "15:40",
-    color: "#f59e0b"
-  },
-  {
-    id: "mca3c-thu-9",
-    name: "Library",
-    teacher: "",
-    location: "Library",
-    day: "Thursday",
-    startTime: "15:40",
-    endTime: "16:30",
-    color: "#f43f5e"
+    color: "#4b5563"
   },
 
   // --- FRIDAY ---
   {
     id: "mca3c-fri-1",
+    name: "Computer Networks (25CA303)",
+    teacher: "Mr. Ajay Kumar",
+    location: "AB-209",
+    day: "Friday",
+    startTime: "08:50",
+    endTime: "09:40",
+    color: "#3b82f6"
+  },
+  {
+    id: "mca3c-fri-2",
     name: "Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)",
     teacher: "Ms. Priya Mishra / Ms. Surbhi Sharma / Mr. Chirag Jain",
     location: "AB-207/208/209",
     day: "Friday",
-    startTime: "08:50",
-    endTime: "09:40",
-    color: "#f59e0b"
-  },
-  {
-    id: "mca3c-fri-2",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
-    location: "AB-209",
-    day: "Friday",
     startTime: "09:40",
     endTime: "10:30",
-    color: "#6366f1"
+    color: "#f59e0b"
   },
   {
     id: "mca3c-fri-3",
@@ -1437,44 +1127,24 @@ export const DEFAULT_TIMETABLE_C = [
     color: "#06b6d4"
   },
   {
+    id: "mca3c-fri-5",
+    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
+    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
+    location: "AB-207/208/209",
+    day: "Friday",
+    startTime: "12:20",
+    endTime: "13:10",
+    color: "#8b5cf6"
+  },
+  {
     id: "mca3c-fri-lunch",
     name: "Lunch Break",
     teacher: "",
     location: "",
     day: "Friday",
-    startTime: "12:20",
-    endTime: "13:10",
-    color: "#4b5563"
-  },
-  {
-    id: "mca3c-fri-6",
-    name: "Elective-I: AML (25CA304-E1) / Cloud-II (E2)",
-    teacher: "Ms. Shilpa Tyagi / Ms. Gunjan Agarwal / Ms. Kalpana Dwivedi",
-    location: "AB-207/208/209",
-    day: "Friday",
     startTime: "13:10",
     endTime: "14:00",
-    color: "#8b5cf6"
-  },
-  {
-    id: "mca3c-fri-7",
-    name: "Design & Analysis of Algorithm (25CA301)",
-    teacher: "Ms. Meghna Gupta",
-    location: "AB-209",
-    day: "Friday",
-    startTime: "14:00",
-    endTime: "14:50",
-    color: "#6366f1"
-  },
-  {
-    id: "mca3c-fri-meeting",
-    name: "Mentor Mentee Meeting",
-    teacher: "Group C1: Ms. Surbhi Sharma / Group C2: Mr. Chirag Jain",
-    location: "AB-209",
-    day: "Friday",
-    startTime: "14:50",
-    endTime: "16:30",
-    color: "#f97316"
+    color: "#4b5563"
   }
 ];
 
@@ -1528,18 +1198,18 @@ export function migrateTeacherNames(table = []) {
  */
 export function loadTimetable() {
   try {
-    const versionKey = 'lecalert_timetable_version_v7';
+    const versionKey = 'lecalert_timetable_version_v10_special';
     const currentVersion = localStorage.getItem(versionKey);
     
     // Automatically update to latest clean timetable
-    if (currentVersion !== '2026-08-03-v7') {
+    if (currentVersion !== '2026-08-04-special-v10') {
       const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
       let newTable = DEFAULT_TIMETABLE_B;
       if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
       else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
 
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
-      localStorage.setItem(versionKey, '2026-08-03-v7');
+      localStorage.setItem(versionKey, '2026-08-04-special-v10');
       return newTable;
     }
 
@@ -1721,6 +1391,15 @@ export function formatTimeTo12Hr(timeStr) {
 
 export const DEFAULT_ACADEMIC_EVENTS = [
   // --- ACADEMIC CALENDAR MILESTONES ---
+  {
+    id: "abes-special-tt-aug4-7",
+    title: "Special Time Table (4th to 7th August 2026)",
+    category: "Special Schedule",
+    startDate: "2026-08-04",
+    endDate: "2026-08-07",
+    details: "Special Time Table effective from 4th to 7th August 2026 for MCA III-A, III-B & III-C.",
+    badgeColor: "#f59e0b"
+  },
   {
     id: "abes-ac-1",
     title: "Commencement of Classes (3rd Sem)",
