@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw } from 'lucide-react';
-import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject } from '../utils/storageHelper';
+import { Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw, Palmtree, AlertTriangle } from 'lucide-react';
+import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject, isTodayHoliday } from '../utils/storageHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -9,7 +9,7 @@ function timeToMinutes(timeStr) {
   return h * 60 + m;
 }
 
-export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection }) {
+export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -18,6 +18,9 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const isHoliday = isTodayHoliday(holidayNotice, currentTime);
+  const showHolidayNotice = holidayNotice?.active && isHoliday;
 
   const show12h = settings?.timeFormat12h !== false;
 
@@ -168,24 +171,32 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           </div>
         </div>
 
-        {/* Special Timetable Banner */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25))',
-          border: '1px solid rgba(245, 158, 11, 0.4)',
-          borderRadius: '12px',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          fontSize: '0.85rem',
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          marginBottom: '16px',
-          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.1)'
-        }}>
-          <Sparkles size={18} style={{ color: '#f59e0b', flexShrink: 0 }} />
-          <span>⚡ <strong>Special Time Table Active</strong> (Effective 4th to 7th Aug 2026) | Today (3rd Aug) follows Regular Monday Schedule</span>
-        </div>
+        {/* College Holiday & Class Suspension Alert Card */}
+        {showHolidayNotice && (
+          <div className="glass animate-scale-in" style={{
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.2))',
+            border: '2px solid rgba(239, 68, 68, 0.4)',
+            borderRadius: '16px',
+            padding: '16px 20px',
+            marginBottom: '16px',
+            boxShadow: '0 8px 24px rgba(239, 68, 68, 0.15)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '1.6rem' }}>🌴</span>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  {holidayNotice.title || 'College Closed / Classes Suspended'}
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--danger)', fontWeight: 700 }}>
+                  Active Period: {holidayNotice.startDate} to {holidayNotice.endDate} • Lecture Notifications Paused 🔕
+                </p>
+              </div>
+            </div>
+            <p style={{ margin: '8px 0 0 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, fontWeight: 500 }}>
+              {holidayNotice.reason}
+            </p>
+          </div>
+        )}
 
         {/* Quick Stats & Section Switcher */}
         <div className="stats-row">

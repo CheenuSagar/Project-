@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { 
   Shield, Lock, Unlock, Zap, RefreshCw, FileText, 
-  Download, Upload, Trash2, Check, AlertTriangle, Plus, Edit2, UserCheck, Layers, MapPin, Key
+  Download, Upload, Trash2, Check, AlertTriangle, Plus, Edit2, UserCheck, Layers, MapPin, Key, Palmtree
 } from 'lucide-react';
 import SettingsPanel from './SettingsPanel';
-import { extractUniqueTeachers, loadTeacherPINs, saveTeacherPINs, getTeacherPrimarySubject } from '../utils/storageHelper';
+import { extractUniqueTeachers, loadTeacherPINs, saveTeacherPINs, getTeacherPrimarySubject, DEFAULT_HOLIDAY_NOTICE } from '../utils/storageHelper';
 
 export default function AdminPanel({
   timetable,
@@ -21,7 +21,9 @@ export default function AdminPanel({
   onOpenGenerator,
   onEditClick,
   onSaveTimetable,
-  onAddClick
+  onAddClick,
+  holidayNotice,
+  onSaveHolidayNotice
 }) {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [proxyTeacherName, setProxyTeacherName] = useState('');
@@ -30,6 +32,24 @@ export default function AdminPanel({
   const allTeachers = extractUniqueTeachers(timetable);
   const [teacherPinsMap, setTeacherPinsMap] = useState(() => loadTeacherPINs(allTeachers));
   const [editingTeacherPin, setEditingTeacherPin] = useState({});
+
+  const [holidayForm, setHolidayForm] = useState(() => holidayNotice || DEFAULT_HOLIDAY_NOTICE);
+
+  const handleSaveHoliday = () => {
+    if (onSaveHolidayNotice) {
+      onSaveHolidayNotice(holidayForm);
+      alert('College Holiday & Class Suspension notice saved successfully!');
+    }
+  };
+
+  const handleClearHoliday = () => {
+    const cleared = { ...holidayForm, active: false };
+    setHolidayForm(cleared);
+    if (onSaveHolidayNotice) {
+      onSaveHolidayNotice(cleared);
+      alert('Holiday notice deactivated. Normal classes & lecture notifications resumed!');
+    }
+  };
 
   const handleAssignProxy = () => {
     if (!selectedClassId || !proxyTeacherName) {
@@ -285,6 +305,88 @@ export default function AdminPanel({
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+
+          {/* Card: College Holiday & Class Suspension Management */}
+          <div className="admin-card glass card-featured" style={{ gridColumn: '1 / -1', borderLeft: '4px solid var(--warning)' }}>
+            <div className="admin-card-header">
+              <Palmtree size={22} style={{ color: '#f59e0b' }} />
+              <div>
+                <h4>College Holiday & Class Suspension Notice Manager</h4>
+                <p>Post college closure / vacation notices (e.g. Aug 4 - Aug 12) & automatically pause daily lecture alarms</p>
+              </div>
+            </div>
+
+            <div className="admin-card-body">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <label className="form-label" style={{ margin: 0, fontWeight: 700 }}>Holiday Notice Active:</label>
+                <input 
+                  type="checkbox" 
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  checked={holidayForm.active}
+                  onChange={(e) => setHolidayForm({ ...holidayForm, active: e.target.checked })}
+                />
+                <span style={{ fontSize: '0.85rem', color: holidayForm.active ? 'var(--danger)' : 'var(--text-muted)', fontWeight: 700 }}>
+                  {holidayForm.active ? '🔴 NOTICE ACTIVE (Alarms & Notifications Paused)' : '⚪ Notice Disabled (Normal Classes Active)'}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div className="form-group">
+                  <label className="form-label">Notice Title / Headline:</label>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    value={holidayForm.title}
+                    onChange={(e) => setHolidayForm({ ...holidayForm, title: e.target.value })}
+                    placeholder="e.g. 🌴 College Closed / Classes Suspended"
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div className="form-group">
+                    <label className="form-label">Start Date:</label>
+                    <input 
+                      type="date" 
+                      className="form-input" 
+                      value={holidayForm.startDate}
+                      onChange={(e) => setHolidayForm({ ...holidayForm, startDate: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">End Date:</label>
+                    <input 
+                      type="date" 
+                      className="form-input" 
+                      value={holidayForm.endDate}
+                      onChange={(e) => setHolidayForm({ ...holidayForm, endDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label className="form-label">Reason / Announcement Message:</label>
+                <textarea 
+                  className="form-input" 
+                  rows={2}
+                  value={holidayForm.reason}
+                  onChange={(e) => setHolidayForm({ ...holidayForm, reason: e.target.value })}
+                  placeholder="Enter detailed notice message for students and faculty..."
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn btn-primary btn-sm" onClick={handleSaveHoliday}>
+                  <Check size={14} /> Save & Publish Notice
+                </button>
+                {holidayForm.active && (
+                  <button className="btn btn-secondary btn-sm" onClick={handleClearHoliday}>
+                    Resume Normal Classes (Clear Notice)
+                  </button>
+                )}
               </div>
             </div>
           </div>

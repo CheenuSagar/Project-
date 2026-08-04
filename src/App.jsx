@@ -16,7 +16,7 @@ import RoleSelectionModal from './components/RoleSelectionModal';
 import { MessageSquare } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
-  loadAcademicCalendar, saveAcademicCalendar,
+  loadAcademicCalendar, saveAcademicCalendar, loadHolidayNotice, saveHolidayNotice, isTodayHoliday,
   DEFAULT_TIMETABLE_A, DEFAULT_TIMETABLE_B, DEFAULT_TIMETABLE_C 
 } from './utils/storageHelper';
 import { requestLocalNotificationPermission, rescheduleLectureReminders } from './utils/localNotificationScheduler';
@@ -30,6 +30,7 @@ function timeToMinutes(timeStr) {
 
 export default function App() {
   const [timetable, setTimetable] = useState([]);
+  const [holidayNotice, setHolidayNotice] = useState(() => loadHolidayNotice());
 
   // User Role State: 'student' | 'teacher' | null
   const [userRole, setUserRole] = useState(() => {
@@ -200,6 +201,8 @@ export default function App() {
       if (timetable.length === 0) return;
       
       const now = new Date();
+      if (isTodayHoliday(holidayNotice, now)) return; // Pause alarms on holiday/suspension days!
+      
       const currentDay = DAYS[now.getDay()];
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const year = now.getFullYear();
@@ -715,6 +718,7 @@ export default function App() {
             }}
             onLoadPreset={handleLoadSectionPreset}
             selectedSection={selectedSection}
+            holidayNotice={holidayNotice}
           />
         )}
 
@@ -771,6 +775,11 @@ export default function App() {
                 setEditingClass(null);
                 setIsModalOpen(true);
               });
+            }}
+            holidayNotice={holidayNotice}
+            onSaveHolidayNotice={(newNotice) => {
+              setHolidayNotice(newNotice);
+              saveHolidayNotice(newNotice);
             }}
           />
         )}

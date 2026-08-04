@@ -1902,6 +1902,47 @@ export function verifyTeacherPIN(teacherName, inputPin, pinsMap) {
   return String(inputPin).trim() === String(expectedPin).trim();
 }
 
+const HOLIDAY_NOTICE_STORAGE_KEY = 'lecalert_holiday_notice';
+
+export const DEFAULT_HOLIDAY_NOTICE = {
+  active: true,
+  title: "🌴 College Closed / Classes Suspended",
+  startDate: "2026-08-04",
+  endDate: "2026-08-12",
+  reason: "College is closed from 4th to 12th August 2026. All lectures and lab sessions stand suspended."
+};
+
+export function loadHolidayNotice() {
+  try {
+    const raw = localStorage.getItem(HOLIDAY_NOTICE_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load holiday notice:', e);
+  }
+  return DEFAULT_HOLIDAY_NOTICE;
+}
+
+export function saveHolidayNotice(noticeObj) {
+  try {
+    localStorage.setItem(HOLIDAY_NOTICE_STORAGE_KEY, JSON.stringify(noticeObj));
+  } catch (e) {
+    console.error('Failed to save holiday notice:', e);
+  }
+}
+
+export function isTodayHoliday(noticeObj = null, checkDate = new Date()) {
+  const notice = noticeObj || loadHolidayNotice();
+  if (!notice || !notice.active || !notice.startDate || !notice.endDate) return false;
+
+  const yyyy = checkDate.getFullYear();
+  const mm = String(checkDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(checkDate.getDate()).padStart(2, '0');
+  const checkStr = `${yyyy}-${mm}-${dd}`;
+
+  return checkStr >= notice.startDate && checkStr <= notice.endDate;
+}
+
+
 
 
 
