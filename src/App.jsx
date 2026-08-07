@@ -13,6 +13,7 @@ import ClassModal from './components/ClassModal';
 import FeedbackModal from './components/FeedbackModal';
 import AdminPasswordModal from './components/AdminPasswordModal';
 import RoleSelectionModal from './components/RoleSelectionModal';
+import UpdateModal from './components/UpdateModal';
 import { MessageSquare } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -892,6 +893,9 @@ export default function App() {
         currentRole={userRole}
         allowClose={!!userRole}
       />
+
+      {/* Auto Update Checker Modal */}
+      <UpdateModal />
 
     </div>
   );
