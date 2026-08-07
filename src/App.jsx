@@ -291,7 +291,7 @@ export default function App() {
     checkSchedule();
     const interval = setInterval(checkSchedule, 1000);
     return () => clearInterval(interval);
-  }, [timetable, settings, userRole, activeTab]);
+  }, [timetable, settings, userRole, activeTab, holidayNotice]);
 
   // Offline lecture reminders (native Android app only) — schedules device-level
   // alarms via Capacitor Local Notifications so alerts fire even when the app
@@ -301,8 +301,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    rescheduleLectureReminders(timetable, settings.preTime);
-  }, [timetable, settings.preTime]);
+    rescheduleLectureReminders(timetable, settings.preTime, holidayNotice);
+  }, [timetable, settings.preTime, holidayNotice]);
 
   // Save changes helper
   const handleSaveTimetable = (newTable) => {

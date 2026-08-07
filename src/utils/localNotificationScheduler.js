@@ -7,6 +7,7 @@
  * it silently does nothing, so the web version (Vercel) is unaffected.
  */
 import { Capacitor } from '@capacitor/core';
+import { isTodayHoliday } from './storageHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -42,7 +43,7 @@ export async function requestLocalNotificationPermission() {
  * for the next 7 days based on the current timetable + preTime setting.
  * Call this whenever the timetable or preTime setting changes.
  */
-export async function rescheduleLectureReminders(timetable, preTime) {
+export async function rescheduleLectureReminders(timetable, preTime, holidayNotice = null) {
   if (!Capacitor.isNativePlatform()) return;
 
   try {
@@ -64,6 +65,12 @@ export async function rescheduleLectureReminders(timetable, preTime) {
     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
       const targetDate = new Date(now);
       targetDate.setDate(now.getDate() + dayOffset);
+
+      // Skip scheduling for holiday / class suspension days!
+      if (isTodayHoliday(holidayNotice, targetDate)) {
+        continue;
+      }
+
       const dayName = DAYS[targetDate.getDay()];
 
       const classesToday = timetable.filter(cls => cls.day === dayName);
