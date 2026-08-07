@@ -1,5 +1,9 @@
 {
   "appId": "com.cheenusagar.lecalert",
   "appName": "ABES Academix",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://college-time-table.vercel.app",
+    "cleartext": true
+  }
 }
