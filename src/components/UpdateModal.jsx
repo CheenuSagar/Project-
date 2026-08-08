@@ -33,13 +33,18 @@ export default function UpdateModal() {
 
   const handleDownloadApk = async (e) => {
     if (e) e.preventDefault();
-    const targetUrl = updateInfo?.apkUrl || 'https://raw.githubusercontent.com/CheenuSagar/Time-Table-/main/Abes_Academix.apk';
+    const targetUrl = updateInfo?.apkUrl || 'https://raw.githubusercontent.com/CheenuSagar/Time-Table-/main/public/Abes_Academix.apk';
 
     try {
       if (Capacitor.isNativePlatform()) {
-        await Browser.open({ url: targetUrl });
+        await Browser.open({ url: targetUrl, windowName: '_system' });
       } else {
-        window.open(targetUrl, '_blank');
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.download = 'Abes_Academix.apk';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     } catch (err) {
       console.error('Browser open error:', err);
