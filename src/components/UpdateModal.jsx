@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download, Sparkles, X, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 const CURRENT_APP_VERSION = '1.0.0'; // Base build version
-const REMOTE_VERSION_URL = 'https://raw.githubusercontent.com/CheenuSagar/Project-/main/public/version.json';
+const REMOTE_VERSION_URL = 'https://raw.githubusercontent.com/CheenuSagar/Time-Table-/main/public/version.json';
 
 export default function UpdateModal() {
   const [updateInfo, setUpdateInfo] = useState(null);
