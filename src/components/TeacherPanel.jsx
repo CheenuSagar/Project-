@@ -4,7 +4,7 @@ import {
   extractUniqueTeachers, getTeacherTimetable, isActualLecture, 
   loadTeacherPINs, saveTeacherPINs, loadTeacherNotifications, 
   saveTeacherNotifications, addProxyNotification, addProxyAcceptanceNotification, addSwapNotification, 
-  getTeacherPrimarySubject, checkTeacherSlotAvailability, getCombinedMasterTimetable 
+  getTeacherPrimarySubject, checkTeacherSlotAvailability, getCombinedMasterTimetable, isTodayHoliday 
 } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
 
@@ -48,7 +48,7 @@ function setPersistentAuthTeacher(teacherName) {
   } catch (e) {}
 }
 
-export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin, onSaveTimetable }) {
+export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin, onSaveTimetable, holidayNotice }) {
   const allTeachers = extractUniqueTeachers(timetable);
   const [teacherPins, setTeacherPins] = useState(() => loadTeacherPINs(allTeachers));
 
@@ -163,6 +163,8 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
   const currentDay = DAYS[currentTime.getDay()];
   const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
+  const isHoliday = isTodayHoliday(holidayNotice, currentTime);
+  
   // Filter today's lectures for active teacher
   const todayLectures = teacherSchedule
     .filter(cls => cls.day === currentDay && isActualLecture(cls))
@@ -171,15 +173,17 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
   let ongoingClass = null;
   let nextClass = null;
 
-  for (let i = 0; i < todayLectures.length; i++) {
-    const cls = todayLectures[i];
-    const startMins = timeToMinutes(cls.startTime);
-    const endMins = timeToMinutes(cls.endTime);
+  if (!isHoliday) {
+    for (let i = 0; i < todayLectures.length; i++) {
+      const cls = todayLectures[i];
+      const startMins = timeToMinutes(cls.startTime);
+      const endMins = timeToMinutes(cls.endTime);
 
-    if (currentMinutes >= startMins && currentMinutes < endMins) {
-      ongoingClass = cls;
-    } else if (currentMinutes < startMins && !nextClass) {
-      nextClass = cls;
+      if (currentMinutes >= startMins && currentMinutes < endMins) {
+        ongoingClass = cls;
+      } else if (currentMinutes < startMins && !nextClass) {
+        nextClass = cls;
+      }
     }
   }
 
@@ -469,7 +473,9 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                   </div>
                 </div>
               ) : (
-                <p className="status-empty-text">No active class right now.</p>
+                <p className="status-empty-text">
+                  {isHoliday ? '🌴 College Closed / Classes Suspended Today' : 'No active class right now.'}
+                </p>
               )}
             </div>
 
@@ -500,7 +506,9 @@ export default function TeacherPanel({ timetable, settings, onEditClick, isAdmin
                   </div>
                 </div>
               ) : (
-                <p className="status-empty-text">No more lectures scheduled for today!</p>
+                <p className="status-empty-text">
+                  {isHoliday ? '🔕 All lectures stand suspended today due to active holiday.' : 'No more lectures scheduled for today!'}
+                </p>
               )}
             </div>
           </div>

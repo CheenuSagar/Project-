@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw, Palmtree, AlertTriangle } from 'lucide-react';
-import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject, isTodayHoliday } from '../utils/storageHelper';
+import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject, isTodayHoliday, getTodayHolidayInfo } from '../utils/storageHelper';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -11,6 +11,7 @@ function timeToMinutes(timeStr) {
 
 export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice }) {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showHolidayScheduleReference, setShowHolidayScheduleReference] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,8 +20,8 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
     return () => clearInterval(timer);
   }, []);
 
-  const isHoliday = isTodayHoliday(holidayNotice, currentTime);
-  const showHolidayNotice = holidayNotice?.active && isHoliday;
+  const holidayDetails = getTodayHolidayInfo(holidayNotice, currentTime);
+  const isHoliday = holidayDetails.isHoliday;
 
   const show12h = settings?.timeFormat12h !== false;
 
@@ -75,41 +76,43 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
     );
   }
 
-  // Find currently active class
-  const activeClass = timetable.find((cls) => {
+  // Find currently active class (null if holiday)
+  const activeClass = isHoliday ? null : timetable.find((cls) => {
     if (cls.day !== currentDay) return false;
     const start = timeToMinutes(cls.startTime);
     const end = timeToMinutes(cls.endTime);
     return currentMinutes >= start && currentMinutes < end;
   });
 
-  // Calculate next class
+  // Calculate next class (disabled on holiday)
   let nextClass = null;
   let minDiff = Infinity;
 
-  timetable.forEach((cls) => {
-    if (activeClass && cls.id === activeClass.id) return;
+  if (!isHoliday) {
+    timetable.forEach((cls) => {
+      if (activeClass && cls.id === activeClass.id) return;
 
-    const classDayIndex = DAYS.indexOf(cls.day);
-    const startMins = timeToMinutes(cls.startTime);
+      const classDayIndex = DAYS.indexOf(cls.day);
+      const startMins = timeToMinutes(cls.startTime);
 
-    let dayDiff = classDayIndex - currentDayIndex;
-    if (dayDiff < 0 || (dayDiff === 0 && currentMinutes >= startMins)) {
-      dayDiff += 7;
-    }
+      let dayDiff = classDayIndex - currentDayIndex;
+      if (dayDiff < 0 || (dayDiff === 0 && currentMinutes >= startMins)) {
+        dayDiff += 7;
+      }
 
-    let diffMinutes = 0;
-    if (dayDiff === 0) {
-      diffMinutes = startMins - currentMinutes;
-    } else {
-      diffMinutes = dayDiff * 24 * 60 + startMins - currentMinutes;
-    }
+      let diffMinutes = 0;
+      if (dayDiff === 0) {
+        diffMinutes = startMins - currentMinutes;
+      } else {
+        diffMinutes = dayDiff * 24 * 60 + startMins - currentMinutes;
+      }
 
-    if (diffMinutes < minDiff) {
-      minDiff = diffMinutes;
-      nextClass = { ...cls, diffMinutes };
-    }
-  });
+      if (diffMinutes < minDiff) {
+        minDiff = diffMinutes;
+        nextClass = { ...cls, diffMinutes };
+      }
+    });
+  }
 
   // Format countdown for next class
   let countdownStr = '';
@@ -150,7 +153,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
     .filter((cls) => cls.day === currentDay)
     .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
 
-  const todaySubstitutedClasses = todayClasses.filter(cls => cls.substituteTeacher && isActualLecture(cls));
+  const todaySubstitutedClasses = isHoliday ? [] : todayClasses.filter(cls => cls.substituteTeacher && isActualLecture(cls));
 
   return (
     <div className="dashboard-grid animate-fade-in">
@@ -172,7 +175,7 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
         </div>
 
         {/* College Holiday & Class Suspension Alert Card */}
-        {showHolidayNotice && (
+        {isHoliday && (
           <div className="glass animate-scale-in" style={{
             background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.2))',
             border: '2px solid rgba(239, 68, 68, 0.4)',
@@ -185,15 +188,15 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
               <span style={{ fontSize: '1.6rem' }}>🌴</span>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                  {holidayNotice.title || 'College Closed / Classes Suspended'}
+                  {holidayDetails.title || 'College Closed / Classes Suspended'}
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--danger)', fontWeight: 700 }}>
-                  Active Period: {holidayNotice.startDate} to {holidayNotice.endDate} • Lecture Notifications Paused 🔕
+                  Active Period: {holidayDetails.startDate}{holidayDetails.endDate && holidayDetails.endDate !== holidayDetails.startDate ? ` to ${holidayDetails.endDate}` : ''} • Lecture Notifications Paused 🔕
                 </p>
               </div>
             </div>
             <p style={{ margin: '8px 0 0 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5, fontWeight: 500 }}>
-              {holidayNotice.reason}
+              {holidayDetails.reason}
             </p>
           </div>
         )}
@@ -206,7 +209,13 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
             </div>
             <div className="stat-details">
               <span className="stat-label">Today's Lectures</span>
-              <span className="stat-value">{todayClasses.filter(isActualLecture).length} Lectures</span>
+              <span className="stat-value">
+                {isHoliday ? (
+                  <span style={{ color: '#f43f5e', fontWeight: 800 }}>0 Lectures (Holiday 🌴)</span>
+                ) : (
+                  `${todayClasses.filter(isActualLecture).length} Lectures`
+                )}
+              </span>
             </div>
           </div>
 
@@ -335,8 +344,18 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
             </div>
           ) : (
             <div className="class-status-empty">
-              <Clock size={28} style={{ color: 'var(--text-muted)', marginBottom: '4px' }} />
-              <p>No ongoing lecture right now. Enjoy your break!</p>
+              {isHoliday ? (
+                <>
+                  <Palmtree size={28} style={{ color: 'var(--danger)', marginBottom: '4px' }} />
+                  <p style={{ fontWeight: 700, color: 'var(--text-primary)', margin: '4px 0' }}>College Closed / Classes Suspended</p>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--danger)', margin: 0 }}>No ongoing lectures today due to active holiday notice.</p>
+                </>
+              ) : (
+                <>
+                  <Clock size={28} style={{ color: 'var(--text-muted)', marginBottom: '4px' }} />
+                  <p>No ongoing lecture right now. Enjoy your break!</p>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -398,7 +417,15 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
             </div>
           ) : (
             <div className="class-status-empty">
-              <p>No upcoming lectures found on schedule.</p>
+              {isHoliday ? (
+                <>
+                  <Coffee size={28} style={{ color: 'var(--warning)', marginBottom: '4px' }} />
+                  <p style={{ fontWeight: 700, color: 'var(--text-primary)', margin: '4px 0' }}>No Upcoming Classes Today</p>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>All lectures stand suspended today.</p>
+                </>
+              ) : (
+                <p>No upcoming lectures found on schedule.</p>
+              )}
             </div>
           )}
         </div>
@@ -414,61 +441,115 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
           <span className="badge badge-secondary">{currentDay}</span>
         </div>
 
-        {todayClasses.length > 0 ? (
-          <div className="timeline">
-            {todayClasses.map((cls, idx) => {
-              const isCurrent = activeClass && activeClass.id === cls.id;
-              const isPast = !isCurrent && timeToMinutes(cls.endTime) <= currentMinutes;
+        {isHoliday && !showHolidayScheduleReference ? (
+          <div className="class-status-empty h-full-center" style={{ padding: '32px 18px', textAlign: 'center' }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.25))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 14px auto',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              boxShadow: '0 8px 20px rgba(239, 68, 68, 0.15)'
+            }}>
+              <Palmtree size={30} style={{ color: '#ef4444' }} />
+            </div>
+            
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '6px' }}>
+              {holidayDetails.title || 'College Closed Today'} 🌴
+            </h3>
 
-              return (
-                <div 
-                  key={cls.id} 
-                  className={`timeline-item ${isCurrent ? 'active' : ''} ${isPast ? 'past' : ''}`}
-                  onClick={() => onEditClick(cls)}
-                >
-                  <div className="timeline-dot-container">
-                    <div className="timeline-dot" style={{ backgroundColor: cls.color, boxShadow: isCurrent ? `0 0 12px ${cls.color}` : 'none' }}></div>
-                    {idx < todayClasses.length - 1 && <div className="timeline-line"></div>}
-                  </div>
-                  
-                  <div className="timeline-content">
-                    <div className="timeline-time" style={{ color: cls.color }}>
-                      {show12h ? formatTimeTo12Hr(cls.startTime) : cls.startTime} - {show12h ? formatTimeTo12Hr(cls.endTime) : cls.endTime}
-                    </div>
-                    <h4 className="timeline-title">
-                      {cls.substituteTeacher ? (
-                        <>
-                          <span style={{ color: '#f43f5e' }}>{cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', textDecoration: 'line-through', fontWeight: 400 }}>
-                            Regular: {cls.name}
-                          </span>
-                        </>
-                      ) : (
-                        cls.name
-                      )}
-                    </h4>
-                    <div className="timeline-meta">
-                      {cls.substituteTeacher ? (
-                        <span style={{ color: '#f43f5e', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <RefreshCw size={12} /> Sub: {cls.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.75rem', fontWeight: 400 }}>({cls.teacher})</span>
-                        </span>
-                      ) : (
-                        cls.teacher && <span>{cls.teacher}</span>
-                      )}
-                      {(cls.teacher || cls.substituteTeacher) && cls.location && <span className="separator">•</span>}
-                      {cls.location && <span>{cls.location}</span>}
-                    </div>
-                    {isCurrent && <span className="badge badge-live live-pill">ONGOING</span>}
-                  </div>
-                </div>
-              );
-            })}
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', maxWidth: '300px', margin: '0 auto 12px auto', lineHeight: 1.5, fontWeight: 500 }}>
+              {holidayDetails.reason || `No classes scheduled on ${currentDay} due to active college holiday/suspension notice.`}
+            </p>
+
+            <div style={{ marginBottom: '16px' }}>
+              <span className="badge badge-danger" style={{ padding: '5px 12px', fontSize: '0.78rem' }}>
+                🔕 Notifications & Alarms Paused
+              </span>
+            </div>
+
+            <div>
+              <button 
+                className="btn btn-secondary btn-sm"
+                style={{ fontSize: '0.78rem', padding: '6px 12px' }}
+                onClick={() => setShowHolidayScheduleReference(true)}
+              >
+                View Regular {currentDay} Schedule (Reference)
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="class-status-empty h-full-center">
-            <Calendar size={42} style={{ color: 'var(--text-muted)', opacity: 0.6 }} />
-            <p style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>No lectures scheduled for {currentDay}.</p>
-          </div>
+          <>
+            {isHoliday && showHolidayScheduleReference && (
+              <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '8px 12px', fontSize: '0.78rem', color: 'var(--warning)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>📌 Regular {currentDay} Schedule (Reference Only — Holiday Active)</span>
+                <button className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.72rem' }} onClick={() => setShowHolidayScheduleReference(false)}>
+                  Hide
+                </button>
+              </div>
+            )}
+
+            {todayClasses.length > 0 ? (
+              <div className="timeline">
+                {todayClasses.map((cls, idx) => {
+                  const isCurrent = activeClass && activeClass.id === cls.id;
+                  const isPast = !isCurrent && timeToMinutes(cls.endTime) <= currentMinutes;
+
+                  return (
+                    <div 
+                      key={cls.id} 
+                      className={`timeline-item ${isCurrent ? 'active' : ''} ${isPast ? 'past' : ''}`}
+                      onClick={() => onEditClick(cls)}
+                    >
+                      <div className="timeline-dot-container">
+                        <div className="timeline-dot" style={{ backgroundColor: cls.color, boxShadow: isCurrent ? `0 0 12px ${cls.color}` : 'none' }}></div>
+                        {idx < todayClasses.length - 1 && <div className="timeline-line"></div>}
+                      </div>
+                      
+                      <div className="timeline-content">
+                        <div className="timeline-time" style={{ color: cls.color }}>
+                          {show12h ? formatTimeTo12Hr(cls.startTime) : cls.startTime} - {show12h ? formatTimeTo12Hr(cls.endTime) : cls.endTime}
+                        </div>
+                        <h4 className="timeline-title">
+                          {cls.substituteTeacher ? (
+                            <>
+                              <span style={{ color: '#f43f5e' }}>{cls.substituteSubject || getTeacherPrimarySubject(cls.substituteTeacher, timetable) || cls.name}</span>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', textDecoration: 'line-through', fontWeight: 400 }}>
+                                Regular: {cls.name}
+                              </span>
+                            </>
+                          ) : (
+                            cls.name
+                          )}
+                        </h4>
+                        <div className="timeline-meta">
+                          {cls.substituteTeacher ? (
+                            <span style={{ color: '#f43f5e', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <RefreshCw size={12} /> Sub: {cls.substituteTeacher} <span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.75rem', fontWeight: 400 }}>({cls.teacher})</span>
+                            </span>
+                          ) : (
+                            cls.teacher && <span>{cls.teacher}</span>
+                          )}
+                          {(cls.teacher || cls.substituteTeacher) && cls.location && <span className="separator">•</span>}
+                          {cls.location && <span>{cls.location}</span>}
+                        </div>
+                        {isCurrent && <span className="badge badge-live live-pill">ONGOING</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="class-status-empty h-full-center">
+                <Calendar size={42} style={{ color: 'var(--text-muted)', opacity: 0.6 }} />
+                <p style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>No lectures scheduled for {currentDay}.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 

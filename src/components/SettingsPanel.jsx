@@ -77,7 +77,8 @@ export default function SettingsPanel({
   isAdmin,
   onToggleAdmin,
   currentTheme = 'default',
-  onThemeChange
+  onThemeChange,
+  onOpenTerms
 }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState(
@@ -529,6 +530,20 @@ export default function SettingsPanel({
                 Section III-C
               </button>
             </div>
+          </div>
+
+          {/* Terms of Service & User Agreement */}
+          <div className="setting-row">
+            <div className="setting-info">
+              <h4>Terms of Service & User Agreement</h4>
+              <p>Review the application privacy policy, offline data local storage policy, and terms of service.</p>
+            </div>
+            <button 
+              className="btn btn-secondary btn-sm"
+              onClick={onOpenTerms}
+            >
+              <ShieldCheck size={14} /> View Agreement
+            </button>
           </div>
 
           {/* Clear Timetable */}

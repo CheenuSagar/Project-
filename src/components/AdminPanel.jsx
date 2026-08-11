@@ -23,7 +23,8 @@ export default function AdminPanel({
   onSaveTimetable,
   onAddClick,
   holidayNotice,
-  onSaveHolidayNotice
+  onSaveHolidayNotice,
+  onOpenTerms
 }) {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [proxyTeacherName, setProxyTeacherName] = useState('');
@@ -405,6 +406,7 @@ export default function AdminPanel({
               onToggleAdmin={onToggleAdmin}
               currentTheme={currentTheme}
               onThemeChange={onThemeChange}
+              onOpenTerms={onOpenTerms}
             />
           </div>
         </div>

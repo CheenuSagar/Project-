@@ -13,7 +13,7 @@ import ClassModal from './components/ClassModal';
 import FeedbackModal from './components/FeedbackModal';
 import AdminPasswordModal from './components/AdminPasswordModal';
 import RoleSelectionModal from './components/RoleSelectionModal';
-import UpdateModal from './components/UpdateModal';
+import TermsModal from './components/TermsModal';
 import { MessageSquare } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -103,10 +103,18 @@ export default function App() {
     }
   });
 
-  // Mobile menu, Weekly Quick Popup & Header Theme Dropdown state
+  // Mobile menu, Weekly Quick Popup, Header Theme Dropdown & Terms state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWeeklyPopupOpen, setIsWeeklyPopupOpen] = useState(false);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(() => {
+    try {
+      return localStorage.getItem('lecalert_terms_accepted') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   // Apply theme to document root
   useEffect(() => {
@@ -735,6 +743,7 @@ export default function App() {
                 setIsModalOpen(true);
               });
             }}
+            holidayNotice={holidayNotice}
           />
         )}
 
@@ -782,6 +791,7 @@ export default function App() {
               setHolidayNotice(newNotice);
               saveHolidayNotice(newNotice);
             }}
+            onOpenTerms={() => setIsTermsOpen(true)}
           />
         )}
 
@@ -811,7 +821,16 @@ export default function App() {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2026 MCA Time Table 🎓 • Build by Cheenu Sagar</p>
+        <p>
+          © 2026 MCA Time Table 🎓 • Build by Cheenu Sagar •{' '}
+          <button 
+            className="footer-terms-btn" 
+            onClick={() => setIsTermsOpen(true)}
+            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', padding: 0, font: 'inherit' }}
+          >
+            Terms & Agreement
+          </button>
+        </p>
       </footer>
 
       {/* Add / Edit Class Modal */}
@@ -894,8 +913,16 @@ export default function App() {
         allowClose={!!userRole}
       />
 
-      {/* Auto Update Checker Modal */}
-      <UpdateModal />
+      {/* Terms of Service & User Agreement Modal */}
+      <TermsModal 
+        isOpen={!isTermsAccepted || isTermsOpen}
+        onAccept={() => {
+          setIsTermsAccepted(true);
+          setIsTermsOpen(false);
+        }}
+        onClose={() => setIsTermsOpen(false)}
+        allowClose={isTermsAccepted}
+      />
 
     </div>
   );

@@ -1930,16 +1930,58 @@ export function saveHolidayNotice(noticeObj) {
   }
 }
 
-export function isTodayHoliday(noticeObj = null, checkDate = new Date()) {
+export function getTodayHolidayInfo(noticeObj = null, checkDate = new Date()) {
   const notice = noticeObj || loadHolidayNotice();
-  if (!notice || !notice.active || !notice.startDate || !notice.endDate) return false;
 
   const yyyy = checkDate.getFullYear();
   const mm = String(checkDate.getMonth() + 1).padStart(2, '0');
   const dd = String(checkDate.getDate()).padStart(2, '0');
   const checkStr = `${yyyy}-${mm}-${dd}`;
 
-  return checkStr >= notice.startDate && checkStr <= notice.endDate;
+  // 1. Check active holiday notice from Admin Panel
+  if (notice && notice.active && notice.startDate && notice.endDate) {
+    if (checkStr >= notice.startDate && checkStr <= notice.endDate) {
+      return {
+        isHoliday: true,
+        title: notice.title || 'College Closed / Classes Suspended',
+        reason: notice.reason || 'College is closed and all classes stand suspended.',
+        startDate: notice.startDate,
+        endDate: notice.endDate,
+        source: 'notice'
+      };
+    }
+  }
+
+  // 2. Check official academic calendar for Holidays category events
+  try {
+    const academicEvents = loadAcademicCalendar();
+    if (Array.isArray(academicEvents)) {
+      const found = academicEvents.find(ev => {
+        if (ev && ev.category === 'Holidays' && ev.startDate) {
+          const end = ev.endDate || ev.startDate;
+          return checkStr >= ev.startDate && checkStr <= end;
+        }
+        return false;
+      });
+
+      if (found) {
+        return {
+          isHoliday: true,
+          title: `🌴 Official Holiday: ${found.title}`,
+          reason: found.details || `College is closed for ${found.title}. All lectures stand suspended.`,
+          startDate: found.startDate,
+          endDate: found.endDate || found.startDate,
+          source: 'calendar'
+        };
+      }
+    }
+  } catch (e) {}
+
+  return { isHoliday: false, title: '', reason: '', source: null };
+}
+
+export function isTodayHoliday(noticeObj = null, checkDate = new Date()) {
+  return getTodayHolidayInfo(noticeObj, checkDate).isHoliday;
 }
 
 
