@@ -152,6 +152,7 @@ export default function App() {
   });
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [isRollModalOpen, setIsRollModalOpen] = useState(false);
+  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
 
   // Apply theme to document root
   useEffect(() => {
@@ -764,7 +765,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -772,23 +773,23 @@ export default function App() {
                       setIsAuthModalOpen(true);
                     }}
                     style={{
-                      flex: 1,
-                      padding: '8px 12px',
+                      width: '100%',
+                      padding: '10px 14px',
                       borderRadius: '12px',
                       background: 'var(--primary-gradient)',
                       border: 'none',
                       color: '#fff',
-                      fontSize: '0.8rem',
+                      fontSize: '0.85rem',
                       fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '6px',
+                      gap: '8px',
                       boxShadow: '0 4px 12px var(--primary-glow)'
                     }}
                   >
-                    <User size={14} />
+                    <User size={16} />
                     <span>My Profile & Avatars</span>
                   </button>
 
@@ -799,22 +800,24 @@ export default function App() {
                       setIsAuthModalOpen(true);
                     }}
                     style={{
-                      padding: '8px 12px',
+                      width: '100%',
+                      padding: '10px 14px',
                       borderRadius: '12px',
                       background: 'rgba(239, 68, 68, 0.12)',
                       border: '1px solid rgba(239, 68, 68, 0.25)',
                       color: 'var(--danger)',
-                      fontSize: '0.8rem',
+                      fontSize: '0.85rem',
                       fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px'
+                      justifyContent: 'center',
+                      gap: '8px'
                     }}
                     title="Sign Out"
                   >
-                    <LogOut size={14} />
-                    <span>Logout</span>
+                    <LogOut size={16} />
+                    <span>Sign Out / Logout 🚪</span>
                   </button>
                 </div>
               </div>
@@ -890,31 +893,55 @@ export default function App() {
               </button>
             </div>
 
-            {/* Mobile Theme Selector */}
-            <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '16px' }}>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Palette size={15} style={{ color: 'var(--primary)' }} /> APP THEME
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
-                {ALL_THEMES.map((t) => {
-                  const IconComp = t.icon;
-                  const isActive = theme === t.id || (t.id === 'default' && theme === 'light');
-                  return (
-                    <button
-                      key={t.id}
-                      className={`mobile-nav-item ${isActive ? 'active' : ''}`}
-                      style={{ padding: '8px 10px', fontSize: '0.78rem' }}
-                      onClick={() => {
-                        setTheme(t.id);
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      <IconComp size={14} style={{ color: t.iconColor }} />
-                      <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{t.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Mobile Theme Selector (Collapsible Accordion) */}
+            <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '12px' }}>
+              <button
+                type="button"
+                onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: 'none',
+                  border: 'none',
+                  padding: '8px 4px',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.88rem',
+                  fontWeight: 800
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Palette size={18} style={{ color: 'var(--primary)' }} />
+                  <span>APP THEME ({ALL_THEMES.find(t => t.id === theme)?.label || 'Light White'})</span>
+                </div>
+                <ChevronDown size={18} style={{ transform: isMobileThemeOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
+              </button>
+
+              {isMobileThemeOpen && (
+                <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px', maxHeight: '240px', overflowY: 'auto' }}>
+                  {ALL_THEMES.map((t) => {
+                    const IconComp = t.icon;
+                    const isActive = theme === t.id || (t.id === 'default' && theme === 'light');
+                    return (
+                      <button
+                        key={t.id}
+                        className={`mobile-nav-item ${isActive ? 'active' : ''}`}
+                        style={{ padding: '10px 14px', fontSize: '0.85rem', justifyContent: 'flex-start', gap: '10px' }}
+                        onClick={() => {
+                          setTheme(t.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <IconComp size={16} style={{ color: t.iconColor }} />
+                        <span style={{ fontWeight: isActive ? 800 : 600 }}>{t.label}</span>
+                        {isActive && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--primary)' }} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
