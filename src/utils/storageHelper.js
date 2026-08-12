@@ -1676,18 +1676,18 @@ export function migrateTeacherNames(table = []) {
  */
 export function loadTimetable() {
   try {
-    const versionKey = 'lecalert_timetable_version_v10_special';
+    const versionKey = 'lecalert_timetable_version_v11_official_aug3';
     const currentVersion = localStorage.getItem(versionKey);
     
-    // Automatically update to latest clean timetable
-    if (currentVersion !== '2026-08-04-special-v10') {
-      const selectedSection = localStorage.getItem('lecalert_selected_section') || 'B';
-      let newTable = DEFAULT_TIMETABLE_B;
-      if (selectedSection === 'A') newTable = DEFAULT_TIMETABLE_A;
+    // Automatically update to latest official w.e.f 03 August 2026 timetable
+    if (currentVersion !== '2026-08-03-official-v11') {
+      const selectedSection = localStorage.getItem('lecalert_selected_section') || 'A';
+      let newTable = DEFAULT_TIMETABLE_A;
+      if (selectedSection === 'B') newTable = DEFAULT_TIMETABLE_B;
       else if (selectedSection === 'C') newTable = DEFAULT_TIMETABLE_C;
 
       localStorage.setItem(STORAGE_KEYS.TIMETABLE, JSON.stringify(newTable));
-      localStorage.setItem(versionKey, '2026-08-04-special-v10');
+      localStorage.setItem(versionKey, '2026-08-03-official-v11');
       return newTable;
     }
 

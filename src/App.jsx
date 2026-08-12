@@ -165,8 +165,16 @@ export default function App() {
     // 1. Master Timetable Listener
     const unsubTimetable = subscribeToRemoteTimetable((remoteData) => {
       if (Array.isArray(remoteData) && remoteData.length > 0) {
-        setTimetable(remoteData);
-        saveTimetable(remoteData);
+        const isObsolete = remoteData.some(c => (c.id && c.id.includes('special')) || (c.name && c.name.includes('Special')));
+        if (isObsolete) {
+          const freshTable = loadTimetable();
+          setTimetable(freshTable);
+          saveTimetable(freshTable);
+          saveRemoteTimetable(freshTable);
+        } else {
+          setTimetable(remoteData);
+          saveTimetable(remoteData);
+        }
       }
     });
 
