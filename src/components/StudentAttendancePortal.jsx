@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Award, BookOpen, CheckCircle2, AlertTriangle, ShieldCheck, 
-  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw, Sliders, Target, Info, Search, UserCheck 
+  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw, Sliders, Target, Info, Lock, Edit3, UserCheck 
 } from 'lucide-react';
 import { subscribeToOfficialAttendanceRecords } from '../utils/firebase';
 
-export default function StudentAttendancePortal({ userProfile, selectedSection = 'A' }) {
+export default function StudentAttendancePortal({ userProfile, selectedSection = 'A', onOpenRollModal }) {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [targetSliderVal, setTargetSliderVal] = useState(75);
 
-  // Roll Number Input State
-  const defaultRoll = userProfile?.email?.split('@')[0] || '230032010001';
-  const [rollInput, setRollInput] = useState(() => localStorage.getItem('lecalert_student_roll') || defaultRoll);
-
+  // Authenticated Student Identity
   const studentName = userProfile?.displayName || 'MCA Student';
-
-  // Format Roll Input into valid ABES email key
-  const cleanRoll = rollInput.trim();
-  const activeEmail = cleanRoll.includes('@') ? cleanRoll.toLowerCase() : `${cleanRoll}@abes.ac.in`;
+  
+  // Extract roll number from profile or email
+  const rawEmail = userProfile?.email || '230032010001@abes.ac.in';
+  const profileRoll = userProfile?.rollNumber || rawEmail.split('@')[0] || '230032010001';
+  
+  // Format active email key for Firestore match
+  const activeEmail = rawEmail.toLowerCase();
+  const displayRoll = profileRoll.includes('@') ? profileRoll.split('@')[0] : profileRoll;
 
   useEffect(() => {
     const unsub = subscribeToOfficialAttendanceRecords((records) => {
@@ -28,19 +29,15 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
     return () => unsub();
   }, []);
 
-  const handleRollChange = (val) => {
-    setRollInput(val);
-    localStorage.setItem('lecalert_student_roll', val);
-  };
-
-  // Compute subject-wise statistics for active roll number
+  // Compute subject-wise statistics STRICTLY for logged-in student
   const subjectStats = {};
   let totalClasses = 0;
   let totalAttended = 0;
 
   attendanceRecords.forEach(rec => {
     const recordsMap = rec.records || {};
-    const studentStatus = recordsMap[activeEmail];
+    // Match by exact authenticated email OR roll number email
+    const studentStatus = recordsMap[activeEmail] || recordsMap[`${displayRoll}@abes.ac.in`?.toLowerCase()];
     if (studentStatus) {
       const subName = rec.subjectName || 'General Subject';
       if (!subjectStats[subName]) {
@@ -135,7 +132,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               {studentName}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700 }}>
-              Roll: {cleanRoll}
+              Roll: {displayRoll}
             </div>
           </div>
           <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.4rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px var(--primary-glow)' }}>
@@ -144,61 +141,51 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
         </div>
       </div>
 
-      {/* Prominent Roll Number Fill & Verification Box */}
+      {/* Secured Authenticated Student Identity Card */}
       <div 
-        className="glass card-hover-effect" 
+        className="glass" 
         style={{ 
-          padding: '20px 24px', 
-          borderRadius: '24px', 
+          padding: '18px 22px', 
+          borderRadius: '20px', 
           marginBottom: '24px', 
-          border: '2px solid var(--primary)', 
-          background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(6, 182, 212, 0.08))',
+          border: '1.5px solid var(--border-light)', 
+          background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(16, 185, 129, 0.06))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '16px'
+          gap: '14px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 320px' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--primary-gradient)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 8px 20px var(--primary-glow)' }}>
-            <UserCheck size={24} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'rgba(16, 185, 129, 0.14)', color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ShieldCheck size={24} />
           </div>
-          <div style={{ width: '100%' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
-              📝 Student Roll Number / Email ID Box
-            </label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <input 
-                type="text"
-                value={rollInput}
-                onChange={(e) => handleRollChange(e.target.value)}
-                placeholder="Enter 13-digit Roll No. (e.g. 230032010001)"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '14px',
-                  border: '1.5px solid var(--primary)',
-                  background: 'var(--bg-surface)',
-                  color: 'var(--text-primary)',
-                  fontSize: '1rem',
-                  fontWeight: 800,
-                  outline: 'none',
-                  boxShadow: '0 4px 14px rgba(79, 70, 229, 0.1)'
-                }}
-              />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.96rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                {studentName}
+              </span>
+              <span style={{ padding: '2px 8px', borderRadius: '99px', background: 'rgba(16, 185, 129, 0.12)', color: 'var(--success)', fontSize: '0.72rem', fontWeight: 800 }}>
+                Verified Student 🔒
+              </span>
+            </div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              Official Roll No: <strong style={{ color: 'var(--primary)' }}>{displayRoll}</strong> ({activeEmail})
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-            FIRESTORE SEARCH KEY:
-          </span>
-          <span style={{ padding: '6px 16px', borderRadius: '99px', background: 'var(--primary-gradient)', color: '#fff', fontSize: '0.85rem', fontWeight: 800, boxShadow: '0 4px 14px var(--primary-glow)' }}>
-            {activeEmail}
-          </span>
-        </div>
+        {onOpenRollModal && (
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={onOpenRollModal}
+            style={{ borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}
+          >
+            <Edit3 size={14} /> Update Roll No.
+          </button>
+        )}
       </div>
 
       {/* Main Stats Grid */}
@@ -243,7 +230,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           </div>
           <div>
             <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              No Official Attendance Marked Yet for {cleanRoll}
+              No Official Attendance Marked Yet for {displayRoll}
             </h4>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
               Once your subject professors mark official attendance for Section {selectedSection}, your live attendance score & subject breakdown will update automatically.
@@ -347,7 +334,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           <div>
             <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BookOpen size={20} style={{ color: 'var(--primary)' }} />
-              Subject-Wise Attendance Breakdown ({cleanRoll})
+              Subject-Wise Attendance Breakdown ({displayRoll})
             </h3>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
               Individual course score & status for MCA 3rd Sem (Section {selectedSection}).

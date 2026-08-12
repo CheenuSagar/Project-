@@ -151,6 +151,7 @@ export default function App() {
     }
   });
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [isRollModalOpen, setIsRollModalOpen] = useState(false);
 
   // Apply theme to document root
   useEffect(() => {
@@ -964,6 +965,7 @@ export default function App() {
           <StudentAttendancePortal 
             userProfile={userProfile}
             selectedSection={selectedSection}
+            onOpenRollModal={() => setIsRollModalOpen(true)}
           />
         )}
 
@@ -1182,6 +1184,9 @@ export default function App() {
 
           if (profile.role === 'student') {
             setActiveTab('student');
+            if (!profile.rollNumber) {
+              setIsRollModalOpen(true);
+            }
             if (profile.roomNumber) {
               const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
               const fullRoom = `AB-${rNum}`;
@@ -1238,6 +1243,20 @@ export default function App() {
           }
         }}
         allowClose={true}
+      />
+
+      {/* Mandatory Roll Number Verification Modal for Students */}
+      <RollNumberModal 
+        isOpen={isRollModalOpen}
+        userProfile={userProfile}
+        onRollSaved={(savedRoll) => {
+          setIsRollModalOpen(false);
+          const updated = { ...(userProfile || {}), rollNumber: savedRoll };
+          setUserProfile(updated);
+          try {
+            localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+          } catch (e) {}
+        }}
       />
 
       {/* Terms of Service & User Agreement Modal */}
