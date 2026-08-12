@@ -346,11 +346,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
             {/* Top Back to Choice Button */}
             <button 
               type="button"
-              className="onboarding-back-btn"
+              className="change-login-method-btn"
               onClick={() => setAuthStep('choice')}
-              style={{ marginBottom: '14px' }}
             >
-              <span>← Change Login Method</span>
+              <ChevronLeft size={16} />
+              <span>Change Login Method</span>
             </button>
 
             <div className="auth-modal-header">
@@ -586,6 +586,26 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           padding: 26px;
           box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
           position: relative;
+        }
+        .change-login-method-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(79, 70, 229, 0.08);
+          border: 1px solid rgba(79, 70, 229, 0.25);
+          color: var(--primary);
+          padding: 6px 14px;
+          border-radius: 99px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          cursor: pointer;
+          margin-bottom: 16px;
+          transition: all 0.2s ease;
+        }
+        .change-login-method-btn:hover {
+          background: rgba(79, 70, 229, 0.16);
+          border-color: var(--primary);
+          transform: translateX(-3px);
         }
         .auth-modal-close {
           position: absolute;
