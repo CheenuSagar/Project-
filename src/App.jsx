@@ -731,6 +731,64 @@ export default function App() {
               </button>
             </div>
 
+            {/* Logged In User Profile Banner in Mobile Drawer */}
+            {userProfile && (
+              <div 
+                className="glass" 
+                style={{ 
+                  margin: '12px 16px 6px 16px', 
+                  padding: '12px 14px', 
+                  borderRadius: '16px', 
+                  background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(168, 85, 247, 0.08))',
+                  border: '1px solid var(--border-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 6px 16px var(--primary-glow)' }}>
+                    {(userProfile.displayName || 'S').charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {userProfile.displayName || 'MCA Student'}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {userProfile.email || '230032010001@abes.ac.in'}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAuthModalOpen(true);
+                  }}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: '10px',
+                    background: 'rgba(239, 68, 68, 0.12)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    color: 'var(--danger)',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    flexShrink: 0
+                  }}
+                  title="Manage Profile / Logout"
+                >
+                  <LogOut size={13} />
+                  <span>Profile</span>
+                </button>
+              </div>
+            )}
+
             <div className="mobile-nav-list">
 
               {(!userRole || userRole === 'student') && (
