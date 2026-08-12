@@ -9,7 +9,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
   const [stage, setStage] = useState('splash'); // 'splash' | 'onboarding' | 'auth'
 
   useEffect(() => {
-    // 1.5 second Splash screen auto-advance to Onboarding
+    // 1.4 second Splash screen auto-advance to Onboarding
     const timer = setTimeout(() => {
       setStage('onboarding');
     }, 1400);
@@ -37,7 +37,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           .splash-screen-wrapper {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 40%, #1e1b4b 0%, #0f172a 70%, #050814 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f1f5f9 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -45,18 +45,18 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           }
           .splash-card {
             text-align: center;
-            color: #fff;
+            color: #0f172a;
           }
           .splash-logo-box {
             width: 84px;
             height: 84px;
             border-radius: 24px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.45);
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.35);
           }
           .bell-glow-animation {
             color: #fff;
@@ -74,21 +74,19 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
             font-weight: 900;
             letter-spacing: 0.08em;
             margin: 0;
-            background: linear-gradient(135deg, #ffffff, #c7d2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #0f172a;
           }
           .splash-subtitle {
             margin: 6px 0 24px 0;
             font-size: 0.82rem;
             font-weight: 700;
-            color: #94a3b8;
+            color: #64748b;
             letter-spacing: 0.15em;
           }
           .splash-loader-bar {
             width: 140px;
             height: 4px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(79, 70, 229, 0.15);
             border-radius: 99px;
             margin: 0 auto;
             overflow: hidden;
@@ -96,7 +94,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           .splash-loader-progress {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, #6366f1, #a855f7);
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
             border-radius: 99px;
             animation: fillProgress 1.4s ease-in-out forwards;
           }
@@ -144,21 +142,21 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            color: #fff;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            color: #0f172a;
             padding: 8px 16px;
             border-radius: 99px;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
           }
           .onboarding-back-floating-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: #f1f5f9;
             transform: translateX(-3px);
+            border-color: #94a3b8;
           }
         `}</style>
       </div>
@@ -170,7 +168,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
       <div className="ambient-glow orb-1"></div>
       <div className="ambient-glow orb-2"></div>
 
-      <div className="onboarding-main-container glass animate-fade-in">
+      <div className="onboarding-main-container animate-fade-in">
         <div className="onboarding-card animate-scale-in">
           {/* Top Visual Hero Banner */}
           <div className="onboarding-hero-banner">
@@ -215,15 +213,15 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           padding: 0;
           border-radius: 28px;
           overflow: hidden;
-          background: rgba(15, 23, 42, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 20px 50px rgba(79, 70, 229, 0.12);
           position: relative;
           z-index: 10;
         }
         .onboarding-hero-banner {
           height: 240px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 60%, #c026d3 100%);
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
           padding: 24px;
           display: flex;
           flex-direction: column;
@@ -237,7 +235,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           position: absolute;
           top: 16px;
           left: 16px;
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.25);
           backdrop-filter: blur(8px);
           padding: 4px 12px;
           border-radius: 99px;
@@ -246,17 +244,18 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           display: flex;
           align-items: center;
           gap: 6px;
+          color: #fff;
         }
         .hero-floating-icon {
           width: 80px;
           height: 80px;
           border-radius: 24px;
-          background: rgba(255, 255, 255, 0.25);
+          background: rgba(255, 255, 255, 0.22);
           backdrop-filter: blur(10px);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
           animation: floatHero 4s ease-in-out infinite alternate;
         }
         @keyframes floatHero {
@@ -271,25 +270,27 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           justify-content: center;
         }
         .pill {
-          background: rgba(0, 0, 0, 0.25);
+          background: rgba(255, 255, 255, 0.2);
           backdrop-filter: blur(6px);
           padding: 4px 10px;
           border-radius: 99px;
           font-size: 0.72rem;
           font-weight: 700;
+          color: #fff;
         }
         .onboarding-body {
           padding: 28px 24px 32px 24px;
+          background: #ffffff;
         }
         .onboarding-title {
           font-size: 1.4rem;
           font-weight: 900;
-          color: #fff;
+          color: #0f172a;
           margin: 0 0 10px 0;
         }
         .onboarding-desc {
           font-size: 0.88rem;
-          color: #94a3b8;
+          color: #64748b;
           line-height: 1.5;
           margin: 0 0 24px 0;
         }
@@ -303,8 +304,8 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           align-items: center;
           justify-content: center;
           gap: 10px;
-          background: linear-gradient(135deg, #6366f1, #a855f7);
-          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+          background: linear-gradient(135deg, #4f46e5, #7c3aed);
+          box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
         }
       `}</style>
     </div>
