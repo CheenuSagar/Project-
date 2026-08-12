@@ -14,13 +14,21 @@ import FeedbackModal from './components/FeedbackModal';
 import AdminPasswordModal from './components/AdminPasswordModal';
 import RoleSelectionModal from './components/RoleSelectionModal';
 import TermsModal from './components/TermsModal';
-import { MessageSquare } from 'lucide-react';
+import AuthModal from './components/AuthModal';
+import RoomSelectModal from './components/RoomSelectModal';
+import { MessageSquare, MapPin, User, LogOut } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
   loadAcademicCalendar, saveAcademicCalendar, loadHolidayNotice, saveHolidayNotice, isTodayHoliday,
   DEFAULT_TIMETABLE_A, DEFAULT_TIMETABLE_B, DEFAULT_TIMETABLE_C 
 } from './utils/storageHelper';
 import { requestLocalNotificationPermission, rescheduleLectureReminders } from './utils/localNotificationScheduler';
+import { 
+  subscribeToRemoteTimetable, saveRemoteTimetable, 
+  subscribeToRemoteHolidayNotice, saveRemoteHolidayNotice, 
+  subscribeToRemoteAcademicEvents, saveRemoteAcademicEvents, 
+  logoutFirebaseUser, updateUserRoomNumber 
+} from './utils/firebase';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -103,7 +111,7 @@ export default function App() {
     }
   });
 
-  // Mobile menu, Weekly Quick Popup, Header Theme Dropdown & Terms state
+  // Mobile menu, Weekly Quick Popup, Header Theme Dropdown, Terms & Room states
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWeeklyPopupOpen, setIsWeeklyPopupOpen] = useState(false);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
@@ -116,6 +124,25 @@ export default function App() {
   });
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
+  // Classroom Room Selection & Firebase Auth State
+  const [selectedRoom, setSelectedRoom] = useState(() => {
+    try {
+      return localStorage.getItem('lecalert_selected_room') || 'AB-207';
+    } catch (e) {
+      return 'AB-207';
+    }
+  });
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState(() => {
+    try {
+      const raw = localStorage.getItem('lecalert_user_profile');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   // Apply theme to document root
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -123,6 +150,39 @@ export default function App() {
       localStorage.setItem('lecalert_theme', theme);
     } catch (e) {}
   }, [theme]);
+
+  // Real-time Firestore Database Listeners
+  useEffect(() => {
+    // 1. Master Timetable Listener
+    const unsubTimetable = subscribeToRemoteTimetable((remoteData) => {
+      if (Array.isArray(remoteData) && remoteData.length > 0) {
+        setTimetable(remoteData);
+        saveTimetable(remoteData);
+      }
+    });
+
+    // 2. Holiday Notice Listener
+    const unsubHoliday = subscribeToRemoteHolidayNotice((remoteNotice) => {
+      if (remoteNotice) {
+        setHolidayNotice(remoteNotice);
+        saveHolidayNotice(remoteNotice);
+      }
+    });
+
+    // 3. Academic Calendar Listener
+    const unsubCalendar = subscribeToRemoteAcademicEvents((remoteEvents) => {
+      if (Array.isArray(remoteEvents) && remoteEvents.length > 0) {
+        setAcademicEvents(remoteEvents);
+        saveAcademicCalendar(remoteEvents);
+      }
+    });
+
+    return () => {
+      unsubTimetable();
+      unsubHoliday();
+      unsubCalendar();
+    };
+  }, []);
 
   // Share link import modal state
   const [sharedClasses, setSharedClasses] = useState(null);
@@ -313,10 +373,11 @@ export default function App() {
     rescheduleLectureReminders(timetable, settings.preTime, holidayNotice);
   }, [timetable, settings.preTime, holidayNotice]);
 
-  // Save changes helper
+  // Save changes helper with remote Firestore Sync
   const handleSaveTimetable = (newTable) => {
     setTimetable(newTable);
     saveTimetable(newTable);
+    saveRemoteTimetable(newTable);
   };
 
   const handleSaveSettings = (newSettings) => {
@@ -327,6 +388,7 @@ export default function App() {
   const handleSaveAcademicEvents = (newEvents) => {
     setAcademicEvents(newEvents);
     saveAcademicCalendar(newEvents);
+    saveRemoteAcademicEvents(newEvents);
   };
 
   // Admin Verification Helper (SHA-256 Encrypted Mastermind & Admin Hashes)
@@ -508,14 +570,27 @@ export default function App() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
-          {/* Switch Role Button */}
+          {/* Room Number Selector Pill for Students */}
+          {(!userRole || userRole === 'student') && (
+            <button 
+              className="role-switch-header-btn" 
+              style={{ background: 'rgba(99, 102, 241, 0.12)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
+              onClick={() => setIsRoomModalOpen(true)}
+              title="Change Classroom Room Number"
+            >
+              <MapPin size={16} />
+              <span>Room: {selectedRoom || 'AB-207'}</span>
+            </button>
+          )}
+
+          {/* User Auth / Profile Button */}
           <button 
             className="role-switch-header-btn"
-            onClick={() => setIsRoleModalOpen(true)}
-            title="Switch User Role (Student / Teacher)"
+            onClick={() => setIsAuthModalOpen(true)}
+            title="User Account & Login"
           >
-            <UserCog size={16} />
-            <span>{userRole === 'teacher' ? 'Teacher Mode' : 'Student Mode'}</span>
+            <User size={16} />
+            <span>{userProfile?.displayName || (userRole === 'teacher' ? 'Faculty Login' : 'Login / Signup')}</span>
           </button>
 
           {/* Quick Theme Picker Pill */}
@@ -728,6 +803,8 @@ export default function App() {
             onLoadPreset={handleLoadSectionPreset}
             selectedSection={selectedSection}
             holidayNotice={holidayNotice}
+            selectedRoom={selectedRoom}
+            onOpenRoomModal={() => setIsRoomModalOpen(true)}
           />
         )}
 
@@ -911,6 +988,77 @@ export default function App() {
         onSelectRole={handleSelectRole}
         currentRole={userRole}
         allowClose={!!userRole}
+      />
+
+      {/* Full Authentication Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={(profile) => {
+          setUserProfile(profile);
+          setUserRole(profile.role);
+          try {
+            localStorage.setItem('lecalert_user_role', profile.role);
+            localStorage.setItem('lecalert_user_profile', JSON.stringify(profile));
+          } catch (e) {}
+          setIsAuthModalOpen(false);
+
+          if (profile.role === 'student') {
+            setActiveTab('student');
+            if (profile.roomNumber) {
+              const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
+              const fullRoom = `AB-${rNum}`;
+              setSelectedRoom(fullRoom);
+              try {
+                localStorage.setItem('lecalert_selected_room', fullRoom);
+              } catch (e) {}
+              if (rNum === '207') handleSelectSection('A');
+              else if (rNum === '208') handleSelectSection('B');
+              else if (rNum === '209') handleSelectSection('C');
+            } else {
+              setIsRoomModalOpen(true);
+            }
+          } else if (profile.role === 'teacher') {
+            setActiveTab('teacher');
+          } else if (profile.role === 'admin') {
+            setIsAdmin(true);
+            try {
+              localStorage.setItem('lecalert_is_admin', 'true');
+            } catch (e) {}
+            setActiveTab('admin');
+          }
+        }}
+        allowClose={true}
+      />
+
+      {/* Classroom Room Selector Modal */}
+      <RoomSelectModal 
+        isOpen={isRoomModalOpen}
+        onClose={() => setIsRoomModalOpen(false)}
+        currentRoom={selectedRoom}
+        onSelectRoom={(roomNum) => {
+          const rNum = roomNum.replace(/[^0-9]/g, '');
+          const fullRoom = `AB-${rNum}`;
+          setSelectedRoom(fullRoom);
+          try {
+            localStorage.setItem('lecalert_selected_room', fullRoom);
+          } catch (e) {}
+
+          // Map Room Number to Section Automatically
+          if (rNum === '207') {
+            handleSelectSection('A');
+          } else if (rNum === '208') {
+            handleSelectSection('B');
+          } else if (rNum === '209') {
+            handleSelectSection('C');
+          }
+
+          if (userProfile?.uid) {
+            updateUserRoomNumber(userProfile.uid, fullRoom);
+          }
+          setIsRoomModalOpen(false);
+        }}
+        allowClose={true}
       />
 
       {/* Terms of Service & User Agreement Modal */}

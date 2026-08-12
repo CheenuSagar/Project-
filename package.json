@@ -16,6 +16,7 @@
     "@capacitor/browser": "^8.0.4",
     "@capacitor/core": "^8.0.0",
     "@capacitor/local-notifications": "^8.0.0",
+    "firebase": "^12.17.1",
     "lucide-react": "^1.25.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

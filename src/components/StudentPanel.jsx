@@ -8,7 +8,9 @@ export default function StudentPanel({
   onEditClick,
   onLoadPreset,
   selectedSection,
-  holidayNotice
+  holidayNotice,
+  selectedRoom,
+  onOpenRoomModal
 }) {
   return (
     <div className="student-portal animate-fade-in">
@@ -20,6 +22,8 @@ export default function StudentPanel({
         onLoadPreset={onLoadPreset}
         selectedSection={selectedSection}
         holidayNotice={holidayNotice}
+        selectedRoom={selectedRoom}
+        onOpenRoomModal={onOpenRoomModal}
       />
     </div>
   );

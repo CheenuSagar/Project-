@@ -9,7 +9,10 @@ function timeToMinutes(timeStr) {
   return h * 60 + m;
 }
 
-export default function Dashboard({ timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice }) {
+export default function Dashboard({ 
+  timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice, 
+  selectedRoom = 'AB-207', onOpenRoomModal 
+}) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showHolidayScheduleReference, setShowHolidayScheduleReference] = useState(false);
 
@@ -236,6 +239,19 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div className="stat-card glass" style={{ cursor: 'pointer' }} onClick={onOpenRoomModal}>
+            <div className="stat-icon-bg bg-primary-glow">
+              <MapPin size={18} className="text-primary" />
+            </div>
+            <div className="stat-details">
+              <span className="stat-label">Classroom Room</span>
+              <span className="stat-value" style={{ color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {selectedRoom || 'AB-207'}
+                <span style={{ fontSize: '0.75rem', fontWeight: 500, opacity: 0.7, textDecoration: 'underline' }}>(Change)</span>
+              </span>
             </div>
           </div>
         </div>
@@ -614,8 +630,8 @@ export default function Dashboard({ timetable, settings, onAddClick, onEditClick
 
         .stats-row {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
+          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+          gap: 14px;
         }
         .stat-card {
           padding: 16px 20px;
