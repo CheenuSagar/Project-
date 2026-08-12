@@ -1,5 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
+/* Full-Screen Animated Auth Landing Page */
+.fullscreen-auth-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #0f172a 70%, #050814 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  overflow: hidden;
+}
+
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: pulseOrb 6s ease-in-out infinite alternate;
+}
+.orb-1 {
+  width: 380px;
+  height: 380px;
+  background: #6366f1;
+  top: 10%;
+  left: 15%;
+}
+.orb-2 {
+  width: 420px;
+  height: 420px;
+  background: #a855f7;
+  bottom: 10%;
+  right: 15%;
+  animation-delay: -3s;
+}
+
+@keyframes pulseOrb {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.4; }
+  100% { transform: scale(1.25) translate(30px, -20px); opacity: 0.65; }
+}
+
 :root {
   /* Color Palette - Default Light White Theme */
   --bg-base: #f1f5f9;
