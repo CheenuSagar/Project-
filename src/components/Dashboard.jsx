@@ -255,19 +255,6 @@ export default function Dashboard({
               </div>
             </div>
           </div>
-
-          <div className="stat-card glass" style={{ cursor: 'pointer' }} onClick={() => setIsAttendanceModalOpen(true)}>
-            <div className="stat-icon-bg bg-primary-glow">
-              <Award size={18} className="text-primary" />
-            </div>
-            <div className="stat-details">
-              <span className="stat-label">Official Attendance</span>
-              <span className="stat-value" style={{ color: 'var(--success)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                85.0% 🟢
-                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline' }}>(View Breakdown)</span>
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Replacement Teacher Alert Banner for Students */}
