@@ -96,6 +96,8 @@ export default function App() {
   const pendingAdminCallbackRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(() => {
     try {
+      const savedRole = localStorage.getItem('lecalert_user_role');
+      if (savedRole === 'student') return false;
       return localStorage.getItem('lecalert_is_admin') === 'true';
     } catch (e) {
       return false;
@@ -257,6 +259,13 @@ export default function App() {
   const handleSelectRole = (role) => {
     setUserRole(role);
     setIsRoleModalOpen(false);
+    try {
+      localStorage.setItem('lecalert_user_role', role);
+      if (role === 'student') {
+        localStorage.setItem('lecalert_is_admin', 'false');
+        setIsAdmin(false);
+      }
+    } catch (e) {}
     if (role === 'teacher') {
       setActiveTab('teacher');
     } else {
