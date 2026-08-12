@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Award, BookOpen, CheckCircle2, AlertTriangle, ShieldCheck, 
-  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw, Sliders, Target 
+  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw, Sliders, Target, Info 
 } from 'lucide-react';
 import { subscribeToOfficialAttendanceRecords } from '../utils/firebase';
 
 export default function StudentAttendancePortal({ userProfile, selectedSection = 'A' }) {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [targetSliderVal, setTargetSliderVal] = useState(85);
+  const [targetSliderVal, setTargetSliderVal] = useState(75);
 
   const studentEmail = userProfile?.email || '230032010001@abes.ac.in';
   const studentName = userProfile?.displayName || 'MCA Student';
@@ -44,26 +44,14 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
     }
   });
 
-  // Fallback demo data if no records exist yet in Firestore
   const hasRecords = totalClasses > 0;
   
-  const displayTotalClasses = hasRecords ? totalClasses : 48;
-  const displayTotalAttended = hasRecords ? totalAttended : 41;
-  const rawPercent = (displayTotalAttended / displayTotalClasses) * 100;
+  // Clean Zero Baseline when no official attendance records exist yet
+  const displayTotalClasses = hasRecords ? totalClasses : 0;
+  const displayTotalAttended = hasRecords ? totalAttended : 0;
+  const rawPercent = displayTotalClasses > 0 ? (displayTotalAttended / displayTotalClasses) * 100 : 0.0;
   const overallPercent = parseFloat(rawPercent.toFixed(1));
-  const isEligible = overallPercent >= 75.0;
-
-  // Default 75% Bunk & Shortage Margin
-  let maxBunksAvailable75 = 0;
-  let requiredClassesTo75 = 0;
-
-  if (isEligible) {
-    maxBunksAvailable75 = Math.floor((displayTotalAttended - 0.75 * displayTotalClasses) / 0.75);
-    if (maxBunksAvailable75 < 0) maxBunksAvailable75 = 0;
-  } else {
-    requiredClassesTo75 = Math.ceil((0.75 * displayTotalClasses - displayTotalAttended) / 0.25);
-    if (requiredClassesTo75 < 0) requiredClassesTo75 = 0;
-  }
+  const isEligible = hasRecords ? overallPercent >= 75.0 : true; // Default neutral
 
   // Exact Mathematical Target Simulator Calculations
   const targetFrac = targetSliderVal / 100;
@@ -71,7 +59,11 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
   let targetBunksAllowed = 0;
   let simulatedFinalPercent = 0;
 
-  if (targetSliderVal > overallPercent) {
+  if (displayTotalClasses === 0) {
+    // Starting fresh semester from 0
+    targetClassesNeeded = Math.ceil(targetFrac * 10); // e.g. attend 8 out of 10 lectures for 80%
+    simulatedFinalPercent = targetSliderVal;
+  } else if (targetSliderVal > overallPercent) {
     // Need more attended classes to reach targetSliderVal%
     if (targetFrac < 1) {
       targetClassesNeeded = Math.ceil((targetFrac * displayTotalClasses - displayTotalAttended) / (1 - targetFrac));
@@ -91,21 +83,24 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
 
     // Exact Simulated Outcome
     const simConducted = displayTotalClasses + targetBunksAllowed;
-    simulatedFinalPercent = parseFloat(((displayTotalAttended / simConducted) * 100).toFixed(1));
+    simulatedFinalPercent = simConducted > 0 ? parseFloat(((displayTotalAttended / simConducted) * 100).toFixed(1)) : 0;
   }
 
-  // Demo subjects fallback
+  // Official MCA Subjects List (Zero baseline when no records exist yet)
   const displaySubjects = hasRecords ? Object.keys(subjectStats).map(name => ({
     name,
     attended: subjectStats[name].attended,
     total: subjectStats[name].total,
     percent: parseFloat(((subjectStats[name].attended / subjectStats[name].total) * 100).toFixed(1))
   })) : [
-    { name: 'DAA - Design & Analysis of Algorithms', attended: 12, total: 14, percent: 85.7 },
-    { name: 'OS - Operating Systems', attended: 11, total: 13, percent: 84.6 },
-    { name: 'DBMS - Database Management Systems', attended: 9, total: 11, percent: 81.8 },
-    { name: 'CN - Computer Networks', attended: 6, total: 7, percent: 85.7 },
-    { name: 'Web Technology & Python Lab', attended: 3, total: 3, percent: 100.0 }
+    { name: 'DAA - Design & Analysis of Algorithm (25CA301)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Agile S/w Dev & Testing (25CA302)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Computer Networks (25CA303)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Elective-I: AML (25CA304-E1) / Cloud-II (E2)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Elective-II: Data Analytics (25DE002) / Cyber Security (25DE003)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'DAA Lab (25CA351)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Full Stack Lab (25VC352)', attended: 0, total: 0, percent: 0.0 },
+    { name: 'Mini Project (25CA353)', attended: 0, total: 0, percent: 0.0 }
   ];
 
   return (
@@ -145,36 +140,53 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
       {/* Main Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
         {/* Card 1: Overall Percentage */}
-        <div className="glass card-hover-effect" style={{ padding: '24px', borderRadius: '24px', border: `2px solid ${isEligible ? 'var(--success)' : 'var(--danger)'}`, position: 'relative', overflow: 'hidden' }}>
+        <div className="glass card-hover-effect" style={{ padding: '24px', borderRadius: '24px', border: '2px solid var(--primary)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Overall Semester Score
               </span>
-              <h2 style={{ margin: '6px 0 0 0', fontSize: '2.4rem', fontWeight: 900, color: isEligible ? 'var(--success)' : 'var(--danger)' }}>
+              <h2 style={{ margin: '6px 0 0 0', fontSize: '2.4rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                 {overallPercent}%
               </h2>
             </div>
-            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: isEligible ? 'var(--success-glow)' : 'rgba(239, 68, 68, 0.15)', color: isEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Percent size={24} />
             </div>
           </div>
 
           {/* Progress Bar */}
           <div style={{ width: '100%', height: '8px', background: 'var(--border-light)', borderRadius: '99px', overflow: 'hidden', marginBottom: '12px' }}>
-            <div style={{ width: `${Math.min(overallPercent, 100)}%`, height: '100%', background: isEligible ? 'var(--success-gradient)' : 'var(--danger)', borderRadius: '99px', transition: 'width 0.8s ease-in-out' }}></div>
+            <div style={{ width: `${Math.min(overallPercent, 100)}%`, height: '100%', background: 'var(--primary-gradient)', borderRadius: '99px', transition: 'width 0.8s ease-in-out' }}></div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
             <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>
               Attended: <strong>{displayTotalAttended} / {displayTotalClasses}</strong> Lectures
             </span>
-            <span style={{ padding: '3px 10px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, background: isEligible ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)', color: isEligible ? 'var(--success)' : 'var(--danger)' }}>
-              {isEligible ? 'Eligible 🟢' : 'Shortage 🔴'}
+            <span style={{ padding: '3px 10px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, background: 'rgba(79, 70, 229, 0.12)', color: 'var(--primary)' }}>
+              {hasRecords ? (isEligible ? 'Eligible 🟢' : 'Shortage 🔴') : 'Fresh Semester (0 Record)'}
             </span>
           </div>
         </div>
       </div>
+
+      {/* No Attendance Record Notice Banner */}
+      {!hasRecords && (
+        <div className="glass" style={{ padding: '16px 20px', borderRadius: '18px', border: '1px solid var(--border-light)', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(79, 70, 229, 0.08))', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Info size={20} />
+          </div>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              No Official Attendance Marked Yet
+            </h4>
+            <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              Once your subject professors mark official attendance for Section {selectedSection}, your live attendance score & subject breakdown will update automatically.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Target Percentage Slider Calculator Card */}
       <div className="glass" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(6, 182, 212, 0.06))' }}>
@@ -232,19 +244,21 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           />
         </div>
 
-        {/* Dynamic Calculator Result Output Card with Exact Mathematical Proof */}
-        <div style={{ background: targetSliderVal > overallPercent ? 'rgba(79, 70, 229, 0.12)' : 'rgba(16, 185, 129, 0.12)', border: `1.5px solid ${targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)'}`, borderRadius: '18px', padding: '20px 22px' }}>
+        {/* Dynamic Calculator Result Output Card */}
+        <div style={{ background: 'rgba(79, 70, 229, 0.12)', border: '1.5px solid var(--primary)', borderRadius: '18px', padding: '20px 22px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
             <div>
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Mathematical Simulation for {targetSliderVal}% Goal:
               </div>
               <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>
-                {targetSliderVal > overallPercent ? (
+                {displayTotalClasses === 0 ? (
+                  <span>👉 To reach {targetSliderVal}%, attend <strong style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{targetClassesNeeded}</strong> out of every 10 upcoming lectures!</span>
+                ) : (targetSliderVal > overallPercent ? (
                   <span>👉 You must attend the next <strong style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{targetClassesNeeded}</strong> consecutive lectures to reach {targetSliderVal}%!</span>
                 ) : (
                   <span>🎉 You can bunk up to <strong style={{ color: 'var(--success)', fontSize: '1.4rem' }}>{targetBunksAllowed}</strong> lectures & still stay above {targetSliderVal}%!</span>
-                )}
+                ))}
               </div>
             </div>
 
@@ -252,11 +266,11 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>
                 SIMULATED OUTCOME
               </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 900, color: targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)' }}>
-                New Score: {simulatedFinalPercent}%
+              <div style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--primary)' }}>
+                Target: {simulatedFinalPercent}%
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                {targetSliderVal > overallPercent ? `${displayTotalAttended + targetClassesNeeded} / ${displayTotalClasses + targetClassesNeeded} Lectures` : `${displayTotalAttended} / ${displayTotalClasses + targetBunksAllowed} Lectures`}
+                {displayTotalClasses === 0 ? 'Starting Fresh Semester' : `${displayTotalAttended + targetClassesNeeded} / ${displayTotalClasses + targetClassesNeeded} Lectures`}
               </div>
             </div>
           </div>
@@ -272,21 +286,14 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               Subject-Wise Attendance Breakdown
             </h3>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-              Individual course score & status for MCA 3rd Sem.
+              Individual course score & status for MCA 3rd Sem (Section {selectedSection}).
             </p>
           </div>
-          {!hasRecords && (
-            <span className="preset-chip active" style={{ fontSize: '0.75rem' }}>
-              Sample View (Live Records Syncing)
-            </span>
-          )}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {displaySubjects.map((sub, idx) => {
-            const subEligible = sub.percent >= 75.0;
-            const subMaxBunks = subEligible ? Math.floor((sub.attended - 0.75 * sub.total) / 0.75) : 0;
-            const subReqClasses = !subEligible ? Math.ceil((0.75 * sub.total - sub.attended) / 0.25) : 0;
+            const subEligible = sub.total > 0 ? sub.percent >= 75.0 : true;
 
             return (
               <div 
@@ -299,10 +306,10 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
                     {sub.name}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    <span>Attended: <strong>{sub.attended} / {sub.total}</strong></span>
+                    <span>Attended: <strong>{sub.attended} / {sub.total}</strong> Lectures</span>
                     <span>•</span>
-                    <span style={{ color: subEligible ? 'var(--success)' : 'var(--danger)', fontWeight: 700 }}>
-                      {subEligible ? `Safe (${subMaxBunks} Bunks Left)` : `Shortage (Need +${subReqClasses} Classes)`}
+                    <span style={{ color: sub.total > 0 ? (subEligible ? 'var(--success)' : 'var(--danger)') : 'var(--text-muted)', fontWeight: 700 }}>
+                      {sub.total > 0 ? (subEligible ? 'Safe' : 'Shortage') : 'No Attendance Marked Yet'}
                     </span>
                   </div>
                 </div>
@@ -310,16 +317,16 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   {/* Subject Progress Bar */}
                   <div style={{ width: '120px', textAlign: 'right' }}>
-                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: subEligible ? 'var(--success)' : 'var(--danger)' }}>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: sub.total > 0 ? (subEligible ? 'var(--success)' : 'var(--danger)') : 'var(--text-muted)' }}>
                       {sub.percent}%
                     </div>
                     <div style={{ width: '100%', height: '6px', background: 'var(--border-light)', borderRadius: '99px', overflow: 'hidden', marginTop: '4px' }}>
-                      <div style={{ width: `${Math.min(sub.percent, 100)}%`, height: '100%', background: subEligible ? 'var(--success-gradient)' : 'var(--danger)', borderRadius: '99px' }}></div>
+                      <div style={{ width: `${Math.min(sub.percent, 100)}%`, height: '100%', background: sub.total > 0 ? (subEligible ? 'var(--success-gradient)' : 'var(--danger)') : 'var(--border-light)', borderRadius: '99px' }}></div>
                     </div>
                   </div>
 
-                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: subEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {subEligible ? <CheckCircle2 size={20} /> : <AlertTriangle size={20} />}
+                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: sub.total > 0 ? (subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)') : 'rgba(255, 255, 255, 0.05)', color: sub.total > 0 ? (subEligible ? 'var(--success)' : 'var(--danger)') : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CheckCircle2 size={20} />
                   </div>
                 </div>
               </div>
