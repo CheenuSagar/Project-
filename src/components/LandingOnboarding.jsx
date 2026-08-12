@@ -142,18 +142,6 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
 
         {/* Right Auth Form Panel */}
         <div className="web-auth-right-panel">
-          {stage === 'auth' && (
-            <button 
-              type="button"
-              className="onboarding-back-floating-btn"
-              onClick={() => setStage('onboarding')}
-              title="Back to Welcome Page"
-            >
-              <ChevronLeft size={16} />
-              <span>Back to Welcome</span>
-            </button>
-          )}
-
           <div className="web-auth-form-wrapper">
             {stage === 'onboarding' ? (
               <div className="onboarding-web-card animate-scale-in">
