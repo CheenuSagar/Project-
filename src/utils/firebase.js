@@ -1,11 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, doc, onSnapshot, setDoc, getDoc, collection, 
-  addDoc, query, where, getDocs, updateDoc 
+  addDoc, query, where, getDocs, updateDoc, deleteDoc 
 } from 'firebase/firestore';
 import { 
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-  signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup 
+  signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, deleteUser 
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -351,5 +351,30 @@ export async function logoutFirebaseUser() {
   } catch (e) {
     console.error('Logout error:', e);
     return false;
+  }
+}
+
+/**
+ * Play Store Data Safety Compliant: Delete User Account & Firestore Profile Data
+ */
+export async function deleteFirebaseAccount() {
+  try {
+    const user = auth.currentUser;
+    if (!user) return { success: false, message: 'No active user session found.' };
+
+    // 1. Delete user profile doc from Firestore
+    const userDocRef = doc(db, 'users', user.uid);
+    try {
+      await deleteDoc(userDocRef);
+    } catch (e) {
+      console.warn('User doc delete warning:', e);
+    }
+
+    // 2. Delete Auth Account from Firebase Auth
+    await deleteUser(user);
+    return { success: true };
+  } catch (error) {
+    console.error('Account deletion error:', error);
+    return { success: false, message: error.message };
   }
 }

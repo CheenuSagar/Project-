@@ -1028,6 +1028,16 @@ export default function App() {
       <AuthModal 
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        userProfile={userProfile}
+        onLogoutSuccess={() => {
+          setUserProfile(null);
+          setUserRole('student');
+          setIsAdmin(false);
+          try {
+            localStorage.removeItem('lecalert_user_profile');
+            localStorage.setItem('lecalert_user_role', 'student');
+          } catch (e) {}
+        }}
         onAuthSuccess={(profile) => {
           setUserProfile(profile);
           setUserRole(profile.role || 'student');

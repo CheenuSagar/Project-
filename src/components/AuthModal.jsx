@@ -3,9 +3,10 @@ import {
   GraduationCap, UserCheck, Shield, Key, Mail, Lock, User, 
   ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle 
 } from 'lucide-react';
-import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase } from '../utils/firebase';
+import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser } from '../utils/firebase';
 
-export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose = true, initialTab = 'student' }) {
+export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSuccess, userProfile, allowClose = true, initialTab = 'student' }) {
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'teacher' | 'admin'
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -160,7 +161,87 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
           </button>
         )}
 
-        {/* Modal Header */}
+        {/* Logged In User Profile & Play Store Compliant Delete Account */}
+        {userProfile ? (
+          <div style={{ padding: '10px 0' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.8rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', boxShadow: '0 8px 24px rgba(99, 102, 241, 0.35)' }}>
+                {userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : '👤'}
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {userProfile.displayName || 'Logged In User'}
+              </h3>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                {userProfile.email} • <span style={{ textTransform: 'capitalize', fontWeight: 700, color: 'var(--primary)' }}>{userProfile.role || 'Student'}</span>
+              </p>
+              {userProfile.rollNumber && (
+                <span className="preset-chip active" style={{ marginTop: '8px', display: 'inline-block', fontSize: '0.78rem' }}>
+                  Roll No: {userProfile.rollNumber}
+                </span>
+              )}
+            </div>
+
+            {/* Logout & Delete Account Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderTop: '1px solid var(--border-light)', paddingTop: '18px' }}>
+              <button 
+                className="btn btn-secondary" 
+                style={{ width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 700 }}
+                onClick={async () => {
+                  await logoutFirebaseUser();
+                  if (onLogoutSuccess) onLogoutSuccess();
+                  onClose();
+                }}
+              >
+                Sign Out / Logout 🚪
+              </button>
+
+              {!showConfirmDelete ? (
+                <button 
+                  type="button"
+                  className="btn"
+                  style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid var(--danger)', color: 'var(--danger)', fontWeight: 800 }}
+                  onClick={() => setShowConfirmDelete(true)}
+                >
+                  Delete Account & Data 🗑️
+                </button>
+              ) : (
+                <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid var(--danger)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.82rem', color: 'var(--text-primary)', fontWeight: 700 }}>
+                    Are you sure? This will permanently delete your account and profile data (Play Store Compliant).
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      className="btn btn-secondary btn-sm" 
+                      style={{ flex: 1 }} 
+                      onClick={() => setShowConfirmDelete(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="btn btn-danger btn-sm" 
+                      style={{ flex: 1, background: 'var(--danger)', color: '#fff', fontWeight: 800 }}
+                      onClick={async () => {
+                        setLoading(true);
+                        const res = await deleteFirebaseAccount();
+                        setLoading(false);
+                        if (res.success) {
+                          if (onLogoutSuccess) onLogoutSuccess();
+                          onClose();
+                        } else {
+                          setErrorMsg(res.message || 'Delete failed.');
+                        }
+                      }}
+                    >
+                      Permanently Delete 🗑️
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Modal Header */}
         <div className="auth-modal-header">
           <div className="auth-badge-pill">
             <Sparkles size={14} className="sparkle-icon" />
@@ -396,7 +477,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
             </button>
           )}
         </div>
-      </div>
+      </>
+    )}
+  </div>
 
       <style>{`
         .auth-modal-overlay {
