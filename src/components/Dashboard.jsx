@@ -180,8 +180,8 @@ export default function Dashboard({
               <Calendar size={14} />
               <span className="date-badge">{formattedDate}</span>
             </div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)', marginTop: '4px' }}>
-              Welcome back, {userProfile?.displayName || 'MCA Student'} 👋
+            <div style={{ fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary)', marginTop: '4px' }}>
+              Welcome back, {userProfile?.displayName || (userProfile?.email ? userProfile.email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'MCA Student')} 👋
             </div>
             <h1 className="clock-time">{formattedTime}</h1>
           </div>
