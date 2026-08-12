@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, UserCheck, Shield, Key, Mail, Lock, User, 
-  ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle 
+  ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle, ChevronLeft 
 } from 'lucide-react';
 import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser, resetFirebasePassword } from '../utils/firebase';
 
@@ -461,7 +461,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
                 />
               </div>
             </div>
-          ) : activeTab === 'teacher' && !isRegistering ? (
+          ) : (activeTab === 'teacher' || activeTab === 'mentor') && !isRegistering ? (
             <>
               <div className="auth-input-group">
                 <label className="auth-label">Faculty PIN / Email</label>
