@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw, Palmtree, AlertTriangle } from 'lucide-react';
+import { Award, Clock, Calendar, MapPin, User, ArrowRight, AlertCircle, PlusCircle, Sparkles, BookOpen, BellRing, Layers, Coffee, RefreshCw, Palmtree, AlertTriangle } from 'lucide-react';
 import { formatTimeTo12Hr, isActualLecture, getTeacherPrimarySubject, isTodayHoliday, getTodayHolidayInfo } from '../utils/storageHelper';
+import { subscribeToOfficialAttendanceRecords } from '../utils/firebase';
+import StudentAttendanceModal from './StudentAttendanceModal';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -15,6 +17,15 @@ export default function Dashboard({
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showHolidayScheduleReference, setShowHolidayScheduleReference] = useState(false);
+  const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+
+  useEffect(() => {
+    const unsub = subscribeToOfficialAttendanceRecords((records) => {
+      setAttendanceRecords(records);
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -242,6 +253,19 @@ export default function Dashboard({
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div className="stat-card glass" style={{ cursor: 'pointer' }} onClick={() => setIsAttendanceModalOpen(true)}>
+            <div className="stat-icon-bg bg-primary-glow">
+              <Award size={18} className="text-primary" />
+            </div>
+            <div className="stat-details">
+              <span className="stat-label">Official Attendance</span>
+              <span className="stat-value" style={{ color: 'var(--success)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                85.0% 🟢
+                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline' }}>(View Breakdown)</span>
+              </span>
             </div>
           </div>
         </div>
@@ -558,6 +582,15 @@ export default function Dashboard({
           </>
         )}
       </div>
+
+      {/* Student Official Attendance Breakdown Modal */}
+      <StudentAttendanceModal 
+        isOpen={isAttendanceModalOpen}
+        onClose={() => setIsAttendanceModalOpen(false)}
+        attendanceRecords={attendanceRecords}
+        studentEmail={userProfile?.email || '230032010001@abes.ac.in'}
+        studentName={userProfile?.displayName || 'MCA Student'}
+      />
 
       <style>{`
         .dashboard-grid {
