@@ -71,12 +71,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         return;
       }
 
-      if (activeTab === 'teacher' && !isRegistering) {
-        // Faculty PIN Quick Auth Check
-        if (facultyPin.trim().length >= 4) {
+      if ((activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') && !isRegistering) {
+        // Faculty PIN Quick Auth Check (e.g. 1001)
+        if (facultyPin && facultyPin.trim().length >= 4) {
           onAuthSuccess({
-            role: 'teacher',
-            displayName: displayName.trim() || 'Faculty Member',
+            role: activeTab,
+            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : 'Faculty Mentor'),
             email: `${facultyPin.trim()}@faculty.abes.ac.in`,
             facultyPin: facultyPin.trim()
           });
@@ -86,39 +86,52 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         }
       }
 
+      // Format Roll Number to email if @ is missing (e.g. 230032010001 -> 230032010001@abes.ac.in)
+      let rawInput = email.trim();
+      if (!rawInput && facultyPin) {
+        rawInput = `${facultyPin}@faculty.abes.ac.in`;
+      }
+      
+      let finalEmail = rawInput;
+      if (finalEmail && !finalEmail.includes('@')) {
+        finalEmail = `${finalEmail}@abes.ac.in`;
+      }
+
       // Standard Firebase Email/Password Auth
-      if (!email.trim() || !password.trim()) {
-        setErrorMsg('Please enter both Email and Password.');
+      if (!finalEmail || !password.trim()) {
+        setErrorMsg('Please enter both Email/Roll No. and Password.');
         setLoading(false);
         return;
       }
 
       let res;
       if (isRegistering) {
-        const nameToUse = displayName.trim() || (activeTab === 'teacher' ? 'Faculty Professor' : 'MCA Student');
-        res = await registerFirebaseUser(email.trim(), password.trim(), nameToUse, activeTab);
+        const nameToUse = displayName.trim() || (activeTab === 'student' ? 'MCA Student' : 'Faculty Member');
+        res = await registerFirebaseUser(finalEmail, password.trim(), nameToUse, activeTab);
       } else {
-        res = await loginFirebaseUser(email.trim(), password.trim());
+        res = await loginFirebaseUser(finalEmail, password.trim());
       }
 
       if (res.success) {
         onAuthSuccess({
           role: res.role || activeTab,
           displayName: res.user?.displayName || displayName || 'User',
-          email: res.user?.email || email,
+          email: res.user?.email || finalEmail,
           uid: res.user?.uid,
           roomNumber: res.roomNumber || ''
         });
         resetForm();
       } else {
-        // Friendly error messages
+        // Friendly error messages with clear action
         let msg = res.message || 'Authentication failed.';
-        if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password')) {
-          msg = 'Invalid Email or Password. If you are new, click "Create Account".';
+        if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password') || msg.includes('auth/user-not-found')) {
+          msg = 'Invalid Email or Password. If you don\'t have an account yet, click "Don\'t have an account? Sign Up" below!';
         } else if (msg.includes('auth/email-already-in-use')) {
-          msg = 'An account with this email already exists. Please log in.';
+          msg = 'An account with this email/roll number already exists. Please log in.';
         } else if (msg.includes('auth/weak-password')) {
           msg = 'Password should be at least 6 characters long.';
+        } else if (msg.includes('auth/invalid-email')) {
+          msg = 'Please enter a valid email address or official Roll Number.';
         }
         setErrorMsg(msg);
       }
