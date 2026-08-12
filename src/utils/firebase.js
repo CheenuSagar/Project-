@@ -140,6 +140,46 @@ export async function saveRemoteAcademicEvents(eventsArray) {
   }
 }
 
+export const CURRENT_APP_VERSION = '1.2.0';
+
+/**
+ * Real-time listener for Remote In-App Version Release Check
+ */
+export function subscribeToRemoteAppVersion(onData) {
+  try {
+    const docRef = doc(db, 'system', 'app_version');
+    return onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists() && docSnap.data().version) {
+        onData(docSnap.data());
+      } else {
+        onData(null);
+      }
+    }, (err) => {
+      console.warn('App version check error:', err);
+    });
+  } catch (e) {
+    return () => {};
+  }
+}
+
+/**
+ * Admin function to publish a new App Version update release
+ */
+export async function saveRemoteAppVersion(versionStr, releaseNotes = 'New features & timetable updates released!') {
+  try {
+    const docRef = doc(db, 'system', 'app_version');
+    await setDoc(docRef, {
+      version: versionStr,
+      releaseNotes,
+      updatedAt: new Date().toISOString()
+    });
+    return true;
+  } catch (e) {
+    console.error('Failed to publish app version:', e);
+    return false;
+  }
+}
+
 // ----------------------------------------------------
 // OFFICIAL ATTENDANCE & HIERARCHY HELPERS (PL & MENTOR)
 // ----------------------------------------------------

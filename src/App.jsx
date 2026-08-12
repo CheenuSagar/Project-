@@ -32,6 +32,7 @@ import {
   subscribeToRemoteTimetable, saveRemoteTimetable, 
   subscribeToRemoteHolidayNotice, saveRemoteHolidayNotice, 
   subscribeToRemoteAcademicEvents, saveRemoteAcademicEvents, 
+  subscribeToRemoteAppVersion, saveRemoteAppVersion, CURRENT_APP_VERSION,
   logoutFirebaseUser, updateUserRoomNumber 
 } from './utils/firebase';
 
@@ -153,6 +154,7 @@ export default function App() {
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [isRollModalOpen, setIsRollModalOpen] = useState(false);
   const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
+  const [remoteAppVersionNotice, setRemoteAppVersionNotice] = useState(null);
 
   // Apply theme to document root
   useEffect(() => {
@@ -196,10 +198,18 @@ export default function App() {
       }
     });
 
+    // 4. Remote App Version Release Listener
+    const unsubVersion = subscribeToRemoteAppVersion((versionData) => {
+      if (versionData && versionData.version) {
+        setRemoteAppVersionNotice(versionData);
+      }
+    });
+
     return () => {
       unsubTimetable();
       unsubHoliday();
       unsubCalendar();
+      unsubVersion();
     };
   }, []);
 
@@ -1214,6 +1224,46 @@ export default function App() {
       />
 
 
+
+      {/* Play-Store Style In-App Update Alert Modal */}
+      {remoteAppVersionNotice && remoteAppVersionNotice.version && remoteAppVersionNotice.version !== CURRENT_APP_VERSION && (
+        <div className="modal-overlay animate-fade-in" style={{ zIndex: 99999 }}>
+          <div className="modal-content glass animate-scale-in" style={{ maxWidth: '440px', padding: '28px', textAlign: 'center', borderRadius: '24px' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px', boxShadow: '0 8px 24px var(--primary-glow)' }}>
+              <Zap size={32} />
+            </div>
+            <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+              New App Update v{remoteAppVersionNotice.version} Available! 🚀
+            </h3>
+            <p style={{ margin: '8px 0 16px 0', fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              {remoteAppVersionNotice.releaseNotes || 'A new updated version with fresh timetables & features is now ready.'}
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                type="button"
+                className="btn btn-secondary btn-sm" 
+                style={{ flex: 1, borderRadius: '12px' }}
+                onClick={() => setRemoteAppVersionNotice(null)}
+              >
+                Dismiss
+              </button>
+              <button 
+                type="button"
+                className="btn btn-primary btn-sm" 
+                style={{ flex: 2, padding: '12px', borderRadius: '12px', fontWeight: 800 }}
+                onClick={() => {
+                  try {
+                    caches.keys().then(names => names.forEach(n => caches.delete(n)));
+                  } catch (e) {}
+                  window.location.reload();
+                }}
+              >
+                Update App Now ⚡
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       <AuthModal 
