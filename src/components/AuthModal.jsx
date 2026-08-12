@@ -3,13 +3,15 @@ import {
   GraduationCap, UserCheck, Shield, Key, Mail, Lock, User, 
   ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle 
 } from 'lucide-react';
-import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser } from '../utils/firebase';
+import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser, resetFirebasePassword } from '../utils/firebase';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSuccess, userProfile, allowClose = true, initialTab = 'student' }) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [authStep, setAuthStep] = useState('choice'); // 'choice' | 'credentials'
   const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'mentor' | 'pl' | 'admin'
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [resetSuccessMsg, setResetSuccessMsg] = useState('');
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -355,12 +357,84 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
 
             <div className="auth-modal-header">
               <h2 className="auth-modal-title">
-                {activeTab === 'admin' ? 'Master Admin Unlock' : (activeTab === 'mentor' ? 'Faculty Mentor Login' : (activeTab === 'pl' ? 'Program Leader Login' : (isRegistering ? 'Create Student Account' : 'Student Login')))}
+                {isForgotPasswordMode ? 'Reset Password 🔑' : (activeTab === 'admin' ? 'Master Admin Unlock' : (activeTab === 'mentor' ? 'Faculty Mentor Login' : (activeTab === 'pl' ? 'Program Leader Login' : (isRegistering ? 'Create Student Account' : 'Student Login'))))}
               </h2>
               <p className="auth-modal-subtitle">
-                Enter your credentials to access your {activeTab} portal.
+                {isForgotPasswordMode ? 'Enter your registered email to receive an official password reset link.' : `Enter your credentials to access your ${activeTab} portal.`}
               </p>
             </div>
+
+        {/* Reset Success Message */}
+        {resetSuccessMsg && (
+          <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid var(--success)', borderRadius: '12px', padding: '12px 16px', color: 'var(--success)', fontSize: '0.85rem', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Check size={18} />
+            <span>{resetSuccessMsg}</span>
+          </div>
+        )}
+
+        {/* Forgot Password Screen */}
+        {isForgotPasswordMode ? (
+          <form 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setErrorMsg('');
+              setResetSuccessMsg('');
+              if (!email) {
+                setErrorMsg('Please enter your registered email address');
+                return;
+              }
+              setLoading(true);
+              const res = await resetFirebasePassword(email);
+              setLoading(false);
+              if (res.success) {
+                setResetSuccessMsg(`Password reset email sent to ${email}! Please check your inbox or spam folder.`);
+              } else {
+                setErrorMsg(res.message || 'Failed to send password reset email. Please verify your email address.');
+              }
+            }}
+            className="auth-form-body"
+          >
+            <div className="auth-input-group">
+              <label className="auth-label">Registered Email Address</label>
+              <div className="input-with-icon">
+                <Mail size={18} className="input-icon" />
+                <input 
+                  type="email"
+                  className="form-input auth-input"
+                  placeholder="e.g. 230032010001@abes.ac.in"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="btn btn-primary auth-submit-btn"
+              disabled={loading}
+              style={{ width: '100%', padding: '14px', borderRadius: '14px', fontWeight: 800 }}
+            >
+              {loading ? 'Sending Email Link...' : 'Send Password Reset Link 📧'}
+            </button>
+
+            <button 
+              type="button" 
+              className="auth-switch-mode-btn"
+              style={{ marginTop: '12px', width: '100%', textAlign: 'center' }}
+              onClick={() => {
+                setIsForgotPasswordMode(false);
+                setErrorMsg('');
+                setResetSuccessMsg('');
+              }}
+            >
+              ← Back to Login
+            </button>
+          </form>
+        ) : (
+          /* Normal Auth Form */
+          <>
 
         {/* Form Error Banner */}
         {errorMsg && (
@@ -476,7 +550,22 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               </div>
 
               <div className="auth-input-group">
-                <label className="auth-label">Password</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className="auth-label" style={{ margin: 0 }}>Password</label>
+                  {!isRegistering && activeTab !== 'admin' && (
+                    <button 
+                      type="button" 
+                      style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                      onClick={() => {
+                        setIsForgotPasswordMode(true);
+                        setErrorMsg('');
+                        setResetSuccessMsg('');
+                      }}
+                    >
+                      Forgot Password? 🔑
+                    </button>
+                  )}
+                </div>
                 <div className="input-with-icon">
                   <Lock size={18} className="input-icon" />
                   <input 
@@ -556,7 +645,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
             </button>
           )}
         </div>
-      </div>
+      </>
+    )}
+  </div>
     )}
   </>
 )}

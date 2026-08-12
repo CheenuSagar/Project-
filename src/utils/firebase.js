@@ -5,7 +5,7 @@ import {
 } from 'firebase/firestore';
 import { 
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-  signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, deleteUser 
+  signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, deleteUser, sendPasswordResetEmail 
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -338,6 +338,19 @@ export async function saveUserRollNumber(uid, rollNumber) {
   } catch (e) {
     console.error('Error saving roll number:', e);
     return false;
+  }
+}
+
+/**
+ * Send Password Reset Email
+ */
+export async function resetFirebasePassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true };
+  } catch (error) {
+    console.error('Password reset error:', error);
+    return { success: false, message: error.message };
   }
 }
 
