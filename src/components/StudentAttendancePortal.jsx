@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Award, BookOpen, CheckCircle2, AlertTriangle, ShieldCheck, 
-  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw 
+  TrendingUp, Percent, Flame, Calendar, Clock, ArrowRight, Zap, RefreshCw, Sliders, Target 
 } from 'lucide-react';
 import { subscribeToOfficialAttendanceRecords } from '../utils/firebase';
 
 export default function StudentAttendancePortal({ userProfile, selectedSection = 'A' }) {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [targetSliderVal, setTargetSliderVal] = useState(75);
 
   const studentEmail = userProfile?.email || '230032010001@abes.ac.in';
   const studentName = userProfile?.displayName || 'MCA Student';
@@ -51,9 +52,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
   const overallPercent = parseFloat(((displayTotalAttended / displayTotalClasses) * 100).toFixed(1));
   const isEligible = overallPercent >= 75.0;
 
-  // Calculate Bunk Margin / Required Classes to reach 75%
-  // Formula for max bunks: Math.floor((attended - 0.75 * total) / 0.75)
-  // Formula for required classes: Math.ceil((0.75 * total - attended) / 0.25)
+  // Default 75% Bunk & Shortage Margin
   let maxBunksAvailable = 0;
   let requiredClassesTo75 = 0;
 
@@ -63,6 +62,23 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
   } else {
     requiredClassesTo75 = Math.ceil((0.75 * displayTotalClasses - displayTotalAttended) / 0.25);
     if (requiredClassesTo75 < 0) requiredClassesTo75 = 0;
+  }
+
+  // Dynamic Slider Calculation for Target % (targetSliderVal)
+  const targetFrac = targetSliderVal / 100;
+  let targetClassesNeeded = 0;
+  let targetBunksAllowed = 0;
+
+  if (targetSliderVal > overallPercent) {
+    if (targetFrac < 1) {
+      targetClassesNeeded = Math.ceil((targetFrac * displayTotalClasses - displayTotalAttended) / (1 - targetFrac));
+    } else {
+      targetClassesNeeded = 999;
+    }
+    if (targetClassesNeeded < 0) targetClassesNeeded = 0;
+  } else {
+    targetBunksAllowed = Math.floor((displayTotalAttended - targetFrac * displayTotalClasses) / targetFrac);
+    if (targetBunksAllowed < 0) targetBunksAllowed = 0;
   }
 
   // Demo subjects fallback
@@ -151,11 +167,11 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {isEligible ? 'Bunk Allowance Margin' : 'Required Attendance Action'}
+                {isEligible ? '75% Criteria Bunk Margin' : 'Required Attendance Action'}
               </span>
               <h3 style={{ margin: '6px 0 0 0', fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                 {isEligible ? (
-                  <span>{maxBunksAvailable} Bunk Classes Available 🏖️</span>
+                  <span>{maxBunksAvailable} Bunks Available 🏖️</span>
                 ) : (
                   <span>Attend Next {requiredClassesTo75} Classes ⚠️</span>
                 )}
@@ -173,6 +189,75 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               <span>Your attendance is below 75%. You must attend <strong>{requiredClassesTo75} consecutive lectures</strong> to restore your exam eligibility threshold!</span>
             )}
           </p>
+        </div>
+      </div>
+
+      {/* Target Percentage Slider Calculator Card */}
+      <div className="glass" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', marginBottom: '24px', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(6, 182, 212, 0.06))' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Target size={22} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                Target Percentage Simulator 🎚️
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                Drag the slider to see how many consecutive lectures you must attend (or can bunk) for any target score!
+              </p>
+            </div>
+          </div>
+
+          <div style={{ padding: '6px 16px', borderRadius: '99px', background: 'var(--primary-gradient)', color: '#fff', fontSize: '1.1rem', fontWeight: 900, boxShadow: '0 6px 18px var(--primary-glow)' }}>
+            Target: {targetSliderVal}%
+          </div>
+        </div>
+
+        {/* Interactive Slider Input */}
+        <div style={{ marginBottom: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <span>50% (Minimum)</span>
+            <span>75% (Exam Criteria)</span>
+            <span>85% (Target)</span>
+            <span>95% (Top Goal)</span>
+          </div>
+          <input 
+            type="range"
+            min="50"
+            max="95"
+            step="1"
+            value={targetSliderVal}
+            onChange={(e) => setTargetSliderVal(Number(e.target.value))}
+            style={{
+              width: '100%',
+              height: '8px',
+              borderRadius: '99px',
+              outline: 'none',
+              accentColor: 'var(--primary)',
+              cursor: 'pointer'
+            }}
+          />
+        </div>
+
+        {/* Dynamic Calculator Result Output Card */}
+        <div style={{ background: targetSliderVal > overallPercent ? 'rgba(79, 70, 229, 0.12)' : 'rgba(16, 185, 129, 0.12)', border: `1.5px solid ${targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)'}`, borderRadius: '16px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
+          <div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Simulator Result for {targetSliderVal}% Target:
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>
+              {targetSliderVal > overallPercent ? (
+                <span>👉 Attend Next <strong style={{ color: 'var(--primary)', fontSize: '1.3rem' }}>{targetClassesNeeded}</strong> Consecutive Lectures</span>
+              ) : (
+                <span>🎉 You can Bunk up to <strong style={{ color: 'var(--success)', fontSize: '1.3rem' }}>{targetBunksAllowed}</strong> Lectures & Maintain {targetSliderVal}%!</span>
+              )}
+            </div>
+          </div>
+
+          <div style={{ padding: '8px 14px', borderRadius: '12px', background: 'var(--bg-surface)', border: '1px solid var(--border-light)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            Current: {overallPercent}% | Target: {targetSliderVal}%
+          </div>
         </div>
       </div>
 
