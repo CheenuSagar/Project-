@@ -44,17 +44,20 @@ export default function App() {
   // User Role State: 'student' | 'teacher' | null
   const [userRole, setUserRole] = useState(() => {
     try {
-      return localStorage.getItem('lecalert_user_role') || null;
+      const saved = localStorage.getItem('lecalert_user_role');
+      if (saved === 'admin') return 'student';
+      return saved || 'student';
     } catch (e) {
-      return null;
+      return 'student';
     }
   });
 
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(() => {
     try {
-      return !localStorage.getItem('lecalert_user_role');
+      const saved = localStorage.getItem('lecalert_user_role');
+      return !saved;
     } catch (e) {
-      return true;
+      return false;
     }
   });
 
@@ -94,15 +97,7 @@ export default function App() {
   const [editingClass, setEditingClass] = useState(null);
   const [isAdminPasswordModalOpen, setIsAdminPasswordModalOpen] = useState(false);
   const pendingAdminCallbackRef = useRef(null);
-  const [isAdmin, setIsAdmin] = useState(() => {
-    try {
-      const savedRole = localStorage.getItem('lecalert_user_role');
-      if (savedRole === 'student') return false;
-      return localStorage.getItem('lecalert_is_admin') === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
+  const [isAdmin, setIsAdmin] = useState(false); // Always default to false on app load
   
   // Theme state: 'default', 'vokka', 'coffee'
   const [theme, setTheme] = useState(() => {
