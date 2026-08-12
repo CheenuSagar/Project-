@@ -118,31 +118,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
     }
   };
 
-  // Quick Demo Logins
-  const handleQuickDemo = (role) => {
-    if (role === 'student') {
-      onAuthSuccess({
-        role: 'student',
-        displayName: 'Student Demo User',
-        email: 'student.demo@abes.ac.in',
-        roomNumber: 'AB-207'
-      });
-    } else if (role === 'teacher') {
-      onAuthSuccess({
-        role: 'teacher',
-        displayName: 'Dr. Rajesh Kr. Maurya',
-        email: 'rajesh.maurya@abes.ac.in'
-      });
-    } else if (role === 'admin') {
-      onAuthSuccess({
-        role: 'admin',
-        displayName: 'Master Administrator',
-        email: 'admin@abes.ac.in'
-      });
-    }
-    resetForm();
-  };
-
   return (
     <div className="auth-modal-overlay">
       <div className="auth-modal-container glass animate-fade-in">
@@ -342,7 +317,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
           </button>
         </form>
 
-        {/* Toggle Sign In / Register & Quick Demo Logins */}
+        {/* Toggle Sign In / Register */}
         <div className="auth-footer-actions">
           {activeTab !== 'admin' && (
             <button 
@@ -356,22 +331,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
               {isRegistering ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
             </button>
           )}
-
-          <div className="demo-login-divider">
-            <span>OR QUICK DEMO LOGIN</span>
-          </div>
-
-          <div className="demo-login-buttons">
-            <button className="btn btn-secondary btn-sm" onClick={() => handleQuickDemo('student')}>
-              <GraduationCap size={14} /> Student Demo
-            </button>
-            <button className="btn btn-secondary btn-sm" onClick={() => handleQuickDemo('teacher')}>
-              <UserCheck size={14} /> Teacher Demo
-            </button>
-            <button className="btn btn-secondary btn-sm" onClick={() => handleQuickDemo('admin')}>
-              <Shield size={14} /> Admin Demo
-            </button>
-          </div>
         </div>
       </div>
 
