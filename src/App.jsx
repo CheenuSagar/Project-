@@ -132,8 +132,6 @@ export default function App() {
       return 'AB-207';
     }
   });
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(() => {
     try {
       const raw = localStorage.getItem('lecalert_user_profile');
@@ -142,6 +140,15 @@ export default function App() {
       return null;
     }
   });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => {
+    try {
+      const raw = localStorage.getItem('lecalert_user_profile');
+      return !raw; // Force Login Page First on app/website launch if not logged in
+    } catch (e) {
+      return true;
+    }
+  });
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
 
   // Apply theme to document root
   useEffect(() => {
@@ -1079,7 +1086,7 @@ export default function App() {
             setActiveTab('admin');
           }
         }}
-        allowClose={true}
+        allowClose={Boolean(userProfile)}
       />
 
       {/* Classroom Room Selector Modal */}
