@@ -574,19 +574,6 @@ export default function App() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
-          {/* Room Number Selector Pill for Students */}
-          {(!userRole || userRole === 'student') && (
-            <button 
-              className="role-switch-header-btn" 
-              style={{ background: 'rgba(99, 102, 241, 0.12)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
-              onClick={() => setIsRoomModalOpen(true)}
-              title="Change Classroom Room Number"
-            >
-              <MapPin size={16} />
-              <span>Room: {selectedRoom || 'AB-207'}</span>
-            </button>
-          )}
-
           {/* User Auth / Profile Button */}
           <button 
             className="role-switch-header-btn"

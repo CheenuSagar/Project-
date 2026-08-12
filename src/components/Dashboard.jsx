@@ -241,19 +241,6 @@ export default function Dashboard({
               </div>
             </div>
           </div>
-
-          <div className="stat-card glass" style={{ cursor: 'pointer' }} onClick={onOpenRoomModal}>
-            <div className="stat-icon-bg bg-primary-glow">
-              <MapPin size={18} className="text-primary" />
-            </div>
-            <div className="stat-details">
-              <span className="stat-label">Classroom Room</span>
-              <span className="stat-value" style={{ color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {selectedRoom || 'AB-207'}
-                <span style={{ fontSize: '0.75rem', fontWeight: 500, opacity: 0.7, textDecoration: 'underline' }}>(Change)</span>
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Replacement Teacher Alert Banner for Students */}
