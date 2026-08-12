@@ -1905,11 +1905,11 @@ export function verifyTeacherPIN(teacherName, inputPin, pinsMap) {
 const HOLIDAY_NOTICE_STORAGE_KEY = 'lecalert_holiday_notice';
 
 export const DEFAULT_HOLIDAY_NOTICE = {
-  active: true,
+  active: false,
   title: "🌴 College Closed / Classes Suspended",
   startDate: "2026-08-04",
   endDate: "2026-08-12",
-  reason: "College is closed from 4th to 12th August 2026. All lectures and lab sessions stand suspended."
+  reason: "Holidays have ended. Regular classes and timetables are fully active!"
 };
 
 export function loadHolidayNotice() {
