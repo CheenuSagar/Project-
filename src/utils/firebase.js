@@ -9,13 +9,13 @@ import {
 } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBF5sN0dMtfSlnRLfOJtCMxoHxqt5c6fVs",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mca-timetable.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mca-timetable",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mca-timetable.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "57704066762",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:57704066762:web:304dcf6b8113e8a8600e33",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-Z2JHSER4F6"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase App
