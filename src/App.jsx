@@ -1198,6 +1198,8 @@ export default function App() {
       <FeedbackModal 
         isOpen={isFeedbackOpen} 
         onClose={() => setIsFeedbackOpen(false)} 
+        userProfile={userProfile}
+        selectedSection={selectedSection}
       />
 
       {/* Admin Password Verification Modal */}
