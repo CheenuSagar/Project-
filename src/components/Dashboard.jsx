@@ -184,13 +184,17 @@ export default function Dashboard({
               Welcome back, {(() => {
                 if (!userProfile) return 'Student';
                 const name = (userProfile.displayName || '').trim();
-                if (name && name !== 'MCA Student' && name !== 'Student' && name !== 'Logged In Student') return name;
+                if (name && !['mca student', 'student', 'logged in student', 'logged in user'].includes(name.toLowerCase())) {
+                  return name;
+                }
                 if (userProfile.email) {
                   const handle = userProfile.email.split('@')[0];
-                  if (!/^\d+$/.test(handle)) return handle.replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                  return `Student (${handle})`;
+                  if (!/^\d+$/.test(handle)) {
+                    return handle.replace(/[\._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                  }
+                  return handle;
                 }
-                if (userProfile.rollNumber) return `Student (${userProfile.rollNumber})`;
+                if (userProfile.rollNumber) return userProfile.rollNumber;
                 return 'Student';
               })()} 👋
             </div>

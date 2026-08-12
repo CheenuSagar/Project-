@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abes-academix-v13_personalized_name';
+const CACHE_NAME = 'abes-academix-v14_clean_name';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
