@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, doc, onSnapshot, setDoc, getDoc, collection, 
-  addDoc, query, where, getDocs 
+  addDoc, query, where, getDocs, updateDoc 
 } from 'firebase/firestore';
 import { 
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
@@ -140,44 +140,71 @@ export async function saveRemoteAcademicEvents(eventsArray) {
   }
 }
 
+// ----------------------------------------------------
+// OFFICIAL ATTENDANCE & HIERARCHY HELPERS (PL & MENTOR)
+// ----------------------------------------------------
+
 /**
- * Real-time listener for Teacher Proxy & Swap Notifications
+ * Save Official Attendance marked by Mentor (LOCKED ONCE SUBMITTED)
  */
-export function subscribeToRemoteTeacherNotifications(teacherName, onData) {
-  if (!teacherName) return () => {};
+export async function saveOfficialAttendance(dateStr, section, subjectName, mentorId, mentorName, attendanceMap) {
   try {
-    const q = query(
-      collection(db, 'teacher_notifications'),
-      where('toTeacher', '==', teacherName)
-    );
+    const docId = `${dateStr}_${section}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const docRef = doc(db, 'official_attendance', docId);
+    await setDoc(docRef, {
+      docId,
+      date: dateStr,
+      section,
+      subjectName,
+      mentorId,
+      mentorName,
+      records: attendanceMap, // { studentEmail: 'P' | 'A' | 'C' }
+      locked: true, // TAMPER-PROOF LOCK
+      submittedAt: new Date().toISOString()
+    });
+    return { success: true };
+  } catch (e) {
+    console.error('Failed to save official attendance:', e);
+    return { success: false, message: e.message };
+  }
+}
+
+/**
+ * Correction Authority: PL / Admin can edit locked attendance
+ */
+export async function correctOfficialAttendanceByPL(docId, updatedMap, plName) {
+  try {
+    const docRef = doc(db, 'official_attendance', docId);
+    await updateDoc(docRef, {
+      records: updatedMap,
+      correctedBy: plName,
+      correctedAt: new Date().toISOString()
+    });
+    return { success: true };
+  } catch (e) {
+    console.error('Failed to correct attendance:', e);
+    return { success: false, message: e.message };
+  }
+}
+
+/**
+ * Real-time listener for Official Attendance Records (PL & Admin Portal)
+ */
+export function subscribeToOfficialAttendanceRecords(onData) {
+  try {
+    const q = collection(db, 'official_attendance');
     return onSnapshot(q, (snapshot) => {
       const list = [];
       snapshot.forEach(docSnap => {
         list.push({ id: docSnap.id, ...docSnap.data() });
       });
-      list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      list.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
       onData(list);
     }, (err) => {
-      console.warn('Teacher notifications sync error:', err);
+      console.warn('Official attendance sync error:', err);
     });
   } catch (e) {
     return () => {};
-  }
-}
-
-/**
- * Send Teacher Proxy or Swap Notification
- */
-export async function sendRemoteTeacherNotification(notifObj) {
-  try {
-    await addDoc(collection(db, 'teacher_notifications'), {
-      ...notifObj,
-      timestamp: new Date().toISOString()
-    });
-    return true;
-  } catch (e) {
-    console.error('Failed to send remote teacher notification:', e);
-    return false;
   }
 }
 
@@ -186,9 +213,9 @@ export async function sendRemoteTeacherNotification(notifObj) {
 // ----------------------------------------------------
 
 /**
- * User Registration
+ * User Registration with Full Name, Role & Avatar
  */
-export async function registerFirebaseUser(email, password, displayName, role, roomNumber = '') {
+export async function registerFirebaseUser(email, password, displayName, role, avatarId = 'avatar1') {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -201,12 +228,12 @@ export async function registerFirebaseUser(email, password, displayName, role, r
       uid: user.uid,
       email: user.email,
       displayName,
-      role, // 'student' | 'teacher' | 'admin'
-      roomNumber: roomNumber ? (roomNumber.startsWith('AB-') ? roomNumber : `AB-${roomNumber}`) : '',
+      role, // 'student' | 'teacher' | 'mentor' | 'pl' | 'admin'
+      avatarId: avatarId || 'avatar1',
       createdAt: new Date().toISOString()
     });
 
-    return { success: true, user, role, roomNumber };
+    return { success: true, user, role, displayName, avatarId };
   } catch (error) {
     console.error('Registration error:', error);
     return { success: false, message: error.message };
@@ -233,7 +260,8 @@ export async function loginFirebaseUser(email, password) {
       success: true, 
       user, 
       role: profileData.role || 'student', 
-      roomNumber: profileData.roomNumber || '' 
+      displayName: profileData.displayName || user.displayName || 'User',
+      avatarId: profileData.avatarId || 'avatar1'
     };
   } catch (error) {
     console.error('Login error:', error);

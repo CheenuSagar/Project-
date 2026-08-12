@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown, UserCheck, Shield, GraduationCap, UserCog, BookOpen } from 'lucide-react';
 import StudentPanel from './components/StudentPanel';
 import TeacherPanel from './components/TeacherPanel';
+import MentorPanel from './components/MentorPanel';
+import PLPanel from './components/PLPanel';
 import AdminPanel from './components/AdminPanel';
 import AutoGeneratorModal from './components/AutoGeneratorModal';
 import Dashboard from './components/Dashboard';
@@ -535,12 +537,20 @@ export default function App() {
                 <GraduationCap size={16} /> Student Portal
               </button>
             )}
-            {(!userRole || userRole === 'teacher') && (
+            {(userRole === 'mentor' || userRole === 'teacher') && (
               <button 
-                className={`nav-tab ${activeTab === 'teacher' ? 'active' : ''}`}
-                onClick={() => setActiveTab('teacher')}
+                className={`nav-tab ${activeTab === 'mentor' ? 'active' : ''}`}
+                onClick={() => setActiveTab('mentor')}
               >
-                <UserCheck size={16} /> Teacher Portal
+                <User size={16} /> Mentor Portal
+              </button>
+            )}
+            {(userRole === 'pl' || isAdmin) && (
+              <button 
+                className={`nav-tab ${activeTab === 'pl' ? 'active' : ''}`}
+                onClick={() => setActiveTab('pl')}
+              >
+                <UserCheck size={16} /> PL Portal
               </button>
             )}
             {isAdmin && (
@@ -813,6 +823,14 @@ export default function App() {
             }}
             holidayNotice={holidayNotice}
           />
+        )}
+
+        {activeTab === 'mentor' && (
+          <MentorPanel userProfile={userProfile} />
+        )}
+
+        {activeTab === 'pl' && (
+          <PLPanel userProfile={userProfile} />
         )}
 
         {activeTab === 'admin' && (

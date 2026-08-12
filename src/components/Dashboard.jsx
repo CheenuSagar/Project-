@@ -11,7 +11,7 @@ function timeToMinutes(timeStr) {
 
 export default function Dashboard({ 
   timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice, 
-  selectedRoom = 'AB-207', onOpenRoomModal 
+  selectedRoom = 'AB-207', onOpenRoomModal, userProfile 
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showHolidayScheduleReference, setShowHolidayScheduleReference] = useState(false);
@@ -168,6 +168,9 @@ export default function Dashboard({
             <div className="date-badge-wrapper">
               <Calendar size={14} />
               <span className="date-badge">{formattedDate}</span>
+            </div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)', marginTop: '4px' }}>
+              Welcome back, {userProfile?.displayName || 'MCA Student'} 👋
             </div>
             <h1 className="clock-time">{formattedTime}</h1>
           </div>

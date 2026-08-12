@@ -154,19 +154,25 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
             className={`auth-role-tab ${activeTab === 'student' ? 'active' : ''}`}
             onClick={() => handleTabChange('student')}
           >
-            <GraduationCap size={16} /> Student Portal
+            <GraduationCap size={15} /> Student
           </button>
           <button 
-            className={`auth-role-tab ${activeTab === 'teacher' ? 'active' : ''}`}
-            onClick={() => handleTabChange('teacher')}
+            className={`auth-role-tab ${activeTab === 'mentor' ? 'active' : ''}`}
+            onClick={() => handleTabChange('mentor')}
           >
-            <UserCheck size={16} /> Faculty Portal
+            <User size={15} /> Mentor
+          </button>
+          <button 
+            className={`auth-role-tab ${activeTab === 'pl' ? 'active' : ''}`}
+            onClick={() => handleTabChange('pl')}
+          >
+            <UserCheck size={15} /> PL Portal
           </button>
           <button 
             className={`auth-role-tab ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={() => handleTabChange('admin')}
           >
-            <Shield size={16} /> Admin Portal
+            <Shield size={15} /> Admin
           </button>
         </div>
 

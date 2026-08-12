@@ -10,7 +10,8 @@ export default function StudentPanel({
   selectedSection,
   holidayNotice,
   selectedRoom,
-  onOpenRoomModal
+  onOpenRoomModal,
+  userProfile
 }) {
   return (
     <div className="student-portal animate-fade-in">
@@ -24,6 +25,7 @@ export default function StudentPanel({
         holidayNotice={holidayNotice}
         selectedRoom={selectedRoom}
         onOpenRoomModal={onOpenRoomModal}
+        userProfile={userProfile}
       />
     </div>
   );
