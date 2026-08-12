@@ -749,9 +749,13 @@ export default function App() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '46px', height: '46px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.4rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 6px 18px var(--primary-glow)' }}>
-                    {userProfile.avatarEmoji || (userProfile.displayName || 'S').charAt(0).toUpperCase()}
-                  </div>
+                  {userProfile.photoURL ? (
+                    <img src={userProfile.photoURL} alt="Profile" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0, boxShadow: '0 4px 14px var(--primary-glow)' }} />
+                  ) : (
+                    <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.4rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 6px 18px var(--primary-glow)' }}>
+                      {(userProfile.displayName || 'S').charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '1.02rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>
                       {userProfile.displayName || 'MCA Student'}
@@ -790,7 +794,7 @@ export default function App() {
                     }}
                   >
                     <User size={16} />
-                    <span>My Profile & Avatars</span>
+                    <span>Customize Profile & Photo ⚙️</span>
                   </button>
 
                   <button

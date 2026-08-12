@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, UserCheck, Shield, Key, Mail, Lock, User, 
-  ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle, ChevronLeft 
+  ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle, ChevronLeft, Camera 
 } from 'lucide-react';
 import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser, resetFirebasePassword } from '../utils/firebase';
 
@@ -180,9 +180,63 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         {userProfile ? (
           <div style={{ padding: '10px 0' }}>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{ width: '68px', height: '68px', borderRadius: '22px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '2rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', boxShadow: '0 8px 24px var(--primary-glow)' }}>
-                {userProfile.avatarEmoji || (userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : '🎓')}
+              <div style={{ position: 'relative', display: 'inline-block', marginBottom: '12px' }}>
+                {userProfile.photoURL ? (
+                  <img 
+                    src={userProfile.photoURL} 
+                    alt="Profile" 
+                    style={{ width: '74px', height: '74px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--primary)', boxShadow: '0 8px 24px var(--primary-glow)' }} 
+                  />
+                ) : (
+                  <div style={{ width: '74px', height: '74px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '2rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px var(--primary-glow)' }}>
+                    {(userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : '🎓')}
+                  </div>
+                )}
+
+                <label 
+                  htmlFor="profile-photo-file-input"
+                  style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '-4px',
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    background: 'var(--primary)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                    border: '2px solid var(--bg-card)'
+                  }}
+                  title="Upload Profile Photo"
+                >
+                  <Camera size={14} />
+                </label>
+                <input 
+                  type="file" 
+                  id="profile-photo-file-input" 
+                  accept="image/*" 
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const updated = { ...userProfile, photoURL: reader.result };
+                        try {
+                          localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+                        } catch (err) {}
+                        if (onAuthSuccess) onAuthSuccess(updated);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
               </div>
+
               <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                 {userProfile.displayName || 'Logged In Student'}
               </h3>
@@ -199,38 +253,37 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               </div>
             </div>
 
-            {/* Choose Profile Avatar Selector (6 Avatars) */}
-            <div style={{ marginBottom: '20px', padding: '14px', borderRadius: '16px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                🎨 Choose Your Profile Avatar (6 Avatars)
+            {/* Profile Photo Customizer Card */}
+            <div style={{ marginBottom: '20px', padding: '16px', borderRadius: '18px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                📸 Customize Profile Photo
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}>
-                {['🎓', '💻', '⚡', '🚀', '👑', '🎯'].map((av, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      const updated = { ...userProfile, avatarEmoji: av };
-                      try {
-                        localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
-                      } catch (e) {}
-                      if (onAuthSuccess) onAuthSuccess(updated);
-                    }}
-                    style={{
-                      fontSize: '1.4rem',
-                      padding: '8px 0',
-                      borderRadius: '12px',
-                      border: userProfile.avatarEmoji === av ? '2px solid var(--primary)' : '1px solid var(--border-light)',
-                      background: userProfile.avatarEmoji === av ? 'var(--primary-glow)' : 'var(--bg-surface)',
-                      cursor: 'pointer',
-                      transition: 'transform 0.15s ease'
-                    }}
-                    title={`Select Avatar ${av}`}
-                  >
-                    {av}
-                  </button>
-                ))}
-              </div>
+              <p style={{ margin: '0 0 12px 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                Upload your official photo directly from your gallery or camera!
+              </p>
+              <label 
+                htmlFor="profile-photo-file-input"
+                className="btn btn-primary btn-sm"
+                style={{ width: '100%', padding: '10px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                <Camera size={16} /> Choose Image / Photo
+              </label>
+
+              {userProfile.photoURL && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = { ...userProfile, photoURL: '' };
+                    try {
+                      localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+                    } catch (err) {}
+                    if (onAuthSuccess) onAuthSuccess(updated);
+                  }}
+                  style={{ marginTop: '10px', background: 'none', border: 'none', color: 'var(--danger)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Remove Current Photo 🗑️
+                </button>
+              )}
             </div>
 
             {/* Logout & Delete Account Actions */}
