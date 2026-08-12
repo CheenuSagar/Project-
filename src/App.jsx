@@ -19,6 +19,7 @@ import TermsModal from './components/TermsModal';
 import AuthModal from './components/AuthModal';
 import RoomSelectModal from './components/RoomSelectModal';
 import RollNumberModal from './components/RollNumberModal';
+import LandingOnboarding from './components/LandingOnboarding';
 import { MessageSquare, MapPin, User, LogOut } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -521,55 +522,45 @@ export default function App() {
     setSharedClasses(null);
   };
 
-  // MANDATORY AUTH GATE: Full-Screen Animated Auth Page if NOT Logged In
+  // MANDATORY AUTH & ONBOARDING GATE: Splash -> Onboarding Hero -> Auth Flow
   if (!userProfile) {
     return (
-      <div className="fullscreen-auth-screen">
-        <div className="ambient-glow orb-1"></div>
-        <div className="ambient-glow orb-2"></div>
-        <div style={{ width: '100%', maxWidth: '440px', padding: '20px', position: 'relative', zIndex: 10 }}>
-          <AuthModal 
-            isOpen={true}
-            onClose={() => {}}
-            userProfile={null}
-            onAuthSuccess={(profile) => {
-              setUserProfile(profile);
-              setUserRole(profile.role || 'student');
-              setIsAdmin(profile.role === 'admin');
-              try {
-                localStorage.setItem('lecalert_user_profile', JSON.stringify(profile));
-                localStorage.setItem('lecalert_user_role', profile.role || 'student');
-              } catch (e) {}
+      <LandingOnboarding 
+        initialTab={userRole || 'student'}
+        onAuthSuccess={(profile) => {
+          setUserProfile(profile);
+          setUserRole(profile.role || 'student');
+          setIsAdmin(profile.role === 'admin');
+          try {
+            localStorage.setItem('lecalert_user_profile', JSON.stringify(profile));
+            localStorage.setItem('lecalert_user_role', profile.role || 'student');
+          } catch (e) {}
 
-              if (profile.role === 'student') {
-                setActiveTab('student');
-                if (profile.roomNumber) {
-                  const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
-                  const fullRoom = `AB-${rNum}`;
-                  setSelectedRoom(fullRoom);
-                  try {
-                    localStorage.setItem('lecalert_selected_room', fullRoom);
-                  } catch (e) {}
-                  if (rNum === '207') handleSelectSection('A');
-                  else if (rNum === '208') handleSelectSection('B');
-                  else if (rNum === '209') handleSelectSection('C');
-                } else {
-                  setIsRoomModalOpen(true);
-                }
-              } else if (profile.role === 'teacher' || profile.role === 'mentor') {
-                setActiveTab('mentor');
-              } else if (profile.role === 'pl') {
-                setActiveTab('pl');
-              } else if (profile.role === 'admin') {
-                setIsAdmin(true);
-                setActiveTab('admin');
-              }
-            }}
-            allowClose={false}
-            initialTab={userRole || 'student'}
-          />
-        </div>
-      </div>
+          if (profile.role === 'student') {
+            setActiveTab('student');
+            if (profile.roomNumber) {
+              const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
+              const fullRoom = `AB-${rNum}`;
+              setSelectedRoom(fullRoom);
+              try {
+                localStorage.setItem('lecalert_selected_room', fullRoom);
+              } catch (e) {}
+              if (rNum === '207') handleSelectSection('A');
+              else if (rNum === '208') handleSelectSection('B');
+              else if (rNum === '209') handleSelectSection('C');
+            } else {
+              setIsRoomModalOpen(true);
+            }
+          } else if (profile.role === 'teacher' || profile.role === 'mentor') {
+            setActiveTab('mentor');
+          } else if (profile.role === 'pl') {
+            setActiveTab('pl');
+          } else if (profile.role === 'admin') {
+            setIsAdmin(true);
+            setActiveTab('admin');
+          }
+        }}
+      />
     );
   }
 
