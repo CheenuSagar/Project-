@@ -8,7 +8,7 @@ import { subscribeToOfficialAttendanceRecords } from '../utils/firebase';
 export default function StudentAttendancePortal({ userProfile, selectedSection = 'A' }) {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [targetSliderVal, setTargetSliderVal] = useState(75);
+  const [targetSliderVal, setTargetSliderVal] = useState(85);
 
   const studentEmail = userProfile?.email || '230032010001@abes.ac.in';
   const studentName = userProfile?.displayName || 'MCA Student';
@@ -49,36 +49,49 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
   
   const displayTotalClasses = hasRecords ? totalClasses : 48;
   const displayTotalAttended = hasRecords ? totalAttended : 41;
-  const overallPercent = parseFloat(((displayTotalAttended / displayTotalClasses) * 100).toFixed(1));
+  const rawPercent = (displayTotalAttended / displayTotalClasses) * 100;
+  const overallPercent = parseFloat(rawPercent.toFixed(1));
   const isEligible = overallPercent >= 75.0;
 
   // Default 75% Bunk & Shortage Margin
-  let maxBunksAvailable = 0;
+  let maxBunksAvailable75 = 0;
   let requiredClassesTo75 = 0;
 
   if (isEligible) {
-    maxBunksAvailable = Math.floor((displayTotalAttended - 0.75 * displayTotalClasses) / 0.75);
-    if (maxBunksAvailable < 0) maxBunksAvailable = 0;
+    maxBunksAvailable75 = Math.floor((displayTotalAttended - 0.75 * displayTotalClasses) / 0.75);
+    if (maxBunksAvailable75 < 0) maxBunksAvailable75 = 0;
   } else {
     requiredClassesTo75 = Math.ceil((0.75 * displayTotalClasses - displayTotalAttended) / 0.25);
     if (requiredClassesTo75 < 0) requiredClassesTo75 = 0;
   }
 
-  // Dynamic Slider Calculation for Target % (targetSliderVal)
+  // Exact Mathematical Target Simulator Calculations
   const targetFrac = targetSliderVal / 100;
   let targetClassesNeeded = 0;
   let targetBunksAllowed = 0;
+  let simulatedFinalPercent = 0;
 
   if (targetSliderVal > overallPercent) {
+    // Need more attended classes to reach targetSliderVal%
     if (targetFrac < 1) {
       targetClassesNeeded = Math.ceil((targetFrac * displayTotalClasses - displayTotalAttended) / (1 - targetFrac));
     } else {
       targetClassesNeeded = 999;
     }
     if (targetClassesNeeded < 0) targetClassesNeeded = 0;
+    
+    // Exact Simulated Outcome
+    const simAttended = displayTotalAttended + targetClassesNeeded;
+    const simConducted = displayTotalClasses + targetClassesNeeded;
+    simulatedFinalPercent = parseFloat(((simAttended / simConducted) * 100).toFixed(1));
   } else {
+    // Bunk allowance while remaining >= targetSliderVal%
     targetBunksAllowed = Math.floor((displayTotalAttended - targetFrac * displayTotalClasses) / targetFrac);
     if (targetBunksAllowed < 0) targetBunksAllowed = 0;
+
+    // Exact Simulated Outcome
+    const simConducted = displayTotalClasses + targetBunksAllowed;
+    simulatedFinalPercent = parseFloat(((displayTotalAttended / simConducted) * 100).toFixed(1));
   }
 
   // Demo subjects fallback
@@ -162,7 +175,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           </div>
         </div>
 
-        {/* Card 2: Smart Bunk & Margin Predictor */}
+        {/* Card 2: Smart 75% Bunk & Shortage Margin */}
         <div className="glass card-hover-effect" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', background: isEligible ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(168, 85, 247, 0.05))' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(245, 158, 11, 0.08))' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
@@ -171,7 +184,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               </span>
               <h3 style={{ margin: '6px 0 0 0', fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                 {isEligible ? (
-                  <span>{maxBunksAvailable} Bunks Available 🏖️</span>
+                  <span>{maxBunksAvailable75} Bunks Available 🏖️</span>
                 ) : (
                   <span>Attend Next {requiredClassesTo75} Classes ⚠️</span>
                 )}
@@ -184,7 +197,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
 
           <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             {isEligible ? (
-              <span>You are safely above the <strong>75% exam criteria</strong>. You can bunk up to <strong>{maxBunksAvailable}</strong> upcoming lectures without falling below 75%!</span>
+              <span>You are safely above the <strong>75% exam criteria</strong>. You can bunk up to <strong>{maxBunksAvailable75}</strong> upcoming lectures without falling below 75%!</span>
             ) : (
               <span>Your attendance is below 75%. You must attend <strong>{requiredClassesTo75} consecutive lectures</strong> to restore your exam eligibility threshold!</span>
             )}
@@ -204,24 +217,32 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
                 Target Percentage Simulator 🎚️
               </h3>
               <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                Drag the slider to see how many consecutive lectures you must attend (or can bunk) for any target score!
+                Select or drag any target percentage (50% - 95%) to calculate required lectures or bunk allowance!
               </p>
             </div>
           </div>
 
-          <div style={{ padding: '6px 16px', borderRadius: '99px', background: 'var(--primary-gradient)', color: '#fff', fontSize: '1.1rem', fontWeight: 900, boxShadow: '0 6px 18px var(--primary-glow)' }}>
+          <div style={{ padding: '6px 18px', borderRadius: '99px', background: 'var(--primary-gradient)', color: '#fff', fontSize: '1.2rem', fontWeight: 900, boxShadow: '0 6px 18px var(--primary-glow)' }}>
             Target: {targetSliderVal}%
           </div>
         </div>
 
+        {/* Quick Target Chips Preset Selector */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          {[75, 80, 85, 90, 95].map((val) => (
+            <button 
+              key={val}
+              className={`preset-chip ${targetSliderVal === val ? 'active' : ''}`}
+              onClick={() => setTargetSliderVal(val)}
+              style={{ cursor: 'pointer', padding: '6px 14px', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 800 }}
+            >
+              {val}% {val === 75 ? '(75% Exam Criteria)' : (val === 90 ? '🏆 Distinction' : 'Target')}
+            </button>
+          ))}
+        </div>
+
         {/* Interactive Slider Input */}
         <div style={{ marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
-            <span>50% (Minimum)</span>
-            <span>75% (Exam Criteria)</span>
-            <span>85% (Target)</span>
-            <span>95% (Top Goal)</span>
-          </div>
           <input 
             type="range"
             min="50"
@@ -231,7 +252,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
             onChange={(e) => setTargetSliderVal(Number(e.target.value))}
             style={{
               width: '100%',
-              height: '8px',
+              height: '10px',
               borderRadius: '99px',
               outline: 'none',
               accentColor: 'var(--primary)',
@@ -240,23 +261,33 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
           />
         </div>
 
-        {/* Dynamic Calculator Result Output Card */}
-        <div style={{ background: targetSliderVal > overallPercent ? 'rgba(79, 70, 229, 0.12)' : 'rgba(16, 185, 129, 0.12)', border: `1.5px solid ${targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)'}`, borderRadius: '16px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
-          <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Simulator Result for {targetSliderVal}% Target:
+        {/* Dynamic Calculator Result Output Card with Exact Mathematical Proof */}
+        <div style={{ background: targetSliderVal > overallPercent ? 'rgba(79, 70, 229, 0.12)' : 'rgba(16, 185, 129, 0.12)', border: `1.5px solid ${targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)'}`, borderRadius: '18px', padding: '20px 22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Mathematical Simulation for {targetSliderVal}% Goal:
+              </div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>
+                {targetSliderVal > overallPercent ? (
+                  <span>👉 You must attend the next <strong style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{targetClassesNeeded}</strong> consecutive lectures to reach {targetSliderVal}%!</span>
+                ) : (
+                  <span>🎉 You can bunk up to <strong style={{ color: 'var(--success)', fontSize: '1.4rem' }}>{targetBunksAllowed}</strong> lectures & still stay above {targetSliderVal}%!</span>
+                )}
+              </div>
             </div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>
-              {targetSliderVal > overallPercent ? (
-                <span>👉 Attend Next <strong style={{ color: 'var(--primary)', fontSize: '1.3rem' }}>{targetClassesNeeded}</strong> Consecutive Lectures</span>
-              ) : (
-                <span>🎉 You can Bunk up to <strong style={{ color: 'var(--success)', fontSize: '1.3rem' }}>{targetBunksAllowed}</strong> Lectures & Maintain {targetSliderVal}%!</span>
-              )}
-            </div>
-          </div>
 
-          <div style={{ padding: '8px 14px', borderRadius: '12px', background: 'var(--bg-surface)', border: '1px solid var(--border-light)', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Current: {overallPercent}% | Target: {targetSliderVal}%
+            <div style={{ padding: '10px 16px', borderRadius: '14px', background: 'var(--bg-surface)', border: '1px solid var(--border-light)', textAlign: 'right' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                SIMULATED OUTCOME
+              </div>
+              <div style={{ fontSize: '1.05rem', fontWeight: 900, color: targetSliderVal > overallPercent ? 'var(--primary)' : 'var(--success)' }}>
+                New Score: {simulatedFinalPercent}%
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                {targetSliderVal > overallPercent ? `${displayTotalAttended + targetClassesNeeded} / ${displayTotalClasses + targetClassesNeeded} Lectures` : `${displayTotalAttended} / ${displayTotalClasses + targetBunksAllowed} Lectures`}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -316,7 +347,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
                     </div>
                   </div>
 
-                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: subEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: subEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {subEligible ? <CheckCircle2 size={20} /> : <AlertTriangle size={20} />}
                   </div>
                 </div>
