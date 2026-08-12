@@ -1,0 +1,16 @@
+{
+  "short_name": "ABES AcademiX",
+  "name": "ABES AcademiX — MCA III Sem Timetable & Live Attendance",
+  "icons": [
+    {
+      "src": "/src/assets/react.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512 192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "display": "standalone",
+  "orientation": "portrait"
+}
