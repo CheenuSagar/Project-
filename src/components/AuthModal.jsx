@@ -7,7 +7,8 @@ import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, delet
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSuccess, userProfile, allowClose = true, initialTab = 'student' }) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'teacher' | 'admin'
+  const [authStep, setAuthStep] = useState('choice'); // 'choice' | 'credentials'
+  const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'mentor' | 'pl' | 'admin'
   const [isRegistering, setIsRegistering] = useState(false);
 
   // Form Fields
@@ -241,47 +242,125 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           </div>
         ) : (
           <>
-            {/* Modal Header */}
-        <div className="auth-modal-header">
-          <div className="auth-badge-pill">
-            <Sparkles size={14} className="sparkle-icon" />
-            <span>ABES MCA TimeTable System</span>
-          </div>
-          <h2 className="auth-modal-title">
-            {isRegistering ? 'Create Your Account' : 'Portal Login & Access'}
-          </h2>
-          <p className="auth-modal-subtitle">
-            Connect to live synchronized MCA timetable, faculty duties & classroom portals.
-          </p>
-        </div>
+            {/* Step 1: Choose Login Method / Role Screen */}
+        {authStep === 'choice' ? (
+          <div className="auth-choice-step animate-fade-in">
+            <div className="auth-modal-header text-center" style={{ marginBottom: '20px' }}>
+              <div className="auth-badge-pill" style={{ margin: '0 auto 10px auto' }}>
+                <Sparkles size={14} className="sparkle-icon" />
+                <span>ABES MCA Portal</span>
+              </div>
+              <h2 className="auth-modal-title" style={{ fontSize: '1.45rem', fontWeight: 900 }}>
+                How would you like to log in?
+              </h2>
+              <p className="auth-modal-subtitle">
+                Select your portal role below to enter your ID & Password.
+              </p>
+            </div>
 
-        {/* Role Tabs Selection */}
-        <div className="auth-role-tabs">
-          <button 
-            className={`auth-role-tab ${activeTab === 'student' ? 'active' : ''}`}
-            onClick={() => handleTabChange('student')}
-          >
-            <GraduationCap size={15} /> Student
-          </button>
-          <button 
-            className={`auth-role-tab ${activeTab === 'mentor' ? 'active' : ''}`}
-            onClick={() => handleTabChange('mentor')}
-          >
-            <User size={15} /> Mentor
-          </button>
-          <button 
-            className={`auth-role-tab ${activeTab === 'pl' ? 'active' : ''}`}
-            onClick={() => handleTabChange('pl')}
-          >
-            <UserCheck size={15} /> PL Portal
-          </button>
-          <button 
-            className={`auth-role-tab ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => handleTabChange('admin')}
-          >
-            <Shield size={15} /> Admin
-          </button>
-        </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '14px' }}>
+              {/* Choice Card 1: Student */}
+              <div 
+                className="glass card-hover-effect"
+                onClick={() => { setActiveTab('student'); setAuthStep('credentials'); }}
+                style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
+              >
+                <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <GraduationCap size={24} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    Student Portal
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Sign in with Roll No / Email or 1-Tap Google
+                  </p>
+                </div>
+                <ArrowRight size={18} style={{ color: 'var(--primary)' }} />
+              </div>
+
+              {/* Choice Card 2: Mentor */}
+              <div 
+                className="glass card-hover-effect"
+                onClick={() => { setActiveTab('mentor'); setAuthStep('credentials'); }}
+                style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
+              >
+                <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--secondary-glow)', color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <User size={24} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    Faculty Mentor Portal
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Official mentee attendance marking & locking
+                  </p>
+                </div>
+                <ArrowRight size={18} style={{ color: 'var(--secondary)' }} />
+              </div>
+
+              {/* Choice Card 3: Program Leader (PL) */}
+              <div 
+                className="glass card-hover-effect"
+                onClick={() => { setActiveTab('pl'); setAuthStep('credentials'); }}
+                style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
+              >
+                <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'rgba(245, 158, 11, 0.15)', color: 'var(--warning)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserCheck size={24} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    Program Leader (PL) Portal
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Department oversight & master attendance correction
+                  </p>
+                </div>
+                <ArrowRight size={18} style={{ color: 'var(--warning)' }} />
+              </div>
+
+              {/* Choice Card 4: Admin */}
+              <div 
+                className="glass card-hover-effect"
+                onClick={() => { setActiveTab('admin'); setAuthStep('credentials'); }}
+                style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
+              >
+                <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'rgba(239, 68, 68, 0.12)', color: 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Shield size={24} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    Master Admin Access
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    Unlock master timetable & system management
+                  </p>
+                </div>
+                <ArrowRight size={18} style={{ color: 'var(--danger)' }} />
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Step 2: Credentials ID & Password Page */
+          <div className="auth-credentials-step animate-fade-in">
+            {/* Top Back to Choice Button */}
+            <button 
+              type="button"
+              className="onboarding-back-btn"
+              onClick={() => setAuthStep('choice')}
+              style={{ marginBottom: '14px' }}
+            >
+              <span>← Change Login Method</span>
+            </button>
+
+            <div className="auth-modal-header">
+              <h2 className="auth-modal-title">
+                {activeTab === 'admin' ? 'Master Admin Unlock' : (activeTab === 'mentor' ? 'Faculty Mentor Login' : (activeTab === 'pl' ? 'Program Leader Login' : (isRegistering ? 'Create Student Account' : 'Student Login')))}
+              </h2>
+              <p className="auth-modal-subtitle">
+                Enter your credentials to access your {activeTab} portal.
+              </p>
+            </div>
 
         {/* Form Error Banner */}
         {errorMsg && (
@@ -477,9 +556,10 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
             </button>
           )}
         </div>
-      </>
+      </div>
     )}
-  </div>
+  </>
+)}
 
       <style>{`
         .auth-modal-overlay {
@@ -677,6 +757,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           justify-content: center;
         }
       `}</style>
+      </div>
     </div>
   );
 }
