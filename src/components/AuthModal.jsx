@@ -275,6 +275,41 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               </div>
             </div>
 
+            {/* Edit Full Name Input */}
+            <div style={{ marginBottom: '16px', padding: '14px', borderRadius: '18px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block', marginBottom: '6px' }}>
+                ✏️ Your Display / Full Name:
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input 
+                  type="text"
+                  className="form-input auth-input"
+                  placeholder="Enter your real name (e.g. Cheenu Sagar)"
+                  defaultValue={userProfile.displayName && userProfile.displayName !== 'MCA Student' ? userProfile.displayName : ''}
+                  id="user-custom-display-name-input"
+                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    const inputVal = document.getElementById('user-custom-display-name-input')?.value?.trim();
+                    if (inputVal) {
+                      const updated = { ...userProfile, displayName: inputVal };
+                      try {
+                        localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+                      } catch (e) {}
+                      if (onAuthSuccess) onAuthSuccess(updated);
+                      alert(`Name updated to "${inputVal}" successfully!`);
+                    }
+                  }}
+                  style={{ padding: '8px 14px', borderRadius: '10px', fontWeight: 800, flexShrink: 0 }}
+                >
+                  Save Name
+                </button>
+              </div>
+            </div>
+
             {/* Profile Photo Customizer Card */}
             <div style={{ marginBottom: '20px', padding: '16px', borderRadius: '18px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
               <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

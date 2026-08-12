@@ -181,7 +181,18 @@ export default function Dashboard({
               <span className="date-badge">{formattedDate}</span>
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary)', marginTop: '4px' }}>
-              Welcome back, {userProfile?.displayName || (userProfile?.email ? userProfile.email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'MCA Student')} 👋
+              Welcome back, {(() => {
+                if (!userProfile) return 'Student';
+                const name = (userProfile.displayName || '').trim();
+                if (name && name !== 'MCA Student' && name !== 'Student' && name !== 'Logged In Student') return name;
+                if (userProfile.email) {
+                  const handle = userProfile.email.split('@')[0];
+                  if (!/^\d+$/.test(handle)) return handle.replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                  return `Student (${handle})`;
+                }
+                if (userProfile.rollNumber) return `Student (${userProfile.rollNumber})`;
+                return 'Student';
+              })()} 👋
             </div>
             <h1 className="clock-time">{formattedTime}</h1>
           </div>
