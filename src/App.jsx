@@ -732,13 +732,6 @@ export default function App() {
             </div>
 
             <div className="mobile-nav-list">
-              <button 
-                className="mobile-nav-item role-switch-mobile-item"
-                onClick={() => { setIsRoleModalOpen(true); setIsMobileMenuOpen(false); }}
-              >
-                <UserCog size={18} style={{ color: 'var(--primary)' }} />
-                <span>Switch Role ({userRole === 'teacher' ? 'Teacher' : 'Student'})</span>
-              </button>
 
               {(!userRole || userRole === 'student') && (
                 <>
@@ -1097,14 +1090,7 @@ export default function App() {
         onSubmit={handleVerifyAdminPassword}
       />
 
-      {/* Student vs Teacher Role Selection Landing Modal */}
-      <RoleSelectionModal 
-        isOpen={isRoleModalOpen}
-        onClose={() => setIsRoleModalOpen(false)}
-        onSelectRole={handleSelectRole}
-        currentRole={userRole}
-        allowClose={!!userRole}
-      />
+
 
       {/* Auth Modal */}
       <AuthModal 
