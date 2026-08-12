@@ -19,6 +19,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
   const [displayName, setDisplayName] = useState('');
   const [facultyPin, setFacultyPin] = useState('');
   const [adminPasscode, setAdminPasscode] = useState('');
+  const [rollNumber, setRollNumber] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -39,6 +40,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     setDisplayName('');
     setFacultyPin('');
     setAdminPasscode('');
+    setRollNumber('');
     setErrorMsg('');
   };
 
@@ -131,6 +133,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           displayName: res.user?.displayName || displayName || 'User',
           email: res.user?.email || finalEmail,
           uid: res.user?.uid,
+          rollNumber: rollNumber.trim() || res.rollNumber || (finalEmail.split('@')[0]),
           roomNumber: res.roomNumber || ''
         });
         resetForm();
@@ -500,29 +503,33 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               e.preventDefault();
               setErrorMsg('');
               setResetSuccessMsg('');
-              if (!email) {
-                setErrorMsg('Please enter your registered email address');
+              let targetEmail = email.trim().toLowerCase();
+              if (!targetEmail) {
+                setErrorMsg('Please enter your registered ABES Email or Roll Number.');
                 return;
               }
+              if (!targetEmail.includes('@')) {
+                targetEmail = `${targetEmail}@abes.ac.in`;
+              }
               setLoading(true);
-              const res = await resetFirebasePassword(email);
+              const res = await resetFirebasePassword(targetEmail);
               setLoading(false);
               if (res.success) {
-                setResetSuccessMsg(`Password reset email sent to ${email}! Please check your inbox or spam folder.`);
+                setResetSuccessMsg(`Password reset email sent to ${targetEmail}! Please check your inbox or spam folder.`);
               } else {
-                setErrorMsg(res.message || 'Failed to send password reset email. Please verify your email address.');
+                setErrorMsg(res.message || 'Failed to send password reset email. Please verify your email address or roll number.');
               }
             }}
             className="auth-form-body"
           >
             <div className="auth-input-group">
-              <label className="auth-label">Registered Email Address</label>
+              <label className="auth-label">Registered ABES Email or Roll Number</label>
               <div className="input-with-icon">
                 <Mail size={18} className="input-icon" />
                 <input 
-                  type="email"
+                  type="text"
                   className="form-input auth-input"
-                  placeholder="e.g. 230032010001@abes.ac.in"
+                  placeholder="e.g. cheenu.sagar@abes.ac.in or 230032010001"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
