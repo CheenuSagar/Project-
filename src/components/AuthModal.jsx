@@ -86,15 +86,28 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         }
       }
 
-      // Format Roll Number to email if @ is missing (e.g. 230032010001 -> 230032010001@abes.ac.in)
+      // Enforce compulsory @abes.ac.in for Student login & registration
       let rawInput = email.trim();
       if (!rawInput && facultyPin) {
         rawInput = `${facultyPin}@faculty.abes.ac.in`;
       }
       
-      let finalEmail = rawInput;
+      let finalEmail = rawInput.toLowerCase();
       if (finalEmail && !finalEmail.includes('@')) {
         finalEmail = `${finalEmail}@abes.ac.in`;
+      }
+
+      if (activeTab === 'student') {
+        if (!finalEmail) {
+          setErrorMsg('Please enter your official ABES college email or Roll Number.');
+          setLoading(false);
+          return;
+        }
+        if (!finalEmail.endsWith('@abes.ac.in')) {
+          setErrorMsg('Access Denied! Students must use their official ABES college email ending with @abes.ac.in (or official 13-digit Roll Number).');
+          setLoading(false);
+          return;
+        }
       }
 
       // Standard Firebase Email/Password Auth
@@ -149,8 +162,14 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     try {
       const res = await loginWithGoogleFirebase();
       if (res.success) {
+        const userEmail = (res.user?.email || '').toLowerCase();
+        if (activeTab === 'student' && !userEmail.endsWith('@abes.ac.in')) {
+          setErrorMsg('Access Denied! Student login requires an official ABES college email ending with @abes.ac.in.');
+          setLoading(false);
+          return;
+        }
         onAuthSuccess({
-          role: 'student',
+          role: activeTab === 'student' ? 'student' : activeTab,
           displayName: res.displayName,
           email: res.user?.email,
           uid: res.user?.uid,
