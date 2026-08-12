@@ -126,6 +126,31 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await loginWithGoogleFirebase();
+      if (res.success) {
+        onAuthSuccess({
+          role: 'student',
+          displayName: res.displayName,
+          email: res.user?.email,
+          uid: res.user?.uid,
+          rollNumber: res.rollNumber || ''
+        });
+        resetForm();
+      } else {
+        setErrorMsg(res.message || 'Google Sign-In failed.');
+      }
+    } catch (err) {
+      console.error('Google Sign-In error:', err);
+      setErrorMsg('Google Sign-In error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="auth-modal-overlay">
       <div className="auth-modal-container glass animate-fade-in">
