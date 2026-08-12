@@ -40,6 +40,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setIsRegistering(false);
     resetForm();
   };
 
@@ -329,9 +330,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
           </button>
         </form>
 
-        {/* Toggle Sign In / Register */}
+        {/* Toggle Sign In / Register (Students only) */}
         <div className="auth-footer-actions">
-          {activeTab !== 'admin' && (
+          {activeTab === 'student' && (
             <button 
               type="button"
               className="auth-switch-mode-btn"
