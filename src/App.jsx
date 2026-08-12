@@ -537,7 +537,15 @@ export default function App() {
                 <GraduationCap size={16} /> Student Portal
               </button>
             )}
-            {(userRole === 'mentor' || userRole === 'teacher') && (
+            {(!userRole || userRole === 'teacher' || userRole === 'mentor' || isAdmin) && (
+              <button 
+                className={`nav-tab ${activeTab === 'teacher' ? 'active' : ''}`}
+                onClick={() => setActiveTab('teacher')}
+              >
+                <UserCheck size={16} /> Teacher Portal
+              </button>
+            )}
+            {(userRole === 'mentor' || userRole === 'teacher' || isAdmin) && (
               <button 
                 className={`nav-tab ${activeTab === 'mentor' ? 'active' : ''}`}
                 onClick={() => setActiveTab('mentor')}
@@ -672,12 +680,28 @@ export default function App() {
                   <GraduationCap size={18} /> Student Portal
                 </button>
               )}
-              {(!userRole || userRole === 'teacher') && (
+              {(!userRole || userRole === 'teacher' || userRole === 'mentor' || isAdmin) && (
                 <button 
                   className={`mobile-nav-item ${activeTab === 'teacher' ? 'active' : ''}`}
                   onClick={() => { setActiveTab('teacher'); setIsMobileMenuOpen(false); }}
                 >
                   <UserCheck size={18} /> Teacher Portal
+                </button>
+              )}
+              {(userRole === 'mentor' || userRole === 'teacher' || isAdmin) && (
+                <button 
+                  className={`mobile-nav-item ${activeTab === 'mentor' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('mentor'); setIsMobileMenuOpen(false); }}
+                >
+                  <User size={18} /> Mentor Portal
+                </button>
+              )}
+              {(userRole === 'pl' || isAdmin) && (
+                <button 
+                  className={`mobile-nav-item ${activeTab === 'pl' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('pl'); setIsMobileMenuOpen(false); }}
+                >
+                  <Shield size={18} /> PL Portal
                 </button>
               )}
               {isAdmin && (
