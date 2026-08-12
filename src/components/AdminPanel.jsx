@@ -393,58 +393,6 @@ export default function AdminPanel({
             </div>
           </div>
 
-          {/* Release New Version Card */}
-          <div className="glass card-hover-effect" style={{ gridColumn: '1 / -1', padding: '20px', borderRadius: '18px', border: '1px solid var(--border-light)', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(168, 85, 247, 0.08))' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-              <Zap size={22} style={{ color: 'var(--primary)' }} />
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)' }}>
-                  In-App Update Release Control 🚀
-                </h4>
-                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  Publish a new version string (e.g. 1.3.0) to prompt all active Android APK & Web users to update their app.
-                </p>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
-              <input 
-                type="text" 
-                className="form-input" 
-                placeholder="Version e.g. 1.3.0"
-                id="admin-new-version-input"
-                style={{ width: '150px', borderRadius: '12px', fontSize: '0.88rem' }}
-              />
-              <input 
-                type="text" 
-                className="form-input" 
-                placeholder="Release notes (e.g. New timetable and attendance features added!)"
-                id="admin-new-version-notes"
-                style={{ flex: 1, minWidth: '220px', borderRadius: '12px', fontSize: '0.88rem' }}
-              />
-              <button 
-                type="button" 
-                className="btn btn-primary"
-                style={{ borderRadius: '12px', fontWeight: 800, padding: '10px 18px', flexShrink: 0 }}
-                onClick={async () => {
-                  const ver = document.getElementById('admin-new-version-input')?.value?.trim();
-                  const notes = document.getElementById('admin-new-version-notes')?.value?.trim() || 'New features & timetable updates released!';
-                  if (!ver) {
-                    alert('Please enter a version string like 1.3.0');
-                    return;
-                  }
-                  const ok = await saveRemoteAppVersion(ver, notes);
-                  if (ok) {
-                    alert(`Published App Version update ${ver} successfully! All users will receive the update prompt.`);
-                  } else {
-                    alert('Failed to publish version update.');
-                  }
-                }}
-              >
-                🚀 Release Update Notice
-              </button>
-            </div>
-          </div>
-
           {/* Settings & Maintenance Section */}
           <div style={{ gridColumn: '1 / -1' }}>
             <SettingsPanel 
