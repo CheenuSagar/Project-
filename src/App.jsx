@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown, UserCheck, Shield, GraduationCap, UserCog, BookOpen } from 'lucide-react';
+import { Clock, Calendar, Settings as SettingsIcon, Bell, Plus, Check, AlertCircle, Share2, CalendarDays, Menu, X, Coffee, Zap, Layers, Palette, ChevronDown, UserCheck, Shield, GraduationCap, UserCog, BookOpen, Award } from 'lucide-react';
 import StudentPanel from './components/StudentPanel';
 import TeacherPanel from './components/TeacherPanel';
 import MentorPanel from './components/MentorPanel';
 import PLPanel from './components/PLPanel';
 import AdminPanel from './components/AdminPanel';
+import StudentAttendancePortal from './components/StudentAttendancePortal';
 import AutoGeneratorModal from './components/AutoGeneratorModal';
 import Dashboard from './components/Dashboard';
 import TimetableGrid from './components/TimetableGrid';
@@ -581,12 +582,20 @@ export default function App() {
         <nav className="desktop-nav">
           <div className="nav-tabs">
             {(!userRole || userRole === 'student') && (
-              <button 
-                className={`nav-tab ${activeTab === 'student' ? 'active' : ''}`}
-                onClick={() => setActiveTab('student')}
-              >
-                <GraduationCap size={16} /> Student Portal
-              </button>
+              <>
+                <button 
+                  className={`nav-tab ${activeTab === 'student' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('student')}
+                >
+                  <GraduationCap size={16} /> Student Portal
+                </button>
+                <button 
+                  className={`nav-tab ${activeTab === 'attendance' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('attendance')}
+                >
+                  <Award size={16} style={{ color: 'var(--success)' }} /> Attendance Portal
+                </button>
+              </>
             )}
             {(!userRole || userRole === 'teacher' || userRole === 'mentor' || isAdmin) && (
               <button 
@@ -724,12 +733,20 @@ export default function App() {
               </button>
 
               {(!userRole || userRole === 'student') && (
-                <button 
-                  className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
-                  onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
-                >
-                  <GraduationCap size={18} /> Student Portal
-                </button>
+                <>
+                  <button 
+                    className={`mobile-nav-item ${activeTab === 'student' ? 'active' : ''}`}
+                    onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
+                  >
+                    <GraduationCap size={18} /> Student Portal
+                  </button>
+                  <button 
+                    className={`mobile-nav-item ${activeTab === 'attendance' ? 'active' : ''}`}
+                    onClick={() => { setActiveTab('attendance'); setIsMobileMenuOpen(false); }}
+                  >
+                    <Award size={18} style={{ color: 'var(--success)' }} /> Attendance Portal
+                  </button>
+                </>
               )}
               {(!userRole || userRole === 'teacher' || userRole === 'mentor' || isAdmin) && (
                 <button 
@@ -881,6 +898,13 @@ export default function App() {
             holidayNotice={holidayNotice}
             selectedRoom={selectedRoom}
             onOpenRoomModal={() => setIsRoomModalOpen(true)}
+          />
+        )}
+
+        {activeTab === 'attendance' && (
+          <StudentAttendancePortal 
+            userProfile={userProfile}
+            selectedSection={selectedSection}
           />
         )}
 
