@@ -109,70 +109,103 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
     );
   }
 
+  if (stage === 'auth') {
+    return (
+      <div className="fullscreen-auth-screen">
+        <div className="ambient-glow orb-1"></div>
+        <div className="ambient-glow orb-2"></div>
+        
+        <button 
+          className="onboarding-back-floating-btn"
+          onClick={() => setStage('onboarding')}
+          title="Back to Welcome Page"
+        >
+          <ChevronLeft size={18} />
+          <span>Back to Welcome</span>
+        </button>
+
+        <div className="auth-modal-wrapper animate-scale-in" style={{ width: '100%', maxWidth: '440px', padding: '20px', position: 'relative', zIndex: 10 }}>
+          <AuthModal 
+            isOpen={true}
+            onClose={() => {}}
+            userProfile={null}
+            onAuthSuccess={onAuthSuccess}
+            allowClose={false}
+            initialTab={initialTab}
+          />
+        </div>
+
+        <style>{`
+          .onboarding-back-floating-btn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000000;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+          }
+          .onboarding-back-floating-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-3px);
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div className="fullscreen-auth-screen">
       <div className="ambient-glow orb-1"></div>
       <div className="ambient-glow orb-2"></div>
 
       <div className="onboarding-main-container glass animate-fade-in">
-        {stage === 'onboarding' ? (
-          <div className="onboarding-card animate-scale-in">
-            {/* Top Visual Hero Banner */}
-            <div className="onboarding-hero-banner">
-              <div className="banner-badge">
-                <Sparkles size={14} /> ABES Academix MCA
-              </div>
-              <div className="hero-floating-icon">
-                <GraduationCap size={48} />
-              </div>
-              <div className="floating-pills">
-                <span className="pill">⚡ Live Timetable</span>
-                <span className="pill">📊 Official Attendance</span>
-                <span className="pill">🎓 Syllabus Portal</span>
-              </div>
+        <div className="onboarding-card animate-scale-in">
+          {/* Top Visual Hero Banner */}
+          <div className="onboarding-hero-banner">
+            <div className="banner-badge">
+              <Sparkles size={14} /> ABES Academix MCA
             </div>
-
-            {/* Content Text */}
-            <div className="onboarding-body text-center">
-              <h2 className="onboarding-title">Welcome to ABES MCA Portal</h2>
-              <p className="onboarding-desc">
-                Your official department hub for live section schedules, mentor attendance tracking, and academic notices.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="onboarding-actions">
-                <button 
-                  className="btn btn-primary onboarding-btn"
-                  onClick={() => setStage('auth')}
-                >
-                  <span>Get Started / Log In</span>
-                  <ArrowRight size={18} />
-                </button>
-              </div>
+            <div className="hero-floating-icon">
+              <GraduationCap size={48} />
+            </div>
+            <div className="floating-pills">
+              <span className="pill">⚡ Live Timetable</span>
+              <span className="pill">📊 Official Attendance</span>
+              <span className="pill">🎓 Syllabus Portal</span>
             </div>
           </div>
-        ) : (
-          /* Auth Stage (Login/Signup Form) with Back Button */
-          <div className="auth-stage-wrapper">
-            <button 
-              className="onboarding-back-btn"
-              onClick={() => setStage('onboarding')}
-              title="Back to Welcome Page"
-            >
-              <ChevronLeft size={20} />
-              <span>Back</span>
-            </button>
 
-            <AuthModal 
-              isOpen={true}
-              onClose={() => {}}
-              userProfile={null}
-              onAuthSuccess={onAuthSuccess}
-              allowClose={false}
-              initialTab={initialTab}
-            />
+          {/* Content Text */}
+          <div className="onboarding-body text-center">
+            <h2 className="onboarding-title">Welcome to ABES MCA Portal</h2>
+            <p className="onboarding-desc">
+              Your official department hub for live section schedules, mentor attendance tracking, and academic notices.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="onboarding-actions">
+              <button 
+                className="btn btn-primary onboarding-btn"
+                onClick={() => setStage('auth')}
+              >
+                <span>Get Started / Log In</span>
+                <ArrowRight size={18} />
+              </button>
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       <style>{`
@@ -272,29 +305,6 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           gap: 10px;
           background: linear-gradient(135deg, #6366f1, #a855f7);
           box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-        }
-        .auth-stage-wrapper {
-          position: relative;
-          padding: 12px;
-        }
-        .onboarding-back-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: #cbd5e1;
-          padding: 6px 12px;
-          border-radius: 99px;
-          font-size: 0.8rem;
-          font-weight: 700;
-          cursor: pointer;
-          margin-bottom: 10px;
-          transition: all 0.2s;
-        }
-        .onboarding-back-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-          color: #fff;
         }
       `}</style>
     </div>
