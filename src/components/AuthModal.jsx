@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, UserCheck, Shield, Key, Mail, Lock, User, 
   ArrowRight, Sparkles, X, Check, Eye, EyeOff, AlertCircle 
 } from 'lucide-react';
 import { loginFirebaseUser, registerFirebaseUser } from '../utils/firebase';
 
-export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose = true }) {
-  const [activeTab, setActiveTab] = useState('student'); // 'student' | 'teacher' | 'admin'
+export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose = true, initialTab = 'student' }) {
+  const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'teacher' | 'admin'
   const [isRegistering, setIsRegistering] = useState(false);
 
   // Form Fields
@@ -19,6 +19,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab || 'student');
+      setErrorMsg('');
+    }
+  }, [isOpen, initialTab]);
 
   if (!isOpen) return null;
 
@@ -181,14 +188,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, allowClose =
                 <input 
                   type="password"
                   className="form-input auth-input"
-                  placeholder="Enter admin passcode (e.g. abes2026)"
+                  placeholder="Enter admin security passcode..."
                   value={adminPasscode}
                   onChange={(e) => setAdminPasscode(e.target.value)}
                   autoFocus
                   required
                 />
               </div>
-              <span className="auth-help-text">Default passcode is <strong>abes2026</strong></span>
             </div>
           ) : activeTab === 'teacher' && !isRegistering ? (
             <>
