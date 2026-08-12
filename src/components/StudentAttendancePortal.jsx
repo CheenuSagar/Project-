@@ -175,17 +175,6 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
             </div>
           </div>
         </div>
-
-        {onOpenRollModal && (
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={onOpenRollModal}
-            style={{ borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}
-          >
-            <Edit3 size={14} /> Update Roll No.
-          </button>
-        )}
       </div>
 
       {/* Main Stats Grid */}
