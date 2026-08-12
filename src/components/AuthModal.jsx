@@ -680,7 +680,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               <div className="auth-input-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <label className="auth-label" style={{ margin: 0 }}>Password</label>
-                  {!isRegistering && activeTab !== 'admin' && (
+                  {!isRegistering && activeTab === 'student' && (
                     <button 
                       type="button" 
                       style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', padding: 0 }}
