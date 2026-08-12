@@ -737,56 +737,86 @@ export default function App() {
               <div 
                 className="glass" 
                 style={{ 
-                  margin: '12px 16px 6px 16px', 
-                  padding: '12px 14px', 
-                  borderRadius: '16px', 
+                  margin: '12px 16px 10px 16px', 
+                  padding: '14px 16px', 
+                  borderRadius: '20px', 
                   background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(168, 85, 247, 0.08))',
-                  border: '1px solid var(--border-light)',
+                  border: '1.5px solid var(--primary-glow)',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '10px'
+                  flexDirection: 'column',
+                  gap: '12px'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 6px 16px var(--primary-glow)' }}>
-                    {(userProfile.displayName || 'S').charAt(0).toUpperCase()}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '46px', height: '46px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.4rem', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 6px 18px var(--primary-glow)' }}>
+                    {userProfile.avatarEmoji || (userProfile.displayName || 'S').charAt(0).toUpperCase()}
                   </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '1.02rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>
                       {userProfile.displayName || 'MCA Student'}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {userProfile.email || '230032010001@abes.ac.in'}
+                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary)', marginTop: '3px' }}>
+                      Roll No: {userProfile.rollNumber || userProfile.email?.split('@')[0] || '230032010001'}
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', wordBreak: 'break-all', marginTop: '1px' }}>
+                      {userProfile.email}
                     </div>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsAuthModalOpen(true);
-                  }}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '10px',
-                    background: 'rgba(239, 68, 68, 0.12)',
-                    border: '1px solid rgba(239, 68, 68, 0.25)',
-                    color: 'var(--danger)',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    flexShrink: 0
-                  }}
-                  title="Manage Profile / Logout"
-                >
-                  <LogOut size={13} />
-                  <span>Profile</span>
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsAuthModalOpen(true);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '12px',
+                      background: 'var(--primary-gradient)',
+                      border: 'none',
+                      color: '#fff',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: '0 4px 12px var(--primary-glow)'
+                    }}
+                  >
+                    <User size={14} />
+                    <span>My Profile & Avatars</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsAuthModalOpen(true);
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '12px',
+                      background: 'rgba(239, 68, 68, 0.12)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: 'var(--danger)',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="Sign Out"
+                  >
+                    <LogOut size={14} />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             )}
 

@@ -180,20 +180,57 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         {userProfile ? (
           <div style={{ padding: '10px 0' }}>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '1.8rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', boxShadow: '0 8px 24px rgba(99, 102, 241, 0.35)' }}>
-                {userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : '👤'}
+              <div style={{ width: '68px', height: '68px', borderRadius: '22px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: '#fff', fontSize: '2rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', boxShadow: '0 8px 24px var(--primary-glow)' }}>
+                {userProfile.avatarEmoji || (userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : '🎓')}
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                {userProfile.displayName || 'Logged In User'}
+              <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                {userProfile.displayName || 'Logged In Student'}
               </h3>
               <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {userProfile.email} • <span style={{ textTransform: 'capitalize', fontWeight: 700, color: 'var(--primary)' }}>{userProfile.role || 'Student'}</span>
+                {userProfile.email}
               </p>
-              {userProfile.rollNumber && (
-                <span className="preset-chip active" style={{ marginTop: '8px', display: 'inline-block', fontSize: '0.78rem' }}>
-                  Roll No: {userProfile.rollNumber}
+              <div style={{ marginTop: '8px', display: 'flex', gap: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <span className="preset-chip active" style={{ fontSize: '0.78rem' }}>
+                  Role: <strong style={{ textTransform: 'capitalize' }}>{userProfile.role || 'Student'}</strong>
                 </span>
-              )}
+                <span className="preset-chip" style={{ fontSize: '0.78rem' }}>
+                  Roll No: <strong>{userProfile.rollNumber || userProfile.email?.split('@')[0] || '230032010001'}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Choose Profile Avatar Selector (6 Avatars) */}
+            <div style={{ marginBottom: '20px', padding: '14px', borderRadius: '16px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                🎨 Choose Your Profile Avatar (6 Avatars)
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}>
+                {['🎓', '💻', '⚡', '🚀', '👑', '🎯'].map((av, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      const updated = { ...userProfile, avatarEmoji: av };
+                      try {
+                        localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+                      } catch (e) {}
+                      if (onAuthSuccess) onAuthSuccess(updated);
+                    }}
+                    style={{
+                      fontSize: '1.4rem',
+                      padding: '8px 0',
+                      borderRadius: '12px',
+                      border: userProfile.avatarEmoji === av ? '2px solid var(--primary)' : '1px solid var(--border-light)',
+                      background: userProfile.avatarEmoji === av ? 'var(--primary-glow)' : 'var(--bg-surface)',
+                      cursor: 'pointer',
+                      transition: 'transform 0.15s ease'
+                    }}
+                    title={`Select Avatar ${av}`}
+                  >
+                    {av}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Logout & Delete Account Actions */}
