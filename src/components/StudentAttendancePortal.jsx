@@ -174,35 +174,6 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
             </span>
           </div>
         </div>
-
-        {/* Card 2: Smart 75% Bunk & Shortage Margin */}
-        <div className="glass card-hover-effect" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', background: isEligible ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(168, 85, 247, 0.05))' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(245, 158, 11, 0.08))' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-            <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {isEligible ? '75% Criteria Bunk Margin' : 'Required Attendance Action'}
-              </span>
-              <h3 style={{ margin: '6px 0 0 0', fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)' }}>
-                {isEligible ? (
-                  <span>{maxBunksAvailable75} Bunks Available 🏖️</span>
-                ) : (
-                  <span>Attend Next {requiredClassesTo75} Classes ⚠️</span>
-                )}
-              </h3>
-            </div>
-            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Flame size={24} />
-            </div>
-          </div>
-
-          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            {isEligible ? (
-              <span>You are safely above the <strong>75% exam criteria</strong>. You can bunk up to <strong>{maxBunksAvailable75}</strong> upcoming lectures without falling below 75%!</span>
-            ) : (
-              <span>Your attendance is below 75%. You must attend <strong>{requiredClassesTo75} consecutive lectures</strong> to restore your exam eligibility threshold!</span>
-            )}
-          </p>
-        </div>
       </div>
 
       {/* Target Percentage Slider Calculator Card */}
