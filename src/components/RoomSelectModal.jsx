@@ -23,17 +23,15 @@ export default function RoomSelectModal({ isOpen, onClose, onSelectRoom, current
     setRoomNumInput(numOnly);
     const finalRoom = `AB-${numOnly}`;
     onSelectRoom(finalRoom);
+    if (onClose) onClose();
   };
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
-    const cleaned = roomNumInput.replace(/[^0-9]/g, '').trim();
-    if (!cleaned) {
-      alert('Please enter a room number (e.g. 207, 208, 209).');
-      return;
-    }
+    const cleaned = roomNumInput.replace(/[^0-9]/g, '').trim() || '207';
     const finalRoom = `AB-${cleaned}`;
     onSelectRoom(finalRoom);
+    if (onClose) onClose();
   };
 
   return (
