@@ -1033,9 +1033,15 @@ export default function App() {
           setUserProfile(null);
           setUserRole('student');
           setIsAdmin(false);
+          setSelectedSection('A');
+          setSelectedRoom('AB-207');
+          setActiveTab('student');
           try {
             localStorage.removeItem('lecalert_user_profile');
             localStorage.setItem('lecalert_user_role', 'student');
+            localStorage.removeItem('lecalert_selected_section');
+            localStorage.removeItem('lecalert_selected_room');
+            localStorage.removeItem('lecalert_is_admin');
           } catch (e) {}
         }}
         onAuthSuccess={(profile) => {
