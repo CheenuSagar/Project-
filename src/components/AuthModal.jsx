@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { loginFirebaseUser, registerFirebaseUser, loginWithGoogleFirebase, deleteFirebaseAccount, logoutFirebaseUser, resetFirebasePassword } from '../utils/firebase';
 
-export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSuccess, userProfile, allowClose = true, initialTab = 'student' }) {
+export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSuccess, userProfile, allowClose = true, initialTab = 'student', isEmbedded = false }) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [authStep, setAuthStep] = useState('choice'); // 'choice' | 'credentials'
   const [activeTab, setActiveTab] = useState(initialTab || 'student'); // 'student' | 'mentor' | 'pl' | 'admin'
@@ -155,14 +155,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     }
   };
 
-  return (
-    <div className="auth-modal-overlay">
-      <div className="auth-modal-container glass animate-fade-in">
-        {allowClose && (
-          <button className="auth-modal-close" onClick={onClose} title="Close">
-            <X size={20} />
-          </button>
-        )}
+  const contentMarkup = (
+    <div className="auth-modal-container glass animate-fade-in" style={isEmbedded ? { boxShadow: 'none', border: 'none', background: 'transparent', padding: 0, maxWidth: '100%' } : {}}>
+      {allowClose && (
+        <button className="auth-modal-close" onClick={onClose} title="Close">
+          <X size={20} />
+        </button>
+      )}
 
         {/* Logged In User Profile & Play Store Compliant Delete Account */}
         {userProfile ? (
@@ -868,7 +867,14 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           justify-content: center;
         }
       `}</style>
-      </div>
+    </div>
+  );
+
+  if (isEmbedded) return contentMarkup;
+
+  return (
+    <div className="auth-modal-overlay">
+      {contentMarkup}
     </div>
   );
 }

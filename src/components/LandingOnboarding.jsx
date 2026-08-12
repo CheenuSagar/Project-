@@ -9,10 +9,10 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
   const [stage, setStage] = useState('splash'); // 'splash' | 'onboarding' | 'auth'
 
   useEffect(() => {
-    // 1.4 second Splash screen auto-advance to Onboarding
+    // 1.2 second Splash screen auto-advance to Auth Login Choice stage
     const timer = setTimeout(() => {
-      setStage('onboarding');
-    }, 1400);
+      setStage('auth');
+    }, 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -187,6 +187,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
                 onAuthSuccess={onAuthSuccess}
                 allowClose={false}
                 initialTab={initialTab}
+                isEmbedded={true}
               />
             )}
           </div>
