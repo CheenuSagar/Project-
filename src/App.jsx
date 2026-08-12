@@ -18,6 +18,7 @@ import RoleSelectionModal from './components/RoleSelectionModal';
 import TermsModal from './components/TermsModal';
 import AuthModal from './components/AuthModal';
 import RoomSelectModal from './components/RoomSelectModal';
+import RollNumberModal from './components/RollNumberModal';
 import { MessageSquare, MapPin, User, LogOut } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -1023,16 +1024,17 @@ export default function App() {
         allowClose={!!userRole}
       />
 
-      {/* Full Authentication Modal */}
+      {/* Auth Modal */}
       <AuthModal 
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onAuthSuccess={(profile) => {
           setUserProfile(profile);
-          setUserRole(profile.role);
+          setUserRole(profile.role || 'student');
+          setIsAdmin(profile.role === 'admin');
           try {
-            localStorage.setItem('lecalert_user_role', profile.role);
             localStorage.setItem('lecalert_user_profile', JSON.stringify(profile));
+            localStorage.setItem('lecalert_user_role', profile.role || 'student');
           } catch (e) {}
           setIsAuthModalOpen(false);
 

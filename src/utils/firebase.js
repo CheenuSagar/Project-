@@ -5,17 +5,17 @@ import {
 } from 'firebase/firestore';
 import { 
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-  signOut, onAuthStateChanged, updateProfile 
+  signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup 
 } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBF5sN0dMtfSlnRLfOJtCMxoHxqt5c6fVs",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mca-timetable.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mca-timetable",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mca-timetable.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "57704066762",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:57704066762:web:304dcf6b8113e8a8600e33",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-Z2JHSER4F6"
 };
 
 // Initialize Firebase App
@@ -281,6 +281,63 @@ export async function updateUserRoomNumber(uid, roomNumber) {
     return formattedRoom;
   } catch (e) {
     console.error('Error updating user room:', e);
+  }
+}
+
+/**
+ * Google Sign-In with 1-Tap Auth
+ */
+export async function loginWithGoogleFirebase() {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userDocRef);
+
+    let profileData = {};
+    if (userSnap.exists()) {
+      profileData = userSnap.data();
+    } else {
+      profileData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || 'Student',
+        role: 'student',
+        avatarId: 'avatar1',
+        rollNumber: '',
+        createdAt: new Date().toISOString()
+      };
+      await setDoc(userDocRef, profileData);
+    }
+
+    return { 
+      success: true, 
+      user, 
+      role: profileData.role || 'student', 
+      displayName: profileData.displayName || user.displayName || 'Student',
+      avatarId: profileData.avatarId || 'avatar1',
+      rollNumber: profileData.rollNumber || ''
+    };
+  } catch (error) {
+    console.error('Google Sign-In error:', error);
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Save / Update Student Roll Number in Firestore
+ */
+export async function saveUserRollNumber(uid, rollNumber) {
+  if (!uid) return false;
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    await setDoc(userDocRef, { rollNumber }, { merge: true });
+    return true;
+  } catch (e) {
+    console.error('Error saving roll number:', e);
+    return false;
   }
 }
 
