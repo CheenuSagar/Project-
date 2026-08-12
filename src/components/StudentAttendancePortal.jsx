@@ -347,7 +347,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
                     </div>
                   </div>
 
-                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: subEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: subEligible ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: subEligible ? 'var(--success)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {subEligible ? <CheckCircle2 size={20} /> : <AlertTriangle size={20} />}
                   </div>
                 </div>
