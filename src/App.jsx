@@ -1138,6 +1138,7 @@ export default function App() {
         onClose={() => setIsRoomModalOpen(false)}
         currentRoom={selectedRoom}
         onSelectRoom={(roomNum) => {
+          setIsRoomModalOpen(false);
           const rNum = roomNum ? roomNum.replace(/[^0-9]/g, '') : '207';
           const fullRoom = `AB-${rNum}`;
           setSelectedRoom(fullRoom);
@@ -1157,11 +1158,8 @@ export default function App() {
           }
 
           if (userProfile?.uid) {
-            try {
-              updateUserRoomNumber(userProfile.uid, fullRoom);
-            } catch (e) {}
+            updateUserRoomNumber(userProfile.uid, fullRoom).catch(() => {});
           }
-          setIsRoomModalOpen(false);
         }}
         allowClose={true}
       />

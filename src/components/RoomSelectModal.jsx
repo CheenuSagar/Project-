@@ -22,16 +22,24 @@ export default function RoomSelectModal({ isOpen, onClose, onSelectRoom, current
     const numOnly = fullRoom.replace(/^AB-?/i, '');
     setRoomNumInput(numOnly);
     const finalRoom = `AB-${numOnly}`;
-    onSelectRoom(finalRoom);
     if (onClose) onClose();
+    try {
+      if (onSelectRoom) onSelectRoom(finalRoom);
+    } catch (err) {
+      console.error('onSelectRoom error:', err);
+    }
   };
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
     const cleaned = roomNumInput.replace(/[^0-9]/g, '').trim() || '207';
     const finalRoom = `AB-${cleaned}`;
-    onSelectRoom(finalRoom);
     if (onClose) onClose();
+    try {
+      if (onSelectRoom) onSelectRoom(finalRoom);
+    } catch (err) {
+      console.error('onSelectRoom error:', err);
+    }
   };
 
   return (
