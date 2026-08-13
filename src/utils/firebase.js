@@ -59,10 +59,10 @@ export async function saveRemoteTimetable(timetableArray) {
       data: timetableArray,
       updatedAt: new Date().toISOString()
     });
-    return true;
+    return { success: true };
   } catch (e) {
     console.error('Failed to save remote timetable:', e);
-    return false;
+    return { success: false, error: e.message || String(e) };
   }
 }
 
@@ -101,7 +101,14 @@ export async function saveRemoteHolidayNotice(noticeObj) {
     return { success: true };
   } catch (e) {
     console.error('❌ Failed to save remote holiday notice to Firestore:', e);
-    return { success: false, error: e.message || String(e) };
+    const errMsg = e.message || String(e);
+    if (errMsg.includes('permission') || errMsg.includes('Missing or insufficient permissions')) {
+      return { 
+        success: false, 
+        error: 'Missing or insufficient permissions. Please update Cloud Firestore Rules in Firebase Console (set rules to allow read, write: if true; for /notices collection).' 
+      };
+    }
+    return { success: false, error: errMsg };
   }
 }
 
@@ -135,10 +142,10 @@ export async function saveRemoteAcademicEvents(eventsArray) {
       events: eventsArray,
       updatedAt: new Date().toISOString()
     });
-    return true;
+    return { success: true };
   } catch (e) {
     console.error('Failed to save remote academic events:', e);
-    return false;
+    return { success: false, error: e.message || String(e) };
   }
 }
 
@@ -175,10 +182,10 @@ export async function saveRemoteAppVersion(versionStr, releaseNotes = 'New featu
       releaseNotes,
       updatedAt: new Date().toISOString()
     });
-    return true;
+    return { success: true };
   } catch (e) {
     console.error('Failed to publish app version:', e);
-    return false;
+    return { success: false, error: e.message || String(e) };
   }
 }
 

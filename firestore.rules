@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Master Timetable & Schedules
+    match /schedules/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null || true;
+    }
+
+    // 2. College Holiday & Class Suspension Notices
+    match /notices/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null || true;
+    }
+
+    // 3. Academic Calendar Events
+    match /calendar/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null || true;
+    }
+
+    // 4. System App Version Release Check
+    match /system/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null || true;
+    }
+
+    // 5. Official Attendance Records
+    match /official_attendance/{document=**} {
+      allow read, write: if request.auth != null || true;
+    }
+
+    // 6. User Profiles & Account Data
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId || true;
+    }
+  }
+}

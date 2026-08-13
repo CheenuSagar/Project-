@@ -256,17 +256,14 @@ export default function Dashboard({
               <Layers size={18} style={{ color: 'var(--secondary)' }} />
             </div>
             <div className="stat-details">
-              <span className="stat-label">Active Section</span>
-              <div className="preset-chip-group">
-                {['A', 'B', 'C'].map((sec) => (
-                  <button 
-                    key={sec} 
-                    className={`preset-chip ${selectedSection === sec ? 'active' : ''}`}
-                    onClick={() => onLoadPreset(sec)}
-                  >
-                    Sec {sec}
-                  </button>
-                ))}
+              <span className="stat-label">Assigned Section & Room</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                <span className="badge badge-primary" style={{ fontSize: '0.85rem', padding: '4px 10px', fontWeight: 700, borderRadius: '8px' }}>
+                  Section {selectedSection || 'B'}
+                </span>
+                <span className="badge badge-secondary" style={{ fontSize: '0.82rem', padding: '4px 10px', fontWeight: 600, borderRadius: '8px' }}>
+                  {selectedRoom || 'AB-208'}
+                </span>
               </div>
             </div>
           </div>
