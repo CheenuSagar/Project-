@@ -92,14 +92,16 @@ export function subscribeToRemoteHolidayNotice(onData) {
 export async function saveRemoteHolidayNotice(noticeObj) {
   try {
     const docRef = doc(db, 'notices', 'holiday_notice');
-    await setDoc(docRef, {
+    const payload = {
       notice: noticeObj,
       updatedAt: new Date().toISOString()
-    });
-    return true;
+    };
+    await setDoc(docRef, payload);
+    console.log('✅ Successfully published remote holiday notice to Firestore:', payload);
+    return { success: true };
   } catch (e) {
-    console.error('Failed to save remote holiday notice:', e);
-    return false;
+    console.error('❌ Failed to save remote holiday notice to Firestore:', e);
+    return { success: false, error: e.message || String(e) };
   }
 }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abes-academix-v14_clean_name';
+const CACHE_NAME = 'abes-academix-v16_force_fresh_sync';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

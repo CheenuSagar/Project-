@@ -1114,10 +1114,11 @@ export default function App() {
               });
             }}
             holidayNotice={holidayNotice}
-            onSaveHolidayNotice={(newNotice) => {
+            onSaveHolidayNotice={async (newNotice) => {
               setHolidayNotice(newNotice);
               saveHolidayNotice(newNotice);
-              saveRemoteHolidayNotice(newNotice);
+              const result = await saveRemoteHolidayNotice(newNotice);
+              return result;
             }}
             onOpenTerms={() => setIsTermsOpen(true)}
           />

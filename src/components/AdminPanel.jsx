@@ -36,6 +36,7 @@ export default function AdminPanel({
   const [editingTeacherPin, setEditingTeacherPin] = useState({});
 
   const [holidayForm, setHolidayForm] = useState(() => holidayNotice || DEFAULT_HOLIDAY_NOTICE);
+  const [isPublishingHoliday, setIsPublishingHoliday] = useState(false);
 
   useEffect(() => {
     if (holidayNotice) {
@@ -43,19 +44,41 @@ export default function AdminPanel({
     }
   }, [holidayNotice]);
 
-  const handleSaveHoliday = () => {
-    if (onSaveHolidayNotice) {
-      onSaveHolidayNotice(holidayForm);
-      alert('College Holiday & Class Suspension notice saved successfully!');
+  const handleSaveHoliday = async () => {
+    setIsPublishingHoliday(true);
+    try {
+      if (onSaveHolidayNotice) {
+        const res = await onSaveHolidayNotice(holidayForm);
+        if (res && res.success === false) {
+          alert(`⚠️ Notice saved locally, but failed to upload to Firebase server!\n\nError: ${res.error || 'Network or Permission Error'}`);
+        } else {
+          alert('✅ Notice Published Live to Firebase Server!\n\nAll student phones and devices will show College Closed / Classes Suspended in real-time.');
+        }
+      }
+    } catch (e) {
+      alert(`Notice save error: ${e.message}`);
+    } finally {
+      setIsPublishingHoliday(false);
     }
   };
 
-  const handleClearHoliday = () => {
-    const cleared = { ...holidayForm, active: false };
-    setHolidayForm(cleared);
-    if (onSaveHolidayNotice) {
-      onSaveHolidayNotice(cleared);
-      alert('Holiday notice deactivated. Normal classes & lecture notifications resumed!');
+  const handleClearHoliday = async () => {
+    setIsPublishingHoliday(true);
+    try {
+      const cleared = { ...holidayForm, active: false };
+      setHolidayForm(cleared);
+      if (onSaveHolidayNotice) {
+        const res = await onSaveHolidayNotice(cleared);
+        if (res && res.success === false) {
+          alert(`⚠️ Notice cleared locally, but failed to sync with Firebase!\n\nError: ${res.error || 'Network Error'}`);
+        } else {
+          alert('✅ Holiday notice deactivated on Firebase! Normal classes & lecture notifications resumed.');
+        }
+      }
+    } catch (e) {
+      alert(`Clear notice error: ${e.message}`);
+    } finally {
+      setIsPublishingHoliday(false);
     }
   };
 
@@ -387,11 +410,11 @@ export default function AdminPanel({
               </div>
 
               <div style={{ display: 'flex', gap: '12px' }}>
-                <button className="btn btn-primary btn-sm" onClick={handleSaveHoliday}>
-                  <Check size={14} /> Save & Publish Notice
+                <button className="btn btn-primary btn-sm" onClick={handleSaveHoliday} disabled={isPublishingHoliday}>
+                  <Check size={14} /> {isPublishingHoliday ? 'Publishing to Firebase...' : 'Save & Publish Notice'}
                 </button>
                 {holidayForm.active && (
-                  <button className="btn btn-secondary btn-sm" onClick={handleClearHoliday}>
+                  <button className="btn btn-secondary btn-sm" onClick={handleClearHoliday} disabled={isPublishingHoliday}>
                     Resume Normal Classes (Clear Notice)
                   </button>
                 )}
