@@ -4,6 +4,7 @@ import {
   CalendarDays, BookOpen, ChevronLeft, User, UserCheck, Shield 
 } from 'lucide-react';
 import AuthModal from './AuthModal';
+import LogoSplash from './LogoSplash';
 
 export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student' }) {
   const [stage, setStage] = useState('splash'); // 'splash' | 'onboarding' | 'auth'
@@ -17,94 +18,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
   }, []);
 
   if (stage === 'splash') {
-    return (
-      <div className="splash-screen-wrapper">
-        <div className="ambient-glow orb-1"></div>
-        <div className="ambient-glow orb-2"></div>
-        
-        <div className="splash-card animate-scale-in">
-          <div className="splash-logo-box">
-            <Bell size={42} className="bell-glow-animation" />
-          </div>
-          <h1 className="splash-title">MCA TIME TABLE</h1>
-          <p className="splash-subtitle">ABES ENGINEERING COLLEGE</p>
-          <div className="splash-loader-bar">
-            <div className="splash-loader-progress"></div>
-          </div>
-        </div>
-
-        <style>{`
-          .splash-screen-wrapper {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f1f5f9 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-          }
-          .splash-card {
-            text-align: center;
-            color: #0f172a;
-          }
-          .splash-logo-box {
-            width: 84px;
-            height: 84px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.35);
-          }
-          .bell-glow-animation {
-            color: #fff;
-            animation: ringBell 1.5s ease-in-out infinite;
-          }
-          @keyframes ringBell {
-            0%, 100% { transform: rotate(0deg); }
-            20% { transform: rotate(15deg); }
-            40% { transform: rotate(-15deg); }
-            60% { transform: rotate(10deg); }
-            80% { transform: rotate(-10deg); }
-          }
-          .splash-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            letter-spacing: 0.08em;
-            margin: 0;
-            color: #0f172a;
-          }
-          .splash-subtitle {
-            margin: 6px 0 24px 0;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #64748b;
-            letter-spacing: 0.15em;
-          }
-          .splash-loader-bar {
-            width: 140px;
-            height: 4px;
-            background: rgba(79, 70, 229, 0.15);
-            border-radius: 99px;
-            margin: 0 auto;
-            overflow: hidden;
-          }
-          .splash-loader-progress {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-            border-radius: 99px;
-            animation: fillProgress 1.4s ease-in-out forwards;
-          }
-          @keyframes fillProgress {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(0%); }
-          }
-        `}</style>
-      </div>
-    );
+    return <LogoSplash />;
   }
 
   return (

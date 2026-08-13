@@ -21,6 +21,7 @@ import AuthModal from './components/AuthModal';
 import RoomSelectModal from './components/RoomSelectModal';
 import RollNumberModal from './components/RollNumberModal';
 import LandingOnboarding from './components/LandingOnboarding';
+import LogoSplash from './components/LogoSplash';
 import { MessageSquare, MapPin, User, LogOut } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -155,6 +156,14 @@ export default function App() {
   const [isRollModalOpen, setIsRollModalOpen] = useState(false);
   const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
   const [remoteAppVersionNotice, setRemoteAppVersionNotice] = useState(null);
+  const [showAppSplash, setShowAppSplash] = useState(true);
+
+  useEffect(() => {
+    const splashTimer = setTimeout(() => {
+      setShowAppSplash(false);
+    }, 1200);
+    return () => clearTimeout(splashTimer);
+  }, []);
 
   // Apply theme to document root
   useEffect(() => {
@@ -587,6 +596,7 @@ export default function App() {
 
   return (
     <div className="app-layout">
+      {showAppSplash && <LogoSplash />}
       {/* Navigation Header */}
       <header className="app-header glass">
         <div className="brand-logo" onClick={handleLogoClick} title="MCA Time Table (Tap 5 times for Secret Admin Access)">
