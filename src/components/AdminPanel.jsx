@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, Lock, Unlock, Zap, RefreshCw, FileText, 
   Download, Upload, Trash2, Check, AlertTriangle, Plus, Edit2, UserCheck, Layers, MapPin, Key, Palmtree
@@ -36,6 +36,12 @@ export default function AdminPanel({
   const [editingTeacherPin, setEditingTeacherPin] = useState({});
 
   const [holidayForm, setHolidayForm] = useState(() => holidayNotice || DEFAULT_HOLIDAY_NOTICE);
+
+  useEffect(() => {
+    if (holidayNotice) {
+      setHolidayForm(holidayNotice);
+    }
+  }, [holidayNotice]);
 
   const handleSaveHoliday = () => {
     if (onSaveHolidayNotice) {

@@ -1117,6 +1117,7 @@ export default function App() {
             onSaveHolidayNotice={(newNotice) => {
               setHolidayNotice(newNotice);
               saveHolidayNotice(newNotice);
+              saveRemoteHolidayNotice(newNotice);
             }}
             onOpenTerms={() => setIsTermsOpen(true)}
           />

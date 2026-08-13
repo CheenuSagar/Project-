@@ -2380,14 +2380,49 @@ export function verifyTeacherPIN(teacherName, inputPin, pinsMap) {
   return String(inputPin).trim() === String(expectedPin).trim();
 }
 
+export function normalizeDateStr(dateInput) {
+  if (!dateInput) return '';
+  if (typeof dateInput === 'string') {
+    const trimmed = dateInput.trim();
+    // Format DD-MM-YYYY or DD/MM/YYYY (e.g. 13-08-2026)
+    if (/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/.test(trimmed)) {
+      const parts = trimmed.split(/[-\/]/);
+      const d = parts[0].padStart(2, '0');
+      const m = parts[1].padStart(2, '0');
+      const y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+    // Format YYYY-MM-DD or YYYY/MM/DD
+    if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(trimmed)) {
+      const parts = trimmed.split(/[-\/]/);
+      const y = parts[0];
+      const m = parts[1].padStart(2, '0');
+      const d = parts[2].padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+  }
+  try {
+    const dt = new Date(dateInput);
+    if (!isNaN(dt.getTime())) {
+      const yyyy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, '0');
+      const dd = String(dt.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+  } catch (e) {}
+  return String(dateInput);
+}
+
 const HOLIDAY_NOTICE_STORAGE_KEY = 'lecalert_holiday_notice';
+
+const todayFormatted = new Date().toISOString().split('T')[0];
 
 export const DEFAULT_HOLIDAY_NOTICE = {
   active: false,
   title: "🌴 College Closed / Classes Suspended",
-  startDate: "2026-08-04",
-  endDate: "2026-08-12",
-  reason: "Holidays have ended. Regular classes and timetables are fully active!"
+  startDate: todayFormatted,
+  endDate: todayFormatted,
+  reason: "College is closed and all regular classes stand suspended."
 };
 
 export function loadHolidayNotice() {
@@ -2410,15 +2445,14 @@ export function saveHolidayNotice(noticeObj) {
 
 export function getTodayHolidayInfo(noticeObj = null, checkDate = new Date()) {
   const notice = noticeObj || loadHolidayNotice();
-
-  const yyyy = checkDate.getFullYear();
-  const mm = String(checkDate.getMonth() + 1).padStart(2, '0');
-  const dd = String(checkDate.getDate()).padStart(2, '0');
-  const checkStr = `${yyyy}-${mm}-${dd}`;
+  const checkStr = normalizeDateStr(checkDate);
 
   // 1. Check active holiday notice from Admin Panel
   if (notice && notice.active && notice.startDate && notice.endDate) {
-    if (checkStr >= notice.startDate && checkStr <= notice.endDate) {
+    const startStr = normalizeDateStr(notice.startDate);
+    const endStr = normalizeDateStr(notice.endDate);
+
+    if (checkStr >= startStr && checkStr <= endStr) {
       return {
         isHoliday: true,
         title: notice.title || 'College Closed / Classes Suspended',
@@ -2436,8 +2470,9 @@ export function getTodayHolidayInfo(noticeObj = null, checkDate = new Date()) {
     if (Array.isArray(academicEvents)) {
       const found = academicEvents.find(ev => {
         if (ev && ev.category === 'Holidays' && ev.startDate) {
-          const end = ev.endDate || ev.startDate;
-          return checkStr >= ev.startDate && checkStr <= end;
+          const startStr = normalizeDateStr(ev.startDate);
+          const endStr = normalizeDateStr(ev.endDate || ev.startDate);
+          return checkStr >= startStr && checkStr <= endStr;
         }
         return false;
       });
