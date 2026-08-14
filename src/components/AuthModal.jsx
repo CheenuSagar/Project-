@@ -50,6 +50,23 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     resetForm();
   };
 
+// Cryptographic SHA-256 Hashes for Secure Credentials (Zero Plaintext Passwords in Source Code)
+const CREDENTIAL_HASHES = {
+  MASTERMIND_PASS: '2071810017735617cc09af7c114a19863f8e1ca8ae82bc4951a6d5e337e88aa6',
+  ADMIN_PASS: 'd89a08370f1157a589cebe086324544139adef1c0e118947390337227b2ddddd',
+  PL_EMAIL: '9e470c9284993e6cf7fd091c8c40a73c0ea403e19b0219c2beaf83c43a3264b6',
+  PL_PASS: '6538b0aad131e0bd1223c318a2e2a4556901fd4def1264abab53d2973704b1d7',
+  MENTOR_EMAIL: '5c3f548fb90fe1bcaf2a6015cadbc661c3f6d3f7dfdaa0ddb9faeddfdd7ad7d0',
+  MENTOR_PASS: '8affad73b90bbc135002be6f35e09683625b628048d5de8d26c08007c84595b6'
+};
+
+const sha256Hash = async (str) => {
+  if (!str) return '';
+  const msgBuffer = new TextEncoder().encode(str.trim());
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -60,26 +77,17 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       const inputEmail = (email || '').trim();
       const inputLower = inputEmail.toLowerCase();
 
-      // Check if input is invalid/malformed first for rejection tests
-      const isInvalidEmailFormat = inputEmail && !inputEmail.includes('@') && !/^\d+$/.test(inputEmail) && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower);
-
-      if (isInvalidEmailFormat || (inputEmail && !inputEmail.endsWith('@abes.ac.in') && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower) && !/^\d+$/.test(inputEmail))) {
-        setErrorMsg('Access Denied! Official college Mail ID se hi login hoga.');
-        setLoading(false);
-        return;
-      }
-
-      // Check for explicit demo / test credentials
-      const isUniversalUser = inputLower === 'admin@mca' || inputLower === 'admin' || inputLower === 'admin@abes.ac.in';
-      const isUniversalPass = enteredPass === '1234' || enteredPass === 'abes2026' || enteredPass === 'admin123';
+      const passHash = await sha256Hash(enteredPass);
+      const emailHash = await sha256Hash(inputLower);
 
       if (activeTab === 'admin') {
-        const isAdminPass = enteredPass === '99971227157505630752' || enteredPass === 'Saloni@12345';
+        const isMastermind = passHash === CREDENTIAL_HASHES.MASTERMIND_PASS;
+        const isAdminPass = isMastermind || passHash === CREDENTIAL_HASHES.ADMIN_PASS;
         if (isAdminPass) {
           onAuthSuccess({
             role: 'admin',
-            displayName: enteredPass === 'Saloni@12345' ? 'Mastermind Administrator' : 'Department Administrator',
-            email: 'admin@abes.ac.in',
+            displayName: isMastermind ? 'Mastermind Administrator' : 'Department Administrator',
+            email: 'admin@college.edu',
             roomNumber: ''
           });
           resetForm();
@@ -93,27 +101,27 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       }
 
       if (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') {
-        const isPLMatch = activeTab === 'pl' && (inputLower === 'adminpl@abes.ac.in' || inputLower === 'adminpl' || facultyPin === '28102005') && (enteredPass === '28102005' || facultyPin === '28102005');
-        const isMentorMatch = (activeTab === 'mentor' || activeTab === 'teacher') && (inputLower === 'mentor@abes.ac.in' || inputLower === 'mentor' || facultyPin === '245101' || facultyPin === '1001') && (enteredPass === '245101' || enteredPass === '1001' || facultyPin === '245101' || facultyPin === '1001');
+        const isPLMatch = activeTab === 'pl' && (emailHash === CREDENTIAL_HASHES.PL_EMAIL || passHash === CREDENTIAL_HASHES.PL_PASS) && (passHash === CREDENTIAL_HASHES.PL_PASS);
+        const isMentorMatch = (activeTab === 'mentor' || activeTab === 'teacher') && (emailHash === CREDENTIAL_HASHES.MENTOR_EMAIL || passHash === CREDENTIAL_HASHES.MENTOR_PASS) && (passHash === CREDENTIAL_HASHES.MENTOR_PASS);
 
         if (isPLMatch) {
           onAuthSuccess({
             role: 'pl',
             displayName: 'Program Leader (MCA)',
-            email: 'adminpl@abes.ac.in',
-            facultyPin: '28102005'
+            email: inputEmail || 'pl@college.edu',
+            facultyPin: '******'
           });
           resetForm();
           setLoading(false);
           return;
         }
 
-        if (isMentorMatch || isUniversalUser || isUniversalPass || (facultyPin && facultyPin.trim().length >= 4 && facultyPin !== '0000' && facultyPin !== '9999')) {
+        if (isMentorMatch) {
           onAuthSuccess({
             role: activeTab,
-            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'teacher' ? 'Faculty Member' : 'Faculty Mentor'),
-            email: inputEmail || (activeTab === 'pl' ? 'adminpl@abes.ac.in' : 'mentor@abes.ac.in'),
-            facultyPin: facultyPin.trim() || (activeTab === 'pl' ? '28102005' : '245101')
+            displayName: displayName.trim() || 'Faculty Mentor',
+            email: inputEmail || 'mentor@college.edu',
+            facultyPin: '******'
           });
           resetForm();
           setLoading(false);
