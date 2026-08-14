@@ -1,0 +1,138 @@
+================================================================================
+                    PRODUCT REQUIREMENT DOCUMENT (PRD)
+          ABES Academix — MCA Time Table & Attendance Management System
+================================================================================
+
+1. PRODUCT OVERVIEW & VISION
+--------------------------------------------------------------------------------
+ABES Academix is a progressive web and native Android mobile application 
+designed specifically for the Master of Computer Applications (MCA) department 
+at ABES Engineering College. 
+
+The system provides live section schedule management (Sections III-A, III-B, III-C), 
+automated pre-lecture alarm notifications, faculty proxy/substitution alerts, 
+mentor attendance logging, official academic calendar integration, and an 
+interactive syllabus tracker.
+
+Key Value Proposition:
+  - Zero Missed Classes: Proactive desktop, in-app, and native mobile alarms fire 
+    5-15 minutes before every lecture.
+  - Dynamic Section Selection & Switching: Instant 1-tap switching and persistent 
+    section assignment across Section III-A (AB-207), Section III-B (AB-208), 
+    and Section III-C (AB-209).
+  - Multi-Role Portals: Unified access for Students, Teachers, Mentors, 
+    Program Leaders (PL), and System Administrators.
+  - Offline & Low-Bandwidth Support: Local storage caching paired with Capacitor 
+    local background notifications ensures reminders work without internet access.
+
+
+2. TARGET AUDIENCE & PERSONAS
+--------------------------------------------------------------------------------
++-------------------+----------------+---------------------------------------------------+
+| Persona           | Role           | Key Needs & Pain Points                           |
++-------------------+----------------+---------------------------------------------------+
+| MCA Student       | Primary User   | Needs real-time view of daily lectures, room      |
+|                   |                | numbers (AB-207/208/209), quick section switcher,  |
+|                   |                | replacement faculty alerts & attendance breakdown.|
+|                   |                |                                                   |
+| Faculty / Teacher | Secondary User | Needs daily teaching schedule, quick proxy/sub    |
+|                   |                | assignment, and lecture swap capabilities.        |
+|                   |                |                                                   |
+| Faculty Mentor    | Operational    | Needs lock/log daily section attendance records   |
+|                   | User           | and monitor section student presence.             |
+|                   |                |                                                   |
+| Program Leader    | Supervisory    | Needs department-wide academic audit and holiday  |
+| (PL)              | User           | / class suspension notice management.             |
+|                   |                |                                                   |
+| System Admin      | Governance     | Full schedule editor, AI schedule generator,      |
+|                   | User           | backup import/export, and global system notices.  |
++-------------------+----------------+---------------------------------------------------+
+
+
+3. TECHNICAL ARCHITECTURE & TECH STACK
+--------------------------------------------------------------------------------
+  - Frontend Framework: React 19, Vite 8
+  - Styling & UI: Vanilla CSS Tokens, Glassmorphism, 20 Theme Engines, Lucide-React
+  - Mobile Runtime: Capacitor 8 (@capacitor/android, @capacitor/local-notifications)
+  - Backend & Database: Firebase v12 (Firestore Realtime Database & Firebase Auth)
+  - Audio Engine: Web Audio API (Synthetic Double-Chime Synthesizer)
+  - Storage & Cache: LocalStorage with automatic fallback and state persistence
+
+
+4. KEY FUNCTIONAL REQUIREMENTS & RECENT FIXES
+--------------------------------------------------------------------------------
+4.1 Section Selection & Section Switcher Engine (FIXED):
+  - Fixed Bug: Solved section defaulting to Section A on sign-in. Section choice 
+    is now permanently saved in localStorage & Firestore userProfile.
+  - Dynamic Section Switcher Bar: Added interactive buttons right on the Student 
+    Dashboard allowing 1-tap switching between:
+      * Section III-A (Classroom AB-207)
+      * Section III-B (Classroom AB-208)
+      * Section III-C (Classroom AB-209)
+  - Preset Loading: Automatically loads the official schedule preset upon selection.
+
+4.2 Proactive Notification & Alarm System:
+  - Pre-Lecture Alarms: Configurable buffer (1, 5, 10, 15 minutes before class).
+  - Web Audio Synthetic Chime: Dual-note digital chime (D5 & A5 frequencies).
+  - Background Reminders: Native Capacitor alerts trigger even if screen is locked.
+  - Pausing on Holidays: Suppresses lecture alarms on active college holiday dates.
+
+4.3 Multi-Portal System:
+  - Student Portal: Live lecture clock, ongoing lecture progress bar, weekly grid.
+  - Attendance Portal: View official section attendance percentage & sessional logs.
+  - Teacher & Mentor Portal: Faculty duty filters, proxy assignment & attendance logger.
+  - Admin Portal & AI Generator: Schedule CRUD, conflict-free generator, holiday alerts.
+
+4.4 20 Theme Engines:
+  - Supports Light White, Midnight Dark, Vokka Neon, Warm Coffee, Emerald Forest, 
+    Sapphire Ocean, Rose Sunset, Cyber Lime, Royal Gold, Matrix Code, Tokyo Synth, etc.
+
+
+5. SECURITY & AUTHENTICATION MATRIX
+--------------------------------------------------------------------------------
++-------------------+-----------------------------+---------------------+-------------------+
+| Role              | Auth Mechanism              | Domain Requirement  | Access Level      |
++-------------------+-----------------------------+---------------------+-------------------+
+| Student           | Firebase Auth / Google Auth | @abes.ac.in         | Read-only schedule|
+| Teacher / Mentor  | Faculty PIN / Firebase Auth | Official Faculty    | Proxy & Attendance|
+| Program Leader    | Faculty Credentials         | Official Faculty    | Audit & Notices   |
+| System Admin      | SHA-256 Security Passcode   | Mastermind Hash     | Full Admin CRUD   |
++-------------------+-----------------------------+---------------------+-------------------+
+
+
+6. DATA SCHEMAS
+--------------------------------------------------------------------------------
+6.1 Lecture Item Schema:
+  {
+    "id": "mca3a-mon-1",
+    "name": "Design & Analysis of Algorithm (25CA301)",
+    "teacher": "Ms. Savita Singh",
+    "location": "AB-207",
+    "day": "Monday",
+    "startTime": "08:50",
+    "endTime": "09:40",
+    "color": "#6366f1",
+    "section": "A",
+    "substituteTeacher": "",
+    "substituteSubject": ""
+  }
+
+6.2 User Profile Schema:
+  {
+    "uid": "usr_98127391823",
+    "displayName": "Cheenu Sagar",
+    "email": "cheenu.23mca01@abes.ac.in",
+    "rollNumber": "2300320140001",
+    "role": "student",
+    "section": "A",
+    "roomNumber": "AB-207",
+    "photoURL": ""
+  }
+
+
+7. VERIFICATION & DEPLOYMENT STATUS
+--------------------------------------------------------------------------------
+  - Build Status: PASSED (Vite 8 production build verified)
+  - GitHub Remote: PUSHED (https://github.com/CheenuSagar/Project-.git)
+  - Firebase Hosting: DEPLOYED (mca-timetable.web.app / mca-timetable.firebaseapp.com)
+================================================================================
