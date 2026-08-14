@@ -251,18 +251,26 @@ export default function Dashboard({
             </div>
           </div>
 
-          <div className="stat-card glass">
+          <div 
+            className="stat-card glass card-hover-effect" 
+            onClick={onOpenRoomModal} 
+            style={{ cursor: 'pointer', border: '1.5px solid var(--primary-glow)' }}
+            title="Click to Open Section & Classroom Selector Popup"
+          >
             <div className="stat-icon-bg bg-secondary-glow">
               <Layers size={18} style={{ color: 'var(--secondary)' }} />
             </div>
-            <div className="stat-details">
-              <span className="stat-label">Assigned Section & Room</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+            <div className="stat-details" style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="stat-label">Assigned Section & Room</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 800 }}>✏️ Select / Switch</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
                 <span className="badge badge-primary" style={{ fontSize: '0.85rem', padding: '4px 10px', fontWeight: 700, borderRadius: '8px' }}>
-                  Section {selectedSection || 'B'}
+                  Section {selectedSection || 'A'}
                 </span>
                 <span className="badge badge-secondary" style={{ fontSize: '0.82rem', padding: '4px 10px', fontWeight: 600, borderRadius: '8px' }}>
-                  {selectedRoom || 'AB-208'}
+                  📍 {selectedRoom || 'AB-207'}
                 </span>
               </div>
             </div>
