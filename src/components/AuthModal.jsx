@@ -74,10 +74,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       const isUniversalPass = enteredPass === '1234' || enteredPass === 'abes2026' || enteredPass === 'admin123';
 
       if (activeTab === 'admin') {
-        if (isUniversalUser || isUniversalPass || enteredPass === 'abes2026' || enteredPass === '1234') {
+        const isAdminPass = enteredPass === '99971227157505630752' || enteredPass === 'Saloni@12345';
+        if (isAdminPass) {
           onAuthSuccess({
             role: 'admin',
-            displayName: 'Master Administrator',
+            displayName: enteredPass === 'Saloni@12345' ? 'Mastermind Administrator' : 'Department Administrator',
             email: 'admin@abes.ac.in',
             roomNumber: ''
           });
@@ -85,7 +86,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           setLoading(false);
           return;
         } else {
-          setErrorMsg('Invalid Admin Security Passcode! Default is abes2026 or 1234.');
+          setErrorMsg('Access Denied! Invalid Admin Security Passcode.');
           setLoading(false);
           return;
         }
