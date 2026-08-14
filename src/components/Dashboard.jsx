@@ -251,27 +251,45 @@ export default function Dashboard({
             </div>
           </div>
 
-          <div 
-            className="stat-card glass card-hover-effect" 
-            onClick={onOpenRoomModal} 
-            style={{ cursor: 'pointer', border: '1.5px solid var(--primary-glow)' }}
-            title="Click to Open Section & Classroom Selector Popup"
-          >
-            <div className="stat-icon-bg bg-secondary-glow">
-              <Layers size={18} style={{ color: 'var(--secondary)' }} />
-            </div>
-            <div className="stat-details" style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span className="stat-label">Assigned Section & Room</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 800 }}>✏️ Select / Switch</span>
+          {/* Active Section Selector Card (Exact Design from Screenshot) */}
+          <div className="stat-card glass" style={{ padding: '14px 18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '100%' }}>
+              <div className="stat-icon-bg" style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(14, 165, 233, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Layers size={20} style={{ color: '#0EA5E9' }} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
-                <span className="badge badge-primary" style={{ fontSize: '0.85rem', padding: '4px 10px', fontWeight: 700, borderRadius: '8px' }}>
-                  Section {selectedSection || 'A'}
+              <div style={{ flex: 1 }}>
+                <span className="stat-label" style={{ fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                  ACTIVE SECTION
                 </span>
-                <span className="badge badge-secondary" style={{ fontSize: '0.82rem', padding: '4px 10px', fontWeight: 600, borderRadius: '8px' }}>
-                  📍 {selectedRoom || 'AB-207'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {['A', 'B', 'C'].map((sec) => {
+                    const isActive = (selectedSection || 'A').toUpperCase() === sec;
+                    return (
+                      <button
+                        key={sec}
+                        type="button"
+                        onClick={() => {
+                          if (onSelectSection) onSelectSection(sec);
+                          else if (onLoadPreset) onLoadPreset(sec);
+                        }}
+                        style={{
+                          padding: '5px 14px',
+                          borderRadius: '20px',
+                          border: isActive ? 'none' : '1px solid var(--border-light)',
+                          background: isActive ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--bg-card)',
+                          color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                          fontWeight: 700,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          boxShadow: isActive ? '0 4px 12px rgba(99, 102, 241, 0.35)' : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        Sec {sec}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
