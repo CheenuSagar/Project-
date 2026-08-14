@@ -222,7 +222,7 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
           transform: translateX(-3px);
         }
 
-        /* Responsive Mobile Fallback (< 900px) */
+        /* Responsive Mobile Layout (< 900px) */
         @media (max-width: 900px) {
           .web-split-landing-container {
             grid-template-columns: 1fr;
@@ -231,10 +231,34 @@ export default function LandingOnboarding({ onAuthSuccess, initialTab = 'student
             border-radius: 28px;
           }
           .web-hero-left-panel {
-            display: none; /* Mobile displays clean stacked onboarding */
+            display: flex;
+            min-height: 200px;
+            padding: 24px 20px;
+            border-radius: 28px 28px 0 0;
+          }
+          .hero-web-title {
+            font-size: 1.35rem;
+            margin-bottom: 6px;
+          }
+          .hero-web-subtitle {
+            font-size: 0.82rem;
+            margin-bottom: 12px;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+          .hero-feature-tags {
+            gap: 6px;
+          }
+          .hero-tag {
+            font-size: 0.72rem;
+            padding: 4px 10px;
           }
           .web-auth-right-panel {
             padding: 24px 20px;
+            border-radius: 0 0 28px 28px;
           }
         }
       `}</style>
