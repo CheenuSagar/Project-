@@ -528,6 +528,36 @@ export default function App() {
     } catch (e) {}
   };
 
+  const handleSelectSection = (sectionCode) => {
+    if (!sectionCode) return;
+    const sec = String(sectionCode).toUpperCase();
+    setSelectedSection(sec);
+    try {
+      localStorage.setItem('lecalert_selected_section', sec);
+    } catch (e) {}
+
+    let room = 'AB-207';
+    if (sec === 'B') room = 'AB-208';
+    else if (sec === 'C') room = 'AB-209';
+    setSelectedRoom(room);
+    try {
+      localStorage.setItem('lecalert_selected_room', room);
+    } catch (e) {}
+
+    handleLoadSectionPreset(sec);
+
+    if (userProfile) {
+      const updated = { ...userProfile, section: sec, roomNumber: room };
+      setUserProfile(updated);
+      try {
+        localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+      } catch (e) {}
+      if (userProfile.uid) {
+        updateUserRoomNumber(userProfile.uid, room, sec).catch(() => {});
+      }
+    }
+  };
+
 
   // Import shared timetable options
   const handleAcceptImport = (merge) => {
@@ -568,19 +598,12 @@ export default function App() {
 
           if (profile.role === 'student') {
             setActiveTab('student');
-            if (profile.roomNumber) {
-              const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
-              const fullRoom = `AB-${rNum}`;
-              setSelectedRoom(fullRoom);
-              try {
-                localStorage.setItem('lecalert_selected_room', fullRoom);
-              } catch (e) {}
-              if (rNum === '207') handleSelectSection('A');
-              else if (rNum === '208') handleSelectSection('B');
-              else if (rNum === '209') handleSelectSection('C');
-            } else {
-              setIsRoomModalOpen(true);
-            }
+            const sec = profile.section || (
+              profile.roomNumber
+                ? (profile.roomNumber.includes('208') ? 'B' : profile.roomNumber.includes('209') ? 'C' : 'A')
+                : (localStorage.getItem('lecalert_selected_section') || 'B')
+            );
+            handleSelectSection(sec);
           } else if (profile.role === 'teacher' || profile.role === 'mentor') {
             setActiveTab('mentor');
           } else if (profile.role === 'pl') {
@@ -1036,9 +1059,11 @@ export default function App() {
             }}
             onLoadPreset={handleLoadSectionPreset}
             selectedSection={selectedSection}
+            onSelectSection={handleSelectSection}
             holidayNotice={holidayNotice}
             selectedRoom={selectedRoom}
             onOpenRoomModal={() => setIsRoomModalOpen(true)}
+            userProfile={userProfile}
           />
         )}
 
@@ -1272,19 +1297,12 @@ export default function App() {
             if (!profile.rollNumber) {
               setIsRollModalOpen(true);
             }
-            if (profile.roomNumber) {
-              const rNum = profile.roomNumber.replace(/[^0-9]/g, '');
-              const fullRoom = `AB-${rNum}`;
-              setSelectedRoom(fullRoom);
-              try {
-                localStorage.setItem('lecalert_selected_room', fullRoom);
-              } catch (e) {}
-              if (rNum === '207') handleSelectSection('A');
-              else if (rNum === '208') handleSelectSection('B');
-              else if (rNum === '209') handleSelectSection('C');
-            } else {
-              setIsRoomModalOpen(true);
-            }
+            const sec = profile.section || (
+              profile.roomNumber
+                ? (profile.roomNumber.includes('208') ? 'B' : profile.roomNumber.includes('209') ? 'C' : 'A')
+                : (localStorage.getItem('lecalert_selected_section') || 'B')
+            );
+            handleSelectSection(sec);
           } else if (profile.role === 'teacher') {
             setActiveTab('teacher');
           } else if (profile.role === 'admin') {

@@ -12,7 +12,7 @@ function timeToMinutes(timeStr) {
 }
 
 export default function Dashboard({ 
-  timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, holidayNotice, 
+  timetable, settings, onAddClick, onEditClick, onLoadPreset, selectedSection, onSelectSection, holidayNotice, 
   selectedRoom = 'AB-207', onOpenRoomModal, userProfile 
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -266,6 +266,84 @@ export default function Dashboard({
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Interactive Quick Section & Room Selector Bar */}
+        <div className="section-switcher-card glass animate-fade-in" style={{
+          padding: '14px 18px',
+          borderRadius: '18px',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.07), rgba(168, 85, 247, 0.07))',
+          border: '1.5px solid var(--primary-glow)',
+          boxShadow: '0 4px 16px rgba(79, 70, 229, 0.08)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Layers size={18} style={{ color: 'var(--primary)' }} />
+            <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              Switch Section:
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {['A', 'B', 'C'].map((sec) => {
+              const isActive = (selectedSection || 'B').toUpperCase() === sec;
+              const roomName = sec === 'A' ? 'AB-207' : sec === 'B' ? 'AB-208' : 'AB-209';
+              return (
+                <button
+                  key={sec}
+                  type="button"
+                  onClick={() => {
+                    if (onSelectSection) onSelectSection(sec);
+                    else if (onLoadPreset) onLoadPreset(sec);
+                  }}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '10px',
+                    border: isActive ? '2px solid var(--primary)' : '1px solid var(--border-light)',
+                    background: isActive ? 'var(--primary-gradient)' : 'var(--bg-card-hover)',
+                    color: isActive ? '#ffffff' : 'var(--text-primary)',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: isActive ? '0 4px 14px var(--primary-glow)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                  title={`Switch to Section III-${sec} (${roomName})`}
+                >
+                  <span>Sec III-{sec}</span>
+                  <span style={{ fontSize: '0.72rem', opacity: isActive ? 0.9 : 0.6 }}>({roomName})</span>
+                </button>
+              );
+            })}
+
+            {onOpenRoomModal && (
+              <button
+                type="button"
+                onClick={onOpenRoomModal}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  cursor: 'pointer'
+                }}
+                title="Change Classroom Number"
+              >
+                📍 {selectedRoom || 'AB-207'} ✏️
+              </button>
+            )}
           </div>
         </div>
 

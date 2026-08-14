@@ -310,7 +310,9 @@ export async function loginFirebaseUser(email, password) {
       user, 
       role: profileData.role || 'student', 
       displayName: profileData.displayName || user.displayName || 'User',
-      avatarId: profileData.avatarId || 'avatar1'
+      avatarId: profileData.avatarId || 'avatar1',
+      section: profileData.section || '',
+      roomNumber: profileData.roomNumber || ''
     };
   } catch (error) {
     console.error('Login error:', error);
@@ -319,14 +321,16 @@ export async function loginFirebaseUser(email, password) {
 }
 
 /**
- * Update User Room Number preference
+ * Update User Room Number & Section preference
  */
-export async function updateUserRoomNumber(uid, roomNumber) {
+export async function updateUserRoomNumber(uid, roomNumber, section) {
   if (!uid) return;
   try {
     const formattedRoom = roomNumber ? (roomNumber.startsWith('AB-') ? roomNumber : `AB-${roomNumber.replace(/[^0-9]/g, '')}`) : '';
     const userDocRef = doc(db, 'users', uid);
-    await setDoc(userDocRef, { roomNumber: formattedRoom }, { merge: true });
+    const updatePayload = { roomNumber: formattedRoom };
+    if (section) updatePayload.section = section;
+    await setDoc(userDocRef, updatePayload, { merge: true });
     return formattedRoom;
   } catch (e) {
     console.error('Error updating user room:', e);
@@ -367,7 +371,9 @@ export async function loginWithGoogleFirebase() {
       role: profileData.role || 'student', 
       displayName: profileData.displayName || user.displayName || 'Student',
       avatarId: profileData.avatarId || 'avatar1',
-      rollNumber: profileData.rollNumber || ''
+      rollNumber: profileData.rollNumber || '',
+      section: profileData.section || '',
+      roomNumber: profileData.roomNumber || ''
     };
   } catch (error) {
     console.error('Google Sign-In error:', error);

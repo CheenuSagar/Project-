@@ -8,6 +8,7 @@ export default function StudentPanel({
   onEditClick,
   onLoadPreset,
   selectedSection,
+  onSelectSection,
   holidayNotice,
   selectedRoom,
   onOpenRoomModal,
@@ -22,6 +23,7 @@ export default function StudentPanel({
         onEditClick={onEditClick}
         onLoadPreset={onLoadPreset}
         selectedSection={selectedSection}
+        onSelectSection={onSelectSection}
         holidayNotice={holidayNotice}
         selectedRoom={selectedRoom}
         onOpenRoomModal={onOpenRoomModal}

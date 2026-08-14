@@ -128,13 +128,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       }
 
       if (res.success) {
+        const savedSection = localStorage.getItem('lecalert_selected_section') || 'B';
         onAuthSuccess({
           role: res.role || activeTab,
           displayName: res.user?.displayName || displayName || 'User',
           email: res.user?.email || finalEmail,
           uid: res.user?.uid,
           rollNumber: rollNumber.trim() || res.rollNumber || (finalEmail.split('@')[0]),
-          roomNumber: res.roomNumber || ''
+          section: res.section || savedSection,
+          roomNumber: res.roomNumber || (res.section === 'B' ? 'AB-208' : res.section === 'C' ? 'AB-209' : 'AB-207')
         });
         resetForm();
       } else {
@@ -171,12 +173,15 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           setLoading(false);
           return;
         }
+        const savedSection = localStorage.getItem('lecalert_selected_section') || 'B';
         onAuthSuccess({
           role: activeTab === 'student' ? 'student' : activeTab,
           displayName: res.displayName,
           email: res.user?.email,
           uid: res.user?.uid,
-          rollNumber: res.rollNumber || ''
+          rollNumber: res.rollNumber || '',
+          section: res.section || savedSection,
+          roomNumber: res.roomNumber || (res.section === 'B' ? 'AB-208' : res.section === 'C' ? 'AB-209' : 'AB-207')
         });
         resetForm();
       } else {
