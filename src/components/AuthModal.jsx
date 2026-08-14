@@ -133,29 +133,8 @@ const sha256Hash = async (str) => {
         }
       }
 
-      if (activeTab === 'student') {
-        if (isUniversalUser || isUniversalPass || inputLower.includes('seca') || inputLower.includes('2300320140001') || inputLower === 'testa@abes.ac.in') {
-          const targetSec = inputLower.includes('secb') || inputLower.includes('2300320140002') ? 'B' : inputLower.includes('secc') || inputLower.includes('2300320140003') ? 'C' : 'A';
-          onAuthSuccess({
-            role: 'student',
-            displayName: 'MCA Student (Test)',
-            email: inputEmail || 'student.seca@abes.ac.in',
-            rollNumber: '2300320140001',
-            section: targetSec,
-            roomNumber: targetSec === 'B' ? 'AB-208' : targetSec === 'C' ? 'AB-209' : 'AB-207'
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        }
-      }
-
       // Enforce compulsory official college email for Student login & registration
-      let rawInput = email.trim();
-      if (!rawInput && facultyPin) {
-        rawInput = `${facultyPin}@faculty.abes.ac.in`;
-      }
-      
+      let rawInput = (email || '').trim();
       let finalEmail = rawInput.toLowerCase();
       if (finalEmail && !finalEmail.includes('@')) {
         finalEmail = `${finalEmail}@abes.ac.in`;
@@ -187,18 +166,26 @@ const sha256Hash = async (str) => {
         res = await registerFirebaseUser(finalEmail, password.trim(), nameToUse, activeTab);
       } else {
         res = await loginFirebaseUser(finalEmail, password.trim());
+        // Seamless auto-register on first time student login if user not found yet
+        if (!res.success && activeTab === 'student' && finalEmail.endsWith('@abes.ac.in') && password.trim().length >= 6) {
+          const autoReg = await registerFirebaseUser(finalEmail, password.trim(), `Student (${finalEmail.split('@')[0]})`, 'student');
+          if (autoReg.success) {
+            res = autoReg;
+          }
+        }
       }
 
       if (res.success) {
         const savedSection = localStorage.getItem('lecalert_selected_section') || 'B';
+        const userRoll = rollNumber.trim() || res.rollNumber || (finalEmail.split('@')[0]);
         onAuthSuccess({
           role: res.role || activeTab,
-          displayName: res.user?.displayName || displayName || 'User',
+          displayName: res.user?.displayName || displayName || `MCA Student (${userRoll})`,
           email: res.user?.email || finalEmail,
           uid: res.user?.uid,
-          rollNumber: rollNumber.trim() || res.rollNumber || (finalEmail.split('@')[0]),
+          rollNumber: userRoll,
           section: res.section || savedSection,
-          roomNumber: res.roomNumber || (res.section === 'B' ? 'AB-208' : res.section === 'C' ? 'AB-209' : 'AB-207')
+          roomNumber: res.roomNumber || (savedSection === 'B' ? 'AB-208' : savedSection === 'C' ? 'AB-209' : 'AB-207')
         });
         resetForm();
       } else {
