@@ -93,18 +93,19 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       }
 
       if (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') {
-        if (isUniversalUser || isUniversalPass || (facultyPin && facultyPin.trim().length >= 4 && facultyPin !== '0000' && facultyPin !== '9999' && facultyPin !== '000')) {
+        const isMentorMatch = (inputLower === 'mentor@abes.ac.in' || inputLower === 'mentor' || facultyPin === '245101' || facultyPin === '1001') && (enteredPass === '245101' || enteredPass === '1001' || facultyPin === '245101' || facultyPin === '1001');
+        if (isMentorMatch || isUniversalUser || isUniversalPass || (facultyPin && facultyPin.trim().length >= 4 && facultyPin !== '0000' && facultyPin !== '9999')) {
           onAuthSuccess({
             role: activeTab,
             displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'teacher' ? 'Faculty Member' : 'Faculty Mentor'),
-            email: inputEmail || `${facultyPin.trim() || '1001'}@faculty.abes.ac.in`,
-            facultyPin: facultyPin.trim() || '1001'
+            email: inputEmail || 'mentor@abes.ac.in',
+            facultyPin: facultyPin.trim() || '245101'
           });
           resetForm();
           setLoading(false);
           return;
         } else {
-          setErrorMsg('Invalid Faculty Credentials or PIN! Default PIN is 1001 or Passcode 1234.');
+          setErrorMsg('Access Denied! Invalid Faculty Credentials or PIN.');
           setLoading(false);
           return;
         }
