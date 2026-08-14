@@ -817,104 +817,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           )}
         </div>
 
-        {/* Quick 1-Tap Demo / Test Accounts Container */}
-        <div style={{
-          marginTop: '16px',
-          padding: '12px 14px',
-          borderRadius: '16px',
-          background: 'rgba(79, 70, 229, 0.06)',
-          border: '1.5px dashed var(--primary)',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.04em', marginBottom: '8px' }}>
-            ⚡ QUICK 1-TAP TEST LOGINS FOR EVALUATION
-          </div>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
-              onClick={() => {
-                onAuthSuccess({
-                  role: 'student',
-                  displayName: 'Test Student (Sec III-A)',
-                  email: 'testa@abes.ac.in',
-                  rollNumber: '2300320140001',
-                  section: 'A',
-                  roomNumber: 'AB-207'
-                });
-              }}
-            >
-              🎓 Sec III-A (AB-207)
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
-              onClick={() => {
-                onAuthSuccess({
-                  role: 'student',
-                  displayName: 'Test Student (Sec III-B)',
-                  email: 'testb@abes.ac.in',
-                  rollNumber: '2300320140002',
-                  section: 'B',
-                  roomNumber: 'AB-208'
-                });
-              }}
-            >
-              🎓 Sec III-B (AB-208)
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
-              onClick={() => {
-                onAuthSuccess({
-                  role: 'student',
-                  displayName: 'Test Student (Sec III-C)',
-                  email: 'testc@abes.ac.in',
-                  rollNumber: '2300320140003',
-                  section: 'C',
-                  roomNumber: 'AB-209'
-                });
-              }}
-            >
-              🎓 Sec III-C (AB-209)
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px', color: 'var(--secondary)' }}
-              onClick={() => {
-                onAuthSuccess({
-                  role: 'mentor',
-                  displayName: 'Faculty Mentor (Test)',
-                  email: '1001@faculty.abes.ac.in',
-                  facultyPin: '1001'
-                });
-              }}
-            >
-              👨‍🏫 Faculty Login
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px', color: 'var(--danger)' }}
-              onClick={() => {
-                onAuthSuccess({
-                  role: 'admin',
-                  displayName: 'Master Administrator (Test)',
-                  email: 'admin@abes.ac.in'
-                });
-              }}
-            >
-              🛡️ Admin Login
-            </button>
-          </div>
+        {/* Mandatory ABES Domain Security Notice */}
+        <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.05)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+          <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+            🔒 <strong>ABES College Security Protocol:</strong> Student Portal access is strictly restricted to official ABES Engineering College email addresses ending with <strong>@abes.ac.in</strong> (or official 13-digit Roll Number).
+          </p>
         </div>
       </>
     )}
