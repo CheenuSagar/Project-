@@ -56,6 +56,50 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     setLoading(true);
 
     try {
+      // Universal Test & Demo Accounts Check
+      if (activeTab === 'student') {
+        const inputLower = (email || '').trim().toLowerCase();
+        if (inputLower.includes('seca') || inputLower.includes('2300320140001') || inputLower === 'testa@abes.ac.in' || inputLower === 'student.a@abes.ac.in') {
+          onAuthSuccess({
+            role: 'student',
+            displayName: 'Section III-A Student (Test)',
+            email: 'student.seca@abes.ac.in',
+            rollNumber: '2300320140001',
+            section: 'A',
+            roomNumber: 'AB-207'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        }
+        if (inputLower.includes('secb') || inputLower.includes('2300320140002') || inputLower === 'testb@abes.ac.in' || inputLower === 'student.b@abes.ac.in') {
+          onAuthSuccess({
+            role: 'student',
+            displayName: 'Section III-B Student (Test)',
+            email: 'student.secb@abes.ac.in',
+            rollNumber: '2300320140002',
+            section: 'B',
+            roomNumber: 'AB-208'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        }
+        if (inputLower.includes('secc') || inputLower.includes('2300320140003') || inputLower === 'testc@abes.ac.in' || inputLower === 'student.c@abes.ac.in') {
+          onAuthSuccess({
+            role: 'student',
+            displayName: 'Section III-C Student (Test)',
+            email: 'student.secc@abes.ac.in',
+            rollNumber: '2300320140003',
+            section: 'C',
+            roomNumber: 'AB-209'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        }
+      }
+
       if (activeTab === 'admin') {
         // Admin Master Passcode Verification
         if (adminPasscode.trim() === 'abes2026' || adminPasscode.trim() === '1234') {
@@ -777,6 +821,106 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               {isRegistering ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
             </button>
           )}
+        </div>
+
+        {/* Quick 1-Tap Demo / Test Accounts Container */}
+        <div style={{
+          marginTop: '16px',
+          padding: '12px 14px',
+          borderRadius: '16px',
+          background: 'rgba(79, 70, 229, 0.06)',
+          border: '1.5px dashed var(--primary)',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.04em', marginBottom: '8px' }}>
+            ⚡ QUICK 1-TAP TEST LOGINS FOR EVALUATION
+          </div>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
+              onClick={() => {
+                onAuthSuccess({
+                  role: 'student',
+                  displayName: 'Test Student (Sec III-A)',
+                  email: 'testa@abes.ac.in',
+                  rollNumber: '2300320140001',
+                  section: 'A',
+                  roomNumber: 'AB-207'
+                });
+              }}
+            >
+              🎓 Sec III-A (AB-207)
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
+              onClick={() => {
+                onAuthSuccess({
+                  role: 'student',
+                  displayName: 'Test Student (Sec III-B)',
+                  email: 'testb@abes.ac.in',
+                  rollNumber: '2300320140002',
+                  section: 'B',
+                  roomNumber: 'AB-208'
+                });
+              }}
+            >
+              🎓 Sec III-B (AB-208)
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px' }}
+              onClick={() => {
+                onAuthSuccess({
+                  role: 'student',
+                  displayName: 'Test Student (Sec III-C)',
+                  email: 'testc@abes.ac.in',
+                  rollNumber: '2300320140003',
+                  section: 'C',
+                  roomNumber: 'AB-209'
+                });
+              }}
+            >
+              🎓 Sec III-C (AB-209)
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px', color: 'var(--secondary)' }}
+              onClick={() => {
+                onAuthSuccess({
+                  role: 'mentor',
+                  displayName: 'Faculty Mentor (Test)',
+                  email: '1001@faculty.abes.ac.in',
+                  facultyPin: '1001'
+                });
+              }}
+            >
+              👨‍🏫 Faculty Login
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', fontWeight: 800, borderRadius: '8px', color: 'var(--danger)' }}
+              onClick={() => {
+                onAuthSuccess({
+                  role: 'admin',
+                  displayName: 'Master Administrator (Test)',
+                  email: 'admin@abes.ac.in'
+                });
+              }}
+            >
+              🛡️ Admin Login
+            </button>
+          </div>
         </div>
       </>
     )}
