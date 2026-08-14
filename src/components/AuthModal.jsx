@@ -666,7 +666,7 @@ const sha256Hash = async (str) => {
                   <input 
                     type="text"
                     className="form-input auth-input"
-                    placeholder="Enter Faculty PIN (e.g. 1001) or Email..."
+                    placeholder="Enter Official Faculty PIN or Email..."
                     value={email || facultyPin}
                     onChange={(e) => {
                       const val = e.target.value;
