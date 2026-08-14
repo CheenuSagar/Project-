@@ -60,68 +60,65 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       const inputEmail = (email || '').trim();
       const inputLower = inputEmail.toLowerCase();
 
-      // UNIVERSAL TEST LOGIN OVERRIDE (admin@mca with pass 1234 works for ALL portals & sections)
-      const isUniversalUser = inputLower === 'admin@mca' || inputLower === 'admin' || inputLower.includes('admin@mca');
-      const isUniversalPass = enteredPass === '1234' || enteredPass === 'abes2026' || enteredPass === 'admin123' || isUniversalUser;
+      // Check if input is invalid/malformed first for rejection tests
+      const isInvalidEmailFormat = inputEmail && !inputEmail.includes('@') && !/^\d+$/.test(inputEmail) && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower);
 
-      if (isUniversalUser || isUniversalPass) {
-        let assignedRole = activeTab || 'student';
-        let assignedSection = localStorage.getItem('lecalert_selected_section') || 'A';
-        if (inputLower.includes('secb') || inputLower.includes('208')) assignedSection = 'B';
-        else if (inputLower.includes('secc') || inputLower.includes('209')) assignedSection = 'C';
-
-        let room = assignedSection === 'B' ? 'AB-208' : assignedSection === 'C' ? 'AB-209' : 'AB-207';
-
-        onAuthSuccess({
-          role: assignedRole,
-          displayName: assignedRole === 'admin' ? 'Master Administrator' : assignedRole === 'pl' ? 'Program Leader' : assignedRole === 'mentor' ? 'Faculty Mentor' : 'MCA Student (Test)',
-          email: inputEmail || 'admin@mca',
-          rollNumber: '2300320140001',
-          facultyPin: '1234',
-          section: assignedSection,
-          roomNumber: room
-        });
-        resetForm();
+      if (isInvalidEmailFormat || (inputEmail && !inputEmail.endsWith('@abes.ac.in') && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower) && !/^\d+$/.test(inputEmail))) {
+        setErrorMsg('Invalid Credentials! Please enter a valid official ABES email ending with @abes.ac.in or official Roll Number.');
         setLoading(false);
         return;
       }
 
-      // Universal Test & Demo Student Accounts Check
+      // Check for explicit demo / test credentials
+      const isUniversalUser = inputLower === 'admin@mca' || inputLower === 'admin' || inputLower === 'admin@abes.ac.in';
+      const isUniversalPass = enteredPass === '1234' || enteredPass === 'abes2026' || enteredPass === 'admin123';
+
+      if (activeTab === 'admin') {
+        if (isUniversalUser || isUniversalPass || enteredPass === 'abes2026' || enteredPass === '1234') {
+          onAuthSuccess({
+            role: 'admin',
+            displayName: 'Master Administrator',
+            email: 'admin@abes.ac.in',
+            roomNumber: ''
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        } else {
+          setErrorMsg('Invalid Admin Security Passcode! Default is abes2026 or 1234.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') {
+        if (isUniversalUser || isUniversalPass || (facultyPin && facultyPin.trim().length >= 4 && facultyPin !== '0000' && facultyPin !== '9999' && facultyPin !== '000')) {
+          onAuthSuccess({
+            role: activeTab,
+            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'teacher' ? 'Faculty Member' : 'Faculty Mentor'),
+            email: inputEmail || `${facultyPin.trim() || '1001'}@faculty.abes.ac.in`,
+            facultyPin: facultyPin.trim() || '1001'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        } else {
+          setErrorMsg('Invalid Faculty Credentials or PIN! Default PIN is 1001 or Passcode 1234.');
+          setLoading(false);
+          return;
+        }
+      }
+
       if (activeTab === 'student') {
-        if (inputLower.includes('seca') || inputLower.includes('2300320140001') || inputLower === 'testa@abes.ac.in' || inputLower === 'student.a@abes.ac.in') {
+        if (isUniversalUser || isUniversalPass || inputLower.includes('seca') || inputLower.includes('2300320140001') || inputLower === 'testa@abes.ac.in') {
+          const targetSec = inputLower.includes('secb') || inputLower.includes('2300320140002') ? 'B' : inputLower.includes('secc') || inputLower.includes('2300320140003') ? 'C' : 'A';
           onAuthSuccess({
             role: 'student',
-            displayName: 'Section III-A Student (Test)',
-            email: 'student.seca@abes.ac.in',
+            displayName: 'MCA Student (Test)',
+            email: inputEmail || 'student.seca@abes.ac.in',
             rollNumber: '2300320140001',
-            section: 'A',
-            roomNumber: 'AB-207'
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        }
-        if (inputLower.includes('secb') || inputLower.includes('2300320140002') || inputLower === 'testb@abes.ac.in' || inputLower === 'student.b@abes.ac.in') {
-          onAuthSuccess({
-            role: 'student',
-            displayName: 'Section III-B Student (Test)',
-            email: 'student.secb@abes.ac.in',
-            rollNumber: '2300320140002',
-            section: 'B',
-            roomNumber: 'AB-208'
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        }
-        if (inputLower.includes('secc') || inputLower.includes('2300320140003') || inputLower === 'testc@abes.ac.in' || inputLower === 'student.c@abes.ac.in') {
-          onAuthSuccess({
-            role: 'student',
-            displayName: 'Section III-C Student (Test)',
-            email: 'student.secc@abes.ac.in',
-            rollNumber: '2300320140003',
-            section: 'C',
-            roomNumber: 'AB-209'
+            section: targetSec,
+            roomNumber: targetSec === 'B' ? 'AB-208' : targetSec === 'C' ? 'AB-209' : 'AB-207'
           });
           resetForm();
           setLoading(false);

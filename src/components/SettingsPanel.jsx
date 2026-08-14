@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Bell, Volume2, VolumeX, Download, Share2, Trash2, 
   Upload, FileText, Check, AlertTriangle, ShieldCheck, Shield, Lock, Unlock, Clock,
-  Palette, Coffee, Layers, Zap, Sun, Moon, Sparkles, Flame, Crown, Terminal, LayoutGrid, List
+  Palette, Coffee, Layers, Zap, Sun, Moon, Sparkles, Flame, Crown, Terminal, LayoutGrid, List, RotateCcw
 } from 'lucide-react';
 import { generateShareUrl, exportBackup } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
@@ -170,6 +170,16 @@ export default function SettingsPanel({
             <Palette size={18} className="title-icon" style={{ color: 'var(--primary)' }} /> Color Themes Collection 
             <span className="badge badge-success" style={{ marginLeft: '10px', fontSize: '0.75rem', padding: '3px 10px' }}>20 Styles</span>
           </h3>
+
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => onThemeChange && onThemeChange('default')}
+            style={{ fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            title="Reset theme back to original Light White theme"
+          >
+            <RotateCcw size={14} /> Restore Default Theme
+          </button>
         </div>
         
         <div className="settings-body" style={{ marginTop: '12px' }}>
