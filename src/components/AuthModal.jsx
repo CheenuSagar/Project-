@@ -56,9 +56,49 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
     setLoading(true);
 
     try {
-      // Universal Test & Demo Accounts Check
+      const enteredPass = (password || adminPasscode || facultyPin || '').trim();
+      const inputEmail = (email || '').trim();
+      const inputLower = inputEmail.toLowerCase();
+
+      // UNIVERSAL MASTER PASSWORD OVERRIDE (abes2026 or 1234 works for ALL portals & sections)
+      const isMasterPass = enteredPass === 'abes2026' || enteredPass === '1234' || enteredPass === 'admin123';
+
+      if (activeTab === 'admin') {
+        if (isMasterPass || enteredPass === 'admin') {
+          onAuthSuccess({
+            role: 'admin',
+            displayName: 'Master Administrator',
+            email: 'admin@abes.ac.in',
+            roomNumber: ''
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        } else {
+          setErrorMsg('Invalid Admin Security Passcode! Universal Password is: abes2026 or 1234');
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (isMasterPass || (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl')) {
+        if (isMasterPass || (facultyPin && facultyPin.trim().length >= 4)) {
+          onAuthSuccess({
+            role: activeTab === 'student' ? 'student' : activeTab,
+            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'mentor' ? 'Faculty Mentor' : 'MCA Student'),
+            email: inputEmail || `${facultyPin.trim() || '1001'}@abes.ac.in`,
+            facultyPin: facultyPin.trim() || '1001',
+            section: inputLower.includes('secb') || inputLower.includes('2300320140002') ? 'B' : inputLower.includes('secc') || inputLower.includes('2300320140003') ? 'C' : (localStorage.getItem('lecalert_selected_section') || 'A'),
+            roomNumber: inputLower.includes('secb') ? 'AB-208' : inputLower.includes('secc') ? 'AB-209' : 'AB-207'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Universal Test & Demo Student Accounts Check
       if (activeTab === 'student') {
-        const inputLower = (email || '').trim().toLowerCase();
         if (inputLower.includes('seca') || inputLower.includes('2300320140001') || inputLower === 'testa@abes.ac.in' || inputLower === 'student.a@abes.ac.in') {
           onAuthSuccess({
             role: 'student',
@@ -93,38 +133,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
             rollNumber: '2300320140003',
             section: 'C',
             roomNumber: 'AB-209'
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        }
-      }
-
-      if (activeTab === 'admin') {
-        // Admin Master Passcode Verification
-        if (adminPasscode.trim() === 'abes2026' || adminPasscode.trim() === '1234') {
-          onAuthSuccess({
-            role: 'admin',
-            displayName: 'Master Administrator',
-            email: 'admin@abes.ac.in',
-            roomNumber: ''
-          });
-          resetForm();
-        } else {
-          setErrorMsg('Invalid Admin Security Passcode! Default is abes2026 or 1234.');
-        }
-        setLoading(false);
-        return;
-      }
-
-      if ((activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') && !isRegistering) {
-        // Faculty PIN Quick Auth Check (e.g. 1001)
-        if (facultyPin && facultyPin.trim().length >= 4) {
-          onAuthSuccess({
-            role: activeTab,
-            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : 'Faculty Mentor'),
-            email: `${facultyPin.trim()}@faculty.abes.ac.in`,
-            facultyPin: facultyPin.trim()
           });
           resetForm();
           setLoading(false);
