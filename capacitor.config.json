@@ -1,5 +1,15 @@
 {
   "appId": "com.cheenusagar.lecalert",
   "appName": "ABES Academix",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://mca-timetable.web.app",
+    "cleartext": true
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#4F46E5"
+    }
+  }
 }
