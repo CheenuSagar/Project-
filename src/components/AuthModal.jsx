@@ -64,7 +64,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       const isInvalidEmailFormat = inputEmail && !inputEmail.includes('@') && !/^\d+$/.test(inputEmail) && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower);
 
       if (isInvalidEmailFormat || (inputEmail && !inputEmail.endsWith('@abes.ac.in') && !['admin@mca', 'admin', 'seca', 'secb', 'secc', 'testa', 'testb', 'testc'].includes(inputLower) && !/^\d+$/.test(inputEmail))) {
-        setErrorMsg('Invalid Credentials! Please enter a valid official ABES email ending with @abes.ac.in or official Roll Number.');
+        setErrorMsg('Access Denied! Official college Mail ID se hi login hoga.');
         setLoading(false);
         return;
       }
@@ -127,7 +127,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         }
       }
 
-      // Enforce compulsory @abes.ac.in for Student login & registration
+      // Enforce compulsory official college email for Student login & registration
       let rawInput = email.trim();
       if (!rawInput && facultyPin) {
         rawInput = `${facultyPin}@faculty.abes.ac.in`;
@@ -140,12 +140,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
 
       if (activeTab === 'student') {
         if (!finalEmail) {
-          setErrorMsg('Please enter your official ABES college email or Roll Number.');
+          setErrorMsg('Please enter your official college Mail ID or Roll Number.');
           setLoading(false);
           return;
         }
         if (!finalEmail.endsWith('@abes.ac.in')) {
-          setErrorMsg('Access Denied! Students must use their official ABES college email ending with @abes.ac.in (or official 13-digit Roll Number).');
+          setErrorMsg('Access Denied! Official college Mail ID se hi login hoga.');
           setLoading(false);
           return;
         }
@@ -188,27 +188,27 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         } else if (msg.includes('auth/weak-password')) {
           msg = 'Password should be at least 6 characters long.';
         } else if (msg.includes('auth/invalid-email')) {
-          msg = 'Please enter a valid email address or official Roll Number.';
+          msg = 'Please enter a valid official college Mail ID or Roll Number.';
         }
         setErrorMsg(msg);
       }
     } catch (err) {
-      console.error('Auth error:', err);
-      setErrorMsg('Network error. Please try again.');
+      console.error('Auth submit error:', err);
+      setErrorMsg('An unexpected authentication error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
     setErrorMsg('');
+    setLoading(true);
     try {
       const res = await loginWithGoogleFirebase();
       if (res.success) {
         const userEmail = (res.user?.email || '').toLowerCase();
         if (activeTab === 'student' && !userEmail.endsWith('@abes.ac.in')) {
-          setErrorMsg('Access Denied! Student login requires an official ABES college email ending with @abes.ac.in.');
+          setErrorMsg('Access Denied! Official college Mail ID se hi login hoga.');
           setLoading(false);
           return;
         }
@@ -830,10 +830,10 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
           </div>
         )}
 
-        {/* Mandatory ABES Domain Security Notice */}
+        {/* Mandatory Security Notice */}
         <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.05)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
           <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-            🔒 <strong>ABES College Security Protocol:</strong> Student Portal access is strictly restricted to official ABES Engineering College email addresses ending with <strong>@abes.ac.in</strong> (or official 13-digit Roll Number).
+            🔒 <strong>College Security Protocol:</strong> Access is strictly restricted to official college Mail ID or official 13-digit Roll Number.
           </p>
         </div>
       </>
