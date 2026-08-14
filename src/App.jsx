@@ -705,16 +705,6 @@ export default function App() {
 
         {/* Header Right Actions */}
         <div className="header-actions">
-          {/* Quick Classroom & Section Selector Button */}
-          <button 
-            className="btn btn-secondary btn-sm"
-            onClick={() => setIsRoomModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 800, padding: '6px 12px', borderRadius: '10px', background: 'var(--bg-card-hover)', border: '1px solid var(--border-light)' }}
-            title="Open Section & Classroom Selector Popup"
-          >
-            <Layers size={15} style={{ color: 'var(--primary)' }} />
-            <span>Sec {selectedSection || 'A'} ({selectedRoom || 'AB-207'}) ✏️</span>
-          </button>
 
           {/* User Auth / Profile Button */}
           <button 
