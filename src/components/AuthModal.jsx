@@ -60,41 +60,30 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       const inputEmail = (email || '').trim();
       const inputLower = inputEmail.toLowerCase();
 
-      // UNIVERSAL MASTER PASSWORD OVERRIDE (abes2026 or 1234 works for ALL portals & sections)
-      const isMasterPass = enteredPass === 'abes2026' || enteredPass === '1234' || enteredPass === 'admin123';
+      // UNIVERSAL TEST LOGIN OVERRIDE (admin@mca with pass 1234 works for ALL portals & sections)
+      const isUniversalUser = inputLower === 'admin@mca' || inputLower === 'admin' || inputLower.includes('admin@mca');
+      const isUniversalPass = enteredPass === '1234' || enteredPass === 'abes2026' || enteredPass === 'admin123' || isUniversalUser;
 
-      if (activeTab === 'admin') {
-        if (isMasterPass || enteredPass === 'admin') {
-          onAuthSuccess({
-            role: 'admin',
-            displayName: 'Master Administrator',
-            email: 'admin@abes.ac.in',
-            roomNumber: ''
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        } else {
-          setErrorMsg('Invalid Admin Security Passcode! Universal Password is: abes2026 or 1234');
-          setLoading(false);
-          return;
-        }
-      }
+      if (isUniversalUser || isUniversalPass) {
+        let assignedRole = activeTab || 'student';
+        let assignedSection = localStorage.getItem('lecalert_selected_section') || 'A';
+        if (inputLower.includes('secb') || inputLower.includes('208')) assignedSection = 'B';
+        else if (inputLower.includes('secc') || inputLower.includes('209')) assignedSection = 'C';
 
-      if (isMasterPass || (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl')) {
-        if (isMasterPass || (facultyPin && facultyPin.trim().length >= 4)) {
-          onAuthSuccess({
-            role: activeTab === 'student' ? 'student' : activeTab,
-            displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'mentor' ? 'Faculty Mentor' : 'MCA Student'),
-            email: inputEmail || `${facultyPin.trim() || '1001'}@abes.ac.in`,
-            facultyPin: facultyPin.trim() || '1001',
-            section: inputLower.includes('secb') || inputLower.includes('2300320140002') ? 'B' : inputLower.includes('secc') || inputLower.includes('2300320140003') ? 'C' : (localStorage.getItem('lecalert_selected_section') || 'A'),
-            roomNumber: inputLower.includes('secb') ? 'AB-208' : inputLower.includes('secc') ? 'AB-209' : 'AB-207'
-          });
-          resetForm();
-          setLoading(false);
-          return;
-        }
+        let room = assignedSection === 'B' ? 'AB-208' : assignedSection === 'C' ? 'AB-209' : 'AB-207';
+
+        onAuthSuccess({
+          role: assignedRole,
+          displayName: assignedRole === 'admin' ? 'Master Administrator' : assignedRole === 'pl' ? 'Program Leader' : assignedRole === 'mentor' ? 'Faculty Mentor' : 'MCA Student (Test)',
+          email: inputEmail || 'admin@mca',
+          rollNumber: '2300320140001',
+          facultyPin: '1234',
+          section: assignedSection,
+          roomNumber: room
+        });
+        resetForm();
+        setLoading(false);
+        return;
       }
 
       // Universal Test & Demo Student Accounts Check
