@@ -93,19 +93,33 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
       }
 
       if (activeTab === 'teacher' || activeTab === 'mentor' || activeTab === 'pl') {
-        const isMentorMatch = (inputLower === 'mentor@abes.ac.in' || inputLower === 'mentor' || facultyPin === '245101' || facultyPin === '1001') && (enteredPass === '245101' || enteredPass === '1001' || facultyPin === '245101' || facultyPin === '1001');
+        const isPLMatch = activeTab === 'pl' && (inputLower === 'adminpl@abes.ac.in' || inputLower === 'adminpl' || facultyPin === '28102005') && (enteredPass === '28102005' || facultyPin === '28102005');
+        const isMentorMatch = (activeTab === 'mentor' || activeTab === 'teacher') && (inputLower === 'mentor@abes.ac.in' || inputLower === 'mentor' || facultyPin === '245101' || facultyPin === '1001') && (enteredPass === '245101' || enteredPass === '1001' || facultyPin === '245101' || facultyPin === '1001');
+
+        if (isPLMatch) {
+          onAuthSuccess({
+            role: 'pl',
+            displayName: 'Program Leader (MCA)',
+            email: 'adminpl@abes.ac.in',
+            facultyPin: '28102005'
+          });
+          resetForm();
+          setLoading(false);
+          return;
+        }
+
         if (isMentorMatch || isUniversalUser || isUniversalPass || (facultyPin && facultyPin.trim().length >= 4 && facultyPin !== '0000' && facultyPin !== '9999')) {
           onAuthSuccess({
             role: activeTab,
             displayName: displayName.trim() || (activeTab === 'pl' ? 'Program Leader' : activeTab === 'teacher' ? 'Faculty Member' : 'Faculty Mentor'),
-            email: inputEmail || 'mentor@abes.ac.in',
-            facultyPin: facultyPin.trim() || '245101'
+            email: inputEmail || (activeTab === 'pl' ? 'adminpl@abes.ac.in' : 'mentor@abes.ac.in'),
+            facultyPin: facultyPin.trim() || (activeTab === 'pl' ? '28102005' : '245101')
           });
           resetForm();
           setLoading(false);
           return;
         } else {
-          setErrorMsg('Access Denied! Invalid Faculty Credentials or PIN.');
+          setErrorMsg('Access Denied! Invalid Faculty / PL Credentials or Password.');
           setLoading(false);
           return;
         }
