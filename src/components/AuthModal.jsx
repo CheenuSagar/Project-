@@ -432,7 +432,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               {/* Choice Card 1: Student */}
               <div 
                 className="glass card-hover-effect"
-                onClick={() => { setActiveTab('student'); setAuthStep('credentials'); }}
+                onClick={() => { setActiveTab('student'); setAuthStep('credentials'); setIsForgotPasswordMode(false); }}
                 style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
               >
                 <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--primary-glow)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -452,7 +452,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               {/* Choice Card 2: Mentor */}
               <div 
                 className="glass card-hover-effect"
-                onClick={() => { setActiveTab('mentor'); setAuthStep('credentials'); }}
+                onClick={() => { setActiveTab('mentor'); setIsRegistering(false); setIsForgotPasswordMode(false); setAuthStep('credentials'); }}
                 style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
               >
                 <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--secondary-glow)', color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -472,7 +472,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               {/* Choice Card 3: Program Leader (PL) */}
               <div 
                 className="glass card-hover-effect"
-                onClick={() => { setActiveTab('pl'); setAuthStep('credentials'); }}
+                onClick={() => { setActiveTab('pl'); setIsRegistering(false); setIsForgotPasswordMode(false); setAuthStep('credentials'); }}
                 style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
               >
                 <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'rgba(245, 158, 11, 0.15)', color: 'var(--warning)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -492,7 +492,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
               {/* Choice Card 4: Admin */}
               <div 
                 className="glass card-hover-effect"
-                onClick={() => { setActiveTab('admin'); setAuthStep('credentials'); }}
+                onClick={() => { setActiveTab('admin'); setIsRegistering(false); setIsForgotPasswordMode(false); setAuthStep('credentials'); }}
                 style={{ padding: '16px 18px', borderRadius: '16px', border: '1.5px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}
               >
                 <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'rgba(239, 68, 68, 0.12)', color: 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -803,8 +803,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
         </form>
 
         {/* Toggle Sign In / Register (Students only) */}
-        <div className="auth-footer-actions">
-          {activeTab === 'student' && (
+        {activeTab === 'student' && (
+          <div className="auth-footer-actions" style={{ marginTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
             <button 
               type="button"
               className="auth-switch-mode-btn"
@@ -815,8 +815,20 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
             >
               {isRegistering ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
             </button>
-          )}
-        </div>
+
+            <button 
+              type="button"
+              className="auth-switch-mode-btn"
+              style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}
+              onClick={() => {
+                setIsForgotPasswordMode(true);
+                setErrorMsg('');
+              }}
+            >
+              Forgot Password?
+            </button>
+          </div>
+        )}
 
         {/* Mandatory ABES Domain Security Notice */}
         <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.05)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
