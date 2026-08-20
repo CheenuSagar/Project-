@@ -117,6 +117,7 @@ export default function App() {
 
   // Mobile menu, Weekly Quick Popup, Header Theme Dropdown, Terms & Room states
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
   const [isWeeklyPopupOpen, setIsWeeklyPopupOpen] = useState(false);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(() => {
