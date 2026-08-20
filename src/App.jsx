@@ -757,11 +757,17 @@ export default function App() {
 
           {/* Corner Hamburger Button for Mobile */}
           <button 
+            type="button"
             className="hamburger-btn"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsMobileMenuOpen(prev => !prev);
+            }}
             title="Toggle Navigation Menu"
+            aria-label="Toggle Navigation Menu"
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </header>
@@ -1216,6 +1222,45 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Mobile Bottom Quick Navigation Bar */}
+      <nav className="mobile-bottom-nav">
+        <button 
+          type="button"
+          className={`mobile-bottom-nav-item ${activeTab === 'student' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
+        >
+          <GraduationCap size={20} />
+          <span>Home</span>
+        </button>
+        <button 
+          type="button"
+          className={`mobile-bottom-nav-item ${activeTab === 'attendance' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('attendance'); setIsMobileMenuOpen(false); }}
+        >
+          <Award size={20} />
+          <span>Attendance</span>
+        </button>
+        <button 
+          type="button"
+          className="mobile-bottom-nav-item"
+          onClick={() => { setIsSyllabusModalOpen(true); setIsMobileMenuOpen(false); }}
+        >
+          <BookOpen size={20} />
+          <span>Syllabus</span>
+        </button>
+        <button 
+          type="button"
+          className={`mobile-bottom-nav-item ${isMobileMenuOpen ? 'active' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsMobileMenuOpen(prev => !prev);
+          }}
+        >
+          <Menu size={20} />
+          <span>Menu ☰</span>
+        </button>
+      </nav>
 
       {/* Footer */}
       <footer className="page-footer">
