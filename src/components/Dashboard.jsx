@@ -423,7 +423,7 @@ export default function Dashboard({
           </div>
 
           {nextClass ? (
-            <div className="next-class-content" onClick={() => onEditClick(nextClass)}>
+            <div className="next-class-content" style={{ cursor: typeof onEditClick === 'function' ? 'pointer' : 'default' }} onClick={typeof onEditClick === 'function' ? () => onEditClick(nextClass) : undefined}>
               <div className="next-details">
                 <div className="next-header">
                   <h2 className="class-name">
@@ -558,7 +558,8 @@ export default function Dashboard({
                     <div 
                       key={cls.id} 
                       className={`timeline-item ${isCurrent ? 'active' : ''} ${isPast ? 'past' : ''}`}
-                      onClick={() => onEditClick(cls)}
+                      style={{ cursor: typeof onEditClick === 'function' ? 'pointer' : 'default' }}
+                      onClick={typeof onEditClick === 'function' ? () => onEditClick(cls) : undefined}
                     >
                       <div className="timeline-dot-container">
                         <div className="timeline-dot" style={{ backgroundColor: cls.color, boxShadow: isCurrent ? `0 0 12px ${cls.color}` : 'none' }}></div>

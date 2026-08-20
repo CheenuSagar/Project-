@@ -11,15 +11,17 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
   const [targetSliderVal, setTargetSliderVal] = useState(75);
 
   // Authenticated Student Identity
-  const studentName = userProfile?.displayName || 'MCA Student';
+  const rawName = userProfile?.displayName || '';
+  const studentName = rawName.replace(/\s*\(\d+\)/g, '').trim() || 'MCA Student';
   
   // Extract roll number from profile or email
-  const rawEmail = userProfile?.email || '230032010001@abes.ac.in';
-  const profileRoll = userProfile?.rollNumber || rawEmail.split('@')[0] || '230032010001';
+  const rawEmail = userProfile?.email || '';
+  const profileRoll = userProfile?.rollNumber || (rawEmail ? rawEmail.split('@')[0] : '');
   
   // Format active email key for Firestore match
   const activeEmail = rawEmail.toLowerCase();
   const displayRoll = profileRoll.includes('@') ? profileRoll.split('@')[0] : profileRoll;
+  const isRollEmail = activeEmail && (/^\d+$/.test(activeEmail.split('@')[0]) || (displayRoll && activeEmail.startsWith(displayRoll.toLowerCase())));
 
   useEffect(() => {
     const unsub = subscribeToOfficialAttendanceRecords((records) => {
@@ -171,7 +173,7 @@ export default function StudentAttendancePortal({ userProfile, selectedSection =
               </span>
             </div>
             <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              Official Roll No: <strong style={{ color: 'var(--primary)' }}>{displayRoll}</strong> ({activeEmail})
+              Official Roll No: <strong style={{ color: 'var(--primary)' }}>{displayRoll || 'MCA Student'}</strong> {!isRollEmail && activeEmail ? `(${activeEmail})` : ''}
             </div>
           </div>
         </div>

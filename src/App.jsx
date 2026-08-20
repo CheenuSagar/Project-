@@ -154,7 +154,7 @@ export default function App() {
   });
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [isRollModalOpen, setIsRollModalOpen] = useState(false);
-  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
+  const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
   const [remoteAppVersionNotice, setRemoteAppVersionNotice] = useState(null);
   const [showAppSplash, setShowAppSplash] = useState(true);
 
@@ -684,7 +684,7 @@ export default function App() {
             )}
             <button 
               className={`nav-tab ${activeTab === 'syllabus' ? 'active' : ''}`}
-              onClick={() => setActiveTab('syllabus')}
+              onClick={() => setIsSyllabusModalOpen(true)}
             >
               <BookOpen size={16} /> Syllabus Portal
             </button>
@@ -713,7 +713,7 @@ export default function App() {
             title="User Account & Login"
           >
             <User size={16} />
-            <span>{userProfile?.displayName || (userRole === 'teacher' ? 'Faculty Login' : 'Login / Signup')}</span>
+            <span>{(userProfile?.displayName || '').replace(/\s*\(\d+\)/g, '').trim() || (userRole === 'teacher' ? 'Faculty Login' : 'Login / Signup')}</span>
           </button>
 
           {/* Quick Theme Picker Pill */}
@@ -800,17 +800,30 @@ export default function App() {
                       {(userProfile.displayName || 'S').charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '1.02rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>
-                      {userProfile.displayName || 'MCA Student'}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary)', marginTop: '3px' }}>
-                      Roll No: {userProfile.rollNumber || userProfile.email?.split('@')[0] || '230032010001'}
-                    </div>
-                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', wordBreak: 'break-all', marginTop: '1px' }}>
-                      {userProfile.email}
-                    </div>
-                  </div>
+                  {(() => {
+                    const rawName = userProfile.displayName || '';
+                    const cleanName = rawName.replace(/\s*\(\d+\)/g, '').trim() || (userRole === 'teacher' ? 'Faculty Mentor' : 'MCA Student');
+                    const isRollEmail = userProfile.email && (/^\d+$/.test(userProfile.email.split('@')[0]) || (userProfile.rollNumber && userProfile.email.toLowerCase().startsWith(userProfile.rollNumber.toLowerCase())));
+                    const displayRoll = userProfile.rollNumber || (userProfile.email ? userProfile.email.split('@')[0] : '');
+
+                    return (
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '1.02rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>
+                          {cleanName}
+                        </div>
+                        {displayRoll && (
+                          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary)', marginTop: '3px' }}>
+                            Roll No: {displayRoll}
+                          </div>
+                        )}
+                        {!isRollEmail && userProfile.email && (
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', wordBreak: 'break-all', marginTop: '1px' }}>
+                            {userProfile.email}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -923,7 +936,7 @@ export default function App() {
               )}
               <button 
                 className={`mobile-nav-item ${activeTab === 'syllabus' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('syllabus'); setIsMobileMenuOpen(false); }}
+                onClick={() => { setIsSyllabusModalOpen(true); setIsMobileMenuOpen(false); }}
               >
                 <BookOpen size={18} /> Syllabus Portal
               </button>
@@ -1028,12 +1041,12 @@ export default function App() {
                     setIsModalOpen(true);
                   });
                 }}
-                onEditClick={async (cls) => {
+                onEditClick={isAdmin ? async (cls) => {
                   await verifyAdminAction(() => {
                     setEditingClass(cls);
                     setIsModalOpen(true);
                   });
-                }}
+                } : null}
               />
             </div>
           </div>
@@ -1052,12 +1065,12 @@ export default function App() {
                 setIsModalOpen(true);
               });
             }}
-            onEditClick={async (cls) => {
+            onEditClick={isAdmin ? async (cls) => {
               await verifyAdminAction(() => {
                 setEditingClass(cls);
                 setIsModalOpen(true);
               });
-            }}
+            } : null}
             onLoadPreset={handleLoadSectionPreset}
             selectedSection={selectedSection}
             onSelectSection={handleSelectSection}
@@ -1173,6 +1186,36 @@ export default function App() {
           alert('Conflict-free timetable published successfully!');
         }}
       />
+
+      {/* Syllabus Portal Popup Modal */}
+      {isSyllabusModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsSyllabusModalOpen(false)}>
+          <div 
+            className="modal-content glass syllabus-popup-modal animate-scale-in" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '960px', width: '95%', maxHeight: '88vh', overflowY: 'auto', padding: '24px', borderRadius: '24px', position: 'relative' }}
+          >
+            <div className="modal-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <BookOpen size={24} style={{ color: 'var(--primary)' }} />
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                    MCA 3rd Sem Syllabus Portal 📖
+                  </h2>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                    Official Course Structure & Unit Breakdown Checklist
+                  </span>
+                </div>
+              </div>
+              <button className="btn-close" onClick={() => setIsSyllabusModalOpen(false)} title="Close Syllabus Modal">
+                <X size={20} />
+              </button>
+            </div>
+
+            <SyllabusPortal />
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="page-footer">

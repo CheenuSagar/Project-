@@ -3735,6 +3735,20 @@ h1, h2, h3, h4, h5, h6 {
   max-height: 90vh !important;
 }
 
+.syllabus-popup-modal {
+  max-width: 900px !important;
+  max-height: 88vh !important;
+  overflow-y: auto !important;
+}
+
+@media (max-width: 768px) {
+  .syllabus-popup-modal {
+    width: 96% !important;
+    max-height: 92vh !important;
+    padding: 16px !important;
+  }
+}
+
 .modal-code-tag {
   font-size: 0.78rem;
   font-weight: 800;

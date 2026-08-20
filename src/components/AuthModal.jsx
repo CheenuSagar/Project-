@@ -25,12 +25,25 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, onLogoutSucc
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [editNameInput, setEditNameInput] = useState('');
+
   useEffect(() => {
     if (isOpen) {
       setActiveTab(initialTab || 'student');
       setErrorMsg('');
     }
   }, [isOpen, initialTab]);
+
+  useEffect(() => {
+    if (userProfile?.displayName) {
+      const clean = userProfile.displayName.replace(/\s*\(\d+\)/g, '').trim();
+      if (!['mca student', 'student', 'logged in student', 'logged in user'].includes(clean.toLowerCase())) {
+        setEditNameInput(clean);
+      } else {
+        setEditNameInput('');
+      }
+    }
+  }, [userProfile]);
 
   if (!isOpen) return null;
 
@@ -87,7 +100,7 @@ const sha256Hash = async (str) => {
           onAuthSuccess({
             role: 'admin',
             displayName: isMastermind ? 'Mastermind Administrator' : 'Department Administrator',
-            email: 'admin@college.edu',
+            email: 'admin@abes.ac.in',
             roomNumber: ''
           });
           resetForm();
@@ -108,7 +121,7 @@ const sha256Hash = async (str) => {
           onAuthSuccess({
             role: 'pl',
             displayName: 'Program Leader (MCA)',
-            email: inputEmail || 'pl@college.edu',
+            email: inputEmail || 'adminpl@abes.ac.in',
             facultyPin: '******'
           });
           resetForm();
@@ -120,7 +133,7 @@ const sha256Hash = async (str) => {
           onAuthSuccess({
             role: activeTab,
             displayName: displayName.trim() || 'Faculty Mentor',
-            email: inputEmail || 'mentor@college.edu',
+            email: inputEmail || 'mentor@abes.ac.in',
             facultyPin: '******'
           });
           resetForm();
@@ -168,7 +181,7 @@ const sha256Hash = async (str) => {
         res = await loginFirebaseUser(finalEmail, password.trim());
         // Seamless auto-register on first time student login if user not found yet
         if (!res.success && activeTab === 'student' && finalEmail.endsWith('@abes.ac.in') && password.trim().length >= 6) {
-          const autoReg = await registerFirebaseUser(finalEmail, password.trim(), `Student (${finalEmail.split('@')[0]})`, 'student');
+          const autoReg = await registerFirebaseUser(finalEmail, password.trim(), 'MCA Student', 'student');
           if (autoReg.success) {
             res = autoReg;
           }
@@ -180,7 +193,7 @@ const sha256Hash = async (str) => {
         const userRoll = rollNumber.trim() || res.rollNumber || (finalEmail.split('@')[0]);
         onAuthSuccess({
           role: res.role || activeTab,
-          displayName: res.user?.displayName || displayName || `MCA Student (${userRoll})`,
+          displayName: res.user?.displayName || displayName || 'MCA Student',
           email: res.user?.email || finalEmail,
           uid: res.user?.uid,
           rollNumber: userRoll,
@@ -313,29 +326,43 @@ const sha256Hash = async (str) => {
                 />
               </div>
 
-              <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)' }}>
-                {userProfile.displayName || 'Logged In Student'}
-              </h3>
-              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {userProfile.email}
-              </p>
-              <div style={{ marginTop: '8px', display: 'flex', gap: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <span className="preset-chip active" style={{ fontSize: '0.78rem' }}>
-                  Role: <strong style={{ textTransform: 'capitalize' }}>{userProfile.role || 'Student'}</strong>
-                </span>
-                <span className="preset-chip" style={{ fontSize: '0.78rem' }}>
-                  Roll No: <strong>{userProfile.rollNumber || userProfile.email?.split('@')[0] || '230032010001'}</strong>
-                </span>
-              </div>
+              {(() => {
+                const rawName = userProfile.displayName || '';
+                const cleanName = rawName.replace(/\s*\(\d+\)/g, '').trim() || (userProfile.role === 'admin' ? 'Administrator' : userProfile.role === 'pl' ? 'Program Leader' : userProfile.role === 'teacher' || userProfile.role === 'mentor' ? 'Faculty Mentor' : 'MCA Student');
+                const isRollEmail = userProfile.email && (/^\d+$/.test(userProfile.email.split('@')[0]) || (userProfile.rollNumber && userProfile.email.toLowerCase().startsWith(userProfile.rollNumber.toLowerCase())));
+                
+                return (
+                  <>
+                    <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                      {cleanName}
+                    </h3>
+                    {!isRollEmail && userProfile.email && (
+                      <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        {userProfile.email}
+                      </p>
+                    )}
+                    <div style={{ marginTop: '8px', display: 'flex', gap: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <span className="preset-chip active" style={{ fontSize: '0.78rem' }}>
+                        Role: <strong style={{ textTransform: 'capitalize' }}>{userProfile.role || 'Student'}</strong>
+                      </span>
+                      {(userProfile.rollNumber || (userProfile.email && isRollEmail)) && (
+                        <span className="preset-chip" style={{ fontSize: '0.78rem' }}>
+                          Roll No: <strong>{userProfile.rollNumber || userProfile.email?.split('@')[0]}</strong>
+                        </span>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
-            {/* Profile Photo Customizer Card */}
+            {/* Profile Photo & Name Customizer Card */}
             <div style={{ marginBottom: '20px', padding: '16px', borderRadius: '18px', background: 'rgba(79, 70, 229, 0.06)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
               <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                📸 Customize Profile Photo
+                📸 Customize Profile Photo & Name
               </div>
               <p style={{ margin: '0 0 12px 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                Upload your official photo directly from your gallery or camera!
+                Upload your official photo directly from gallery or edit your full display name!
               </p>
               <label 
                 htmlFor="profile-photo-file-input"
@@ -360,6 +387,40 @@ const sha256Hash = async (str) => {
                   Remove Current Photo 🗑️
                 </button>
               )}
+
+              {/* Edit Full Name Section */}
+              <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed var(--border-light)' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textAlign: 'left' }}>
+                  ✏️ Edit Full Name:
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Enter your real name (e.g. Cheenu Sagar)"
+                    value={editNameInput}
+                    onChange={(e) => setEditNameInput(e.target.value)}
+                    className="form-input"
+                    style={{ padding: '8px 12px', fontSize: '0.85rem', borderRadius: '10px', flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    style={{ padding: '8px 14px', borderRadius: '10px', fontWeight: 800 }}
+                    onClick={() => {
+                      const newName = editNameInput.trim();
+                      if (!newName) return;
+                      const updated = { ...userProfile, displayName: newName };
+                      try {
+                        localStorage.setItem('lecalert_user_profile', JSON.stringify(updated));
+                      } catch (err) {}
+                      if (onAuthSuccess) onAuthSuccess(updated);
+                      alert('Profile name updated successfully!');
+                    }}
+                  >
+                    Save Name
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Logout & Delete Account Actions */}

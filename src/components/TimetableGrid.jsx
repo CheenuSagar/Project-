@@ -62,13 +62,14 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
   const renderClassCard = (cls) => {
     const durationStr = calculateDuration(cls.startTime, cls.endTime);
     const accent = cls.color || '#6366f1';
+    const isEditable = typeof onEditClick === 'function';
 
     return (
       <div 
         key={cls.id} 
-        className="graphical-class-card glass glass-interactive"
-        style={{ '--card-accent': accent }}
-        onClick={() => onEditClick(cls)}
+        className={`graphical-class-card glass ${isEditable ? 'glass-interactive' : ''}`}
+        style={{ '--card-accent': accent, cursor: isEditable ? 'pointer' : 'default' }}
+        onClick={isEditable ? () => onEditClick(cls) : undefined}
       >
         <div className="card-accent-strip" style={{ backgroundColor: accent, boxShadow: `0 0 12px ${accent}` }}></div>
         <div className="graphical-card-body">
@@ -210,8 +211,8 @@ export default function TimetableGrid({ timetable, settings, onAddClick, onEditC
                             <div 
                               key={cls.id} 
                               className="timeline-slot-card"
-                              style={{ borderLeftColor: cls.color || '#6366f1' }}
-                              onClick={() => onEditClick(cls)}
+                              style={{ borderLeftColor: cls.color || '#6366f1', cursor: typeof onEditClick === 'function' ? 'pointer' : 'default' }}
+                              onClick={typeof onEditClick === 'function' ? () => onEditClick(cls) : undefined}
                             >
                               <div className="slot-time-badge">
                                 {show12h ? formatTimeTo12Hr(cls.startTime) : cls.startTime}
