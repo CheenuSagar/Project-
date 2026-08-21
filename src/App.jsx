@@ -685,7 +685,7 @@ export default function App() {
             )}
             <button 
               className={`nav-tab ${activeTab === 'syllabus' ? 'active' : ''}`}
-              onClick={() => setIsSyllabusModalOpen(true)}
+              onClick={() => setActiveTab('syllabus')}
             >
               <BookOpen size={16} /> Syllabus Portal
             </button>
@@ -943,7 +943,7 @@ export default function App() {
               )}
               <button 
                 className={`mobile-nav-item ${activeTab === 'syllabus' ? 'active' : ''}`}
-                onClick={() => { setIsSyllabusModalOpen(true); setIsMobileMenuOpen(false); }}
+                onClick={() => { setActiveTab('syllabus'); setIsMobileMenuOpen(false); }}
               >
                 <BookOpen size={18} /> Syllabus Portal
               </button>
@@ -1194,35 +1194,8 @@ export default function App() {
         }}
       />
 
-      {/* Syllabus Portal Popup Modal */}
-      {isSyllabusModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsSyllabusModalOpen(false)}>
-          <div 
-            className="modal-content glass syllabus-popup-modal animate-scale-in" 
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '960px', width: '95%', maxHeight: '88vh', overflowY: 'auto', padding: '24px', borderRadius: '24px', position: 'relative' }}
-          >
-            <div className="modal-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <BookOpen size={24} style={{ color: 'var(--primary)' }} />
-                <div>
-                  <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)' }}>
-                    MCA 3rd Sem Syllabus Portal 📖
-                  </h2>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                    Official Course Structure & Unit Breakdown Checklist
-                  </span>
-                </div>
-              </div>
-              <button className="btn-close" onClick={() => setIsSyllabusModalOpen(false)} title="Close Syllabus Modal">
-                <X size={20} />
-              </button>
-            </div>
 
-            <SyllabusPortal />
-          </div>
-        </div>
-      )}
+
 
 
 
