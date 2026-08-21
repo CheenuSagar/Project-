@@ -8,21 +8,25 @@ export default function AdminPasswordModal({ isOpen, onClose, onSubmit }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!password) {
       setErrorMsg('Please enter the Admin Password.');
       return;
     }
 
-    const success = onSubmit(password);
-    if (!success) {
-      setErrorMsg('Incorrect Password! Access denied.');
-    } else {
-      setPassword('');
-      setErrorMsg('');
-      setShowPassword(false);
-      onClose();
+    try {
+      const success = await onSubmit(password);
+      if (!success) {
+        setErrorMsg('Incorrect Password! Access denied.');
+      } else {
+        setPassword('');
+        setErrorMsg('');
+        setShowPassword(false);
+        onClose();
+      }
+    } catch (err) {
+      setErrorMsg('Verification error. Please try again.');
     }
   };
 
