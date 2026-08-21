@@ -692,14 +692,20 @@ export default function App() {
                 <UserCheck size={16} /> PL Portal
               </button>
             )}
-            {isAdmin && (
-              <button 
-                className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
-                onClick={() => setActiveTab('admin')}
-              >
-                <Shield size={16} /> Admin Portal
-              </button>
-            )}
+            <button 
+              className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
+              onClick={() => {
+                if (isAdmin) {
+                  setActiveTab('admin');
+                } else {
+                  verifyAdminAction(() => {
+                    setActiveTab('admin');
+                  });
+                }
+              }}
+            >
+              <Shield size={16} /> Admin Portal
+            </button>
             <button 
               className={`nav-tab ${activeTab === 'syllabus' ? 'active' : ''}`}
               onClick={() => setActiveTab('syllabus')}
@@ -950,14 +956,21 @@ export default function App() {
                   <Shield size={18} /> PL Portal
                 </button>
               )}
-              {isAdmin && (
-                <button 
-                  className={`mobile-nav-item ${activeTab === 'admin' ? 'active' : ''}`}
-                  onClick={() => { setActiveTab('admin'); setIsMobileMenuOpen(false); }}
-                >
-                  <Shield size={18} /> Admin Portal
-                </button>
-              )}
+              <button 
+                className={`mobile-nav-item ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (isAdmin) {
+                    setActiveTab('admin');
+                  } else {
+                    verifyAdminAction(() => {
+                      setActiveTab('admin');
+                    });
+                  }
+                }}
+              >
+                <Shield size={18} /> Admin Portal
+              </button>
               <button 
                 className={`mobile-nav-item ${activeTab === 'syllabus' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('syllabus'); setIsMobileMenuOpen(false); }}
