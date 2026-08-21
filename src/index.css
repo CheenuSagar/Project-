@@ -1952,7 +1952,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .floating-bottom-trigger {
-    bottom: 80px;
+    bottom: 24px;
     right: 16px;
     padding: 10px 16px;
     font-size: 0.85rem;
@@ -2751,7 +2751,7 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
   }
   .floating-feedback-btn {
-    bottom: 80px;
+    bottom: 24px;
     right: 16px;
     padding: 10px;
     border-radius: 50%;

@@ -1224,44 +1224,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Mobile Bottom Quick Navigation Bar */}
-      <nav className="mobile-bottom-nav">
-        <button 
-          type="button"
-          className={`mobile-bottom-nav-item ${activeTab === 'student' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('student'); setIsMobileMenuOpen(false); }}
-        >
-          <GraduationCap size={20} />
-          <span>Home</span>
-        </button>
-        <button 
-          type="button"
-          className={`mobile-bottom-nav-item ${activeTab === 'attendance' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('attendance'); setIsMobileMenuOpen(false); }}
-        >
-          <Award size={20} />
-          <span>Attendance</span>
-        </button>
-        <button 
-          type="button"
-          className="mobile-bottom-nav-item"
-          onClick={() => { setIsSyllabusModalOpen(true); setIsMobileMenuOpen(false); }}
-        >
-          <BookOpen size={20} />
-          <span>Syllabus</span>
-        </button>
-        <button 
-          type="button"
-          className={`mobile-bottom-nav-item ${isMobileMenuOpen ? 'active' : ''}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsMobileMenuOpen(prev => !prev);
-          }}
-        >
-          <Menu size={20} />
-          <span>Menu ☰</span>
-        </button>
-      </nav>
+
 
       {/* Footer */}
       <footer className="page-footer">
