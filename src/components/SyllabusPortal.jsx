@@ -324,8 +324,8 @@ const MCA_SEM3_SYLLABUS = [
 export default function SyllabusPortal() {
   const [filterType, setFilterType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeSubjectModal, setActiveSubjectModal] = useState(null);
-  
+  const [expandedSubjectId, setExpandedSubjectId] = useState(null);
+
   // Progress tracker state saved in localStorage
   const [completedUnits, setCompletedUnits] = useState(() => {
     try {
@@ -478,7 +478,7 @@ export default function SyllabusPortal() {
         </button>
       </div>
 
-      {/* Subject Cards Grid */}
+      {/* Subject Cards — Inline Accordion */}
       <div className="subjects-grid">
         {filteredSubjects.length === 0 ? (
           <div className="empty-syllabus-state glass">
@@ -489,8 +489,11 @@ export default function SyllabusPortal() {
         ) : (
           filteredSubjects.map(sub => {
             const progress = getSubjectProgress(sub);
+            const isExpanded = expandedSubjectId === sub.id;
+
             return (
-              <div key={sub.id} className="subject-card glass">
+              <div key={sub.id} className={`subject-card glass ${isExpanded ? 'subject-card-expanded' : ''}`}>
+                {/* Card Header */}
                 <div className="subject-card-header">
                   <span className="subject-code-badge">{sub.code}</span>
                   <div className="subject-pills">
@@ -522,147 +525,90 @@ export default function SyllabusPortal() {
                   </div>
                 </div>
 
+                {/* Toggle Button */}
                 <div className="subject-card-footer">
                   <button 
                     className="view-syllabus-btn"
-                    onClick={() => setActiveSubjectModal(sub)}
+                    onClick={() => setExpandedSubjectId(isExpanded ? null : sub.id)}
                   >
                     <BookOpen size={16} />
-                    <span>View Unit Breakdown</span>
-                    <ChevronRight size={16} />
+                    <span>{isExpanded ? 'Hide Unit Breakdown' : 'View Unit Breakdown'}</span>
+                    <ChevronRight size={16} style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease' }} />
                   </button>
                 </div>
+
+                {/* Inline Expanded Section */}
+                {isExpanded && (
+                  <div className="subject-inline-breakdown animate-fade-in">
+                    {/* Completion Status Banner */}
+                    <div className="modal-progress-banner glass" style={{ marginBottom: '16px' }}>
+                      <div className="banner-left">
+                        <Percent size={20} className="text-primary" />
+                        <div>
+                          <div className="banner-title">Completion Status</div>
+                          <div className="banner-sub">
+                            {progress}% Units Completed
+                          </div>
+                        </div>
+                      </div>
+                      <div className="banner-badge">
+                        {progress === 100 ? '✅ 100% Completed' : 'In Progress'}
+                      </div>
+                    </div>
+
+                    {/* Units Checklist */}
+                    <h4 className="section-heading">
+                      <Layers size={16} /> Unit Breakdown & Topics Checklist
+                    </h4>
+                    <div className="units-list">
+                      {sub.units.map(unit => {
+                        const unitKey = `${sub.id}-${unit.id}`;
+                        const isChecked = !!completedUnits[unitKey];
+                        return (
+                          <div 
+                            key={unit.id} 
+                            className={`unit-item-card ${isChecked ? 'unit-completed' : ''}`}
+                            onClick={() => toggleUnitCompletion(unitKey)}
+                          >
+                            <div className="unit-checkbox-wrapper">
+                              {isChecked ? (
+                                <CheckCircle size={22} className="check-icon-active" />
+                              ) : (
+                                <Circle size={22} className="check-icon-idle" />
+                              )}
+                            </div>
+                            <div className="unit-content">
+                              <h5 className="unit-name">{unit.name}</h5>
+                              <p className="unit-topics">{unit.topics}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Textbooks */}
+                    {sub.textbooks && (
+                      <div className="textbooks-section" style={{ marginTop: '16px' }}>
+                        <h4 className="section-heading">
+                          <FileText size={16} /> Recommended Textbooks & References
+                        </h4>
+                        <ul className="textbook-list">
+                          {sub.textbooks.map((tb, idx) => (
+                            <li key={idx}>
+                              <Bookmark size={14} className="tb-icon" />
+                              <span>{tb}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })
         )}
       </div>
-
-      {/* Detailed Unit Reader & Checklist Modal */}
-      {activeSubjectModal && (
-        <div className="modal-overlay" onClick={() => setActiveSubjectModal(null)}>
-          <div className="modal-content glass syllabus-reader-modal animate-scale-in" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div>
-                <span className="modal-code-tag">{activeSubjectModal.code} • MCA 3rd Semester</span>
-                <h2 className="modal-title">{activeSubjectModal.title}</h2>
-              </div>
-              <button className="btn-close" onClick={() => setActiveSubjectModal(null)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="syllabus-modal-body">
-              {/* Overall Subject Progress Banner */}
-              <div className="modal-progress-banner glass">
-                <div className="banner-left">
-                  <Percent size={20} className="text-primary" />
-                  <div>
-                    <div className="banner-title">Completion Status</div>
-                    <div className="banner-sub">
-                      {getSubjectProgress(activeSubjectModal)}% Units Completed
-                    </div>
-                  </div>
-                </div>
-                <div className="banner-badge">
-                  {getSubjectProgress(activeSubjectModal) === 100 ? '✅ 100% Completed' : 'In Progress'}
-                </div>
-              </div>
-
-              {/* Units Checklist */}
-              <div className="units-list-wrapper">
-                <h4 className="section-heading">
-                  <Layers size={16} /> Unit Breakdown & Topics Checklist
-                </h4>
-
-                <div className="units-list">
-                  {activeSubjectModal.units.map(unit => {
-                    const unitKey = `${activeSubjectModal.id}-${unit.id}`;
-                    const isChecked = !!completedUnits[unitKey];
-
-                    return (
-                      <div 
-                        key={unit.id} 
-                        className={`unit-item-card ${isChecked ? 'unit-completed' : ''}`}
-                        onClick={() => toggleUnitCompletion(unitKey)}
-                      >
-                        <div className="unit-checkbox-wrapper">
-                          {isChecked ? (
-                            <CheckCircle size={22} className="check-icon-active" />
-                          ) : (
-                            <Circle size={22} className="check-icon-idle" />
-                          )}
-                        </div>
-
-                        <div className="unit-content">
-                          <h5 className="unit-name">{unit.name}</h5>
-                          <p className="unit-topics">{unit.topics}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Textbooks & References */}
-              {activeSubjectModal.textbooks && (
-                <div className="textbooks-section">
-                  <h4 className="section-heading">
-                    <FileText size={16} /> Recommended Textbooks & References
-                  </h4>
-                  <ul className="textbook-list">
-                    {activeSubjectModal.textbooks.map((tb, idx) => (
-                      <li key={idx}>
-                        <Bookmark size={14} className="tb-icon" />
-                        <span>{tb}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn btn-primary" onClick={() => setActiveSubjectModal(null)}>
-                Done & Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
