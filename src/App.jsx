@@ -89,22 +89,39 @@ export default function App() {
     alarmSound: 'chime'
   });
   const [academicEvents, setAcademicEvents] = useState(() => loadAcademicCalendar());
-  const [activeTab, setActiveTab] = useState(() => {
+  const [activeTab, setActiveTabState] = useState(() => {
     try {
+      const savedTab = localStorage.getItem('lecalert_active_tab');
+      if (savedTab) return savedTab;
       const savedRole = localStorage.getItem('lecalert_user_role');
       if (savedRole === 'teacher') return 'teacher';
+      if (savedRole === 'admin') return 'admin';
       return 'student';
     } catch (e) {
       return 'student';
     }
   });
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    try {
+      localStorage.setItem('lecalert_active_tab', tab);
+    } catch (e) {}
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
   const [isAdminPasswordModalOpen, setIsAdminPasswordModalOpen] = useState(false);
   const pendingAdminCallbackRef = useRef(null);
-  const [isAdmin, setIsAdmin] = useState(false); // Always default to false on app load
+  const [isAdmin, setIsAdmin] = useState(() => {
+    try {
+      return localStorage.getItem('lecalert_is_admin') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   
   // Theme state: 'default', 'vokka', 'coffee'
   const [theme, setTheme] = useState(() => {
