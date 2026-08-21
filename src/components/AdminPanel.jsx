@@ -164,6 +164,30 @@ export default function AdminPanel({
 
       {isAdmin ? (
         <div className="admin-grid">
+          {/* Quick Metrics Bar */}
+          <div className="admin-card glass card-featured" style={{ gridColumn: '1 / -1', background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(168, 85, 247, 0.08))', border: '1.5px solid var(--primary-glow)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>COMMAND CENTER DASHBOARD</span>
+                <h2 style={{ margin: '4px 0 0 0', fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)' }}>ABES Academix Administration Portal</h2>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ background: 'var(--bg-surface)', padding: '10px 18px', borderRadius: '12px', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--primary)', display: 'block' }}>{timetable.length}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>Total Lectures</span>
+                </div>
+                <div style={{ background: 'var(--bg-surface)', padding: '10px 18px', borderRadius: '12px', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--success)', display: 'block' }}>{allTeachers.length}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>Faculty Members</span>
+                </div>
+                <div style={{ background: 'var(--bg-surface)', padding: '10px 18px', borderRadius: '12px', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 900, color: proxyClasses.length > 0 ? '#f59e0b' : 'var(--text-muted)', display: 'block' }}>{proxyClasses.length}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>Active Proxies</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Card 0: Manual Class Creator */}
           <div className="admin-card glass card-featured">
             <div className="admin-card-header">
