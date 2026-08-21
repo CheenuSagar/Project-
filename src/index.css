@@ -2723,8 +2723,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Floating Feedback Button & Modal */
 .floating-feedback-btn {
   position: fixed;
-  bottom: 74px;
-  right: 16px;
+  bottom: 84px;
+  right: 24px;
   z-index: 99;
   display: flex;
   align-items: center;
@@ -2751,7 +2751,7 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
   }
   .floating-feedback-btn {
-    bottom: 24px;
+    bottom: 84px;
     right: 16px;
     padding: 10px;
     border-radius: 50%;
