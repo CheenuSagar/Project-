@@ -724,6 +724,12 @@ export default function App() {
               <CalendarDays size={16} /> Academic Calendar
             </button>
             <button 
+              className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <SettingsIcon size={16} /> Settings & Updates
+            </button>
+            <button 
               className="nav-tab"
               onClick={() => setIsFeedbackOpen(true)}
             >
@@ -980,6 +986,12 @@ export default function App() {
                 onClick={() => { setActiveTab('academic'); setIsMobileMenuOpen(false); }}
               >
                 <CalendarDays size={18} /> Academic Calendar
+              </button>
+              <button 
+                className={`mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+              >
+                <SettingsIcon size={18} style={{ color: 'var(--primary)' }} /> Settings & Updates
               </button>
               <button 
                 className="mobile-nav-item"
