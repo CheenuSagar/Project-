@@ -22,8 +22,6 @@ import RoomSelectModal from './components/RoomSelectModal';
 import RollNumberModal from './components/RollNumberModal';
 import LandingOnboarding from './components/LandingOnboarding';
 import LogoSplash from './components/LogoSplash';
-import UpdateModal from './components/UpdateModal';
-import { checkAppUpdate } from './utils/updateService';
 import { MessageSquare, MapPin, User, LogOut } from 'lucide-react';
 import { 
   loadTimetable, saveTimetable, loadSettings, saveSettings, parseShareUrl, 
@@ -160,8 +158,6 @@ export default function App() {
   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
   const [remoteAppVersionNotice, setRemoteAppVersionNotice] = useState(null);
   const [showAppSplash, setShowAppSplash] = useState(true);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [updateData, setUpdateData] = useState(null);
 
   useEffect(() => {
     const splashTimer = setTimeout(() => {
@@ -169,30 +165,6 @@ export default function App() {
     }, 1200);
     return () => clearTimeout(splashTimer);
   }, []);
-
-  // 48-Hour Deferred Auto Update Check on App Launch
-  useEffect(() => {
-    async function runAutoUpdateCheck() {
-      const res = await checkAppUpdate(false);
-      if (res && res.updateAvailable && res.shouldPrompt) {
-        setUpdateData(res);
-        setIsUpdateModalOpen(true);
-      }
-    }
-    runAutoUpdateCheck();
-  }, []);
-
-  const handleManualCheckUpdate = async () => {
-    const res = await checkAppUpdate(true);
-    if (res && res.updateAvailable) {
-      setUpdateData(res);
-      setIsUpdateModalOpen(true);
-    } else if (res && !res.error) {
-      alert(`You are using the latest version (v${res.currentVersion?.versionName || '1.0.1'}) 👍`);
-    } else {
-      alert('Unable to check for updates right now. Please check your internet connection.');
-    }
-  };
 
   // Apply theme to document root
   useEffect(() => {
@@ -724,12 +696,6 @@ export default function App() {
               <CalendarDays size={16} /> Academic Calendar
             </button>
             <button 
-              className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
-            >
-              <SettingsIcon size={16} /> Settings & Updates
-            </button>
-            <button 
               className="nav-tab"
               onClick={() => setIsFeedbackOpen(true)}
             >
@@ -986,12 +952,6 @@ export default function App() {
                 onClick={() => { setActiveTab('academic'); setIsMobileMenuOpen(false); }}
               >
                 <CalendarDays size={18} /> Academic Calendar
-              </button>
-              <button 
-                className={`mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
-              >
-                <SettingsIcon size={18} style={{ color: 'var(--primary)' }} /> Settings & Updates
               </button>
               <button 
                 className="mobile-nav-item"
@@ -1438,13 +1398,6 @@ export default function App() {
         }}
         onClose={() => setIsTermsOpen(false)}
         allowClose={isTermsAccepted}
-      />
-
-      {/* In-App Update Modal (48h deferred auto-prompt / manual check) */}
-      <UpdateModal 
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-        updateData={updateData}
       />
 
     </div>

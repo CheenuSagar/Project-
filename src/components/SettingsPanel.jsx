@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { generateShareUrl, exportBackup } from '../utils/storageHelper';
 import { downloadICSFile } from '../utils/icsHelper';
-import { CURRENT_APP_VERSION } from '../utils/updateService';
 
 // Synthesizes a beautiful digital double-chime note using Web Audio API
 export function playSyntheticChime() {
@@ -79,8 +78,7 @@ export default function SettingsPanel({
   onToggleAdmin,
   currentTheme = 'default',
   onThemeChange,
-  onOpenTerms,
-  onCheckUpdate
+  onOpenTerms
 }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState(
@@ -555,20 +553,6 @@ export default function SettingsPanel({
               onClick={onOpenTerms}
             >
               <ShieldCheck size={14} /> View Agreement
-            </button>
-          </div>
-
-          {/* App Version & Manual Update Checker */}
-          <div className="setting-row">
-            <div className="setting-info">
-              <h4>App Version & Updates</h4>
-              <p>Current version: <strong>v{CURRENT_APP_VERSION.versionName}</strong> (Build #{CURRENT_APP_VERSION.versionCode}). Manual update check with 48h deferred auto-prompt.</p>
-            </div>
-            <button 
-              className="btn btn-primary btn-sm"
-              onClick={onCheckUpdate}
-            >
-              <RotateCcw size={14} /> Check for Updates
             </button>
           </div>
 
